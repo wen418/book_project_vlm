@@ -73,3 +73,7 @@ python3 -m unittest discover -s tests
 ## 新增阶段时间锚点
 
 量化报告新增stage_timeline.html入口，区分到点、头部到位、接图、每次VLM客户端调用、有效识别、确认及最终退出；数据仍在本轮result目录。请在按钮实际未亮且终端出现“[按键测试就绪]”后按键。提前操作或未完整拍到变化起点时，报告会提示，起点不完整的该项延迟留空。详见elevator_button_floor_demo/README.md。
+
+## 按键与楼层单帧确认
+
+按键点亮与目标楼层现均为confirmations=1、min_span=0.0，一帧有效结果即可通过，不再等待第二帧或至少1秒跨度；门全开原本也是单帧。下位机实际入口与上位机配置已同步，其余现场参数保留，VLM仍最多1Hz。旧轮次按当时配置解释，report中使用“识别确认通过”字样。详见elevator_button_floor_demo/README.md。

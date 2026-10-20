@@ -593,10 +593,10 @@ def render_report(directory, observations, views, summary, reviews=None):
         esc(v["view"]), esc(v["kind"]), esc(v["image"]), esc(v["image_stamp"])) for v in views)
     names = {"button_wait_to_first_positive_s": "开始观察按键 → 首次识别点亮",
              "actual_button_lit_to_first_positive_s": "人工点亮帧 → 首次有效识别",
-             "actual_button_lit_to_recognition_s": "人工点亮帧 → 连续确认通过",
+             "actual_button_lit_to_recognition_s": "人工点亮帧 → 识别确认通过",
              "actual_door_open_to_recognition_s": "人工全开帧 → 开门确认",
-             "button_wait_to_recognition_s": "开始观察按键 → 连续确认通过",
-             "button_confirmation_s": "首次识别点亮 → 连续确认通过", "button_inference_s": "按键确认帧推理耗时",
+             "button_wait_to_recognition_s": "开始观察按键 → 识别确认通过",
+             "button_confirmation_s": "首次识别点亮 → 识别确认通过", "button_inference_s": "按键确认帧推理耗时",
              "door_wait_to_recognition_s": "开始等门 → 程序确认全开", "door_inference_s": "开门识别推理耗时",
              "recognition_to_command_s": "确认全开 → 开始发令", "command_call_s": "发令调用耗时",
              "command_to_motion_s": "开始发令 → 实测起步", "motion_to_entry_s": "实测起步 → 导航到点",
@@ -699,7 +699,7 @@ byId('frame').src=f.image;byId('time').textContent=`第 ${Number(slider.value)+1
 let prev=frames[Number(slider.value)-1];if(prev)byId('time').textContent+=`\n与上一帧间隔 ${(f.image_stamp-prev.image_stamp).toFixed(3)} 秒`;}
 function show(){let o=trial[current.key+'_ros_stamp'],p=trial[current.key+'_prev_ros_stamp'];
 let text=`最后未${current.label}：${p??'未标记'}\n第一张${current.label}：${o??'未标记'}`;
-if(o!=null&&current.recognized!=null){let d=current.recognized-o;text+=`\n第一张${current.label}帧 → 连续确认通过：${d.toFixed(3)} 秒`;
+if(o!=null&&current.recognized!=null){let d=current.recognized-o;text+=`\n第一张${current.label}帧 → 识别确认通过：${d.toFixed(3)} 秒`;
 if(d<0)text+='（确认早于人工标记，需检查误识别或标记）';
 if(p!=null&&p<o)text+=`\n画面变化位于两帧之间，间隔 ${(o-p).toFixed(3)} 秒；延迟范围 [${d.toFixed(3)}, ${(current.recognized-p).toFixed(3)}) 秒。`;}
 if(o!=null&&current.first!=null)text+=`\n第一张点亮帧 → 首次有效识别：${(current.first-o).toFixed(3)} 秒`;

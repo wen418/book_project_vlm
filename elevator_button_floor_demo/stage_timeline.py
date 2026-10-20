@@ -11,7 +11,7 @@ ANCHORS = {
     "first_frame_selected": "首次选择推理源帧", "first_vlm_request": "首次调用VLM客户端",
     "first_vlm_response": "该次客户端调用结束／返回", "first_valid_result": "首次有效识别结果",
     "button_unlit_ready": "已识别未亮，允许人工按键", "first_positive": "首次识别目标状态",
-    "confirmation": "本阶段连续确认通过",
+    "confirmation": "本阶段识别确认通过",
 }
 WORKFLOW_EVENTS = {
     "navigation_start":"开始导航", "command_issue":"开始发令", "command_accepted":"发令返回",
@@ -200,5 +200,5 @@ def timeline_html(timeline, alignments=None):
     workflow='<section><h2>全流程节点：导航、观察与最终退出</h2><table><tr><th>节点</th><th>位置／对象</th><th>ROS时间</th><th>相对本轮开始</th></tr>%s</table></section>'%flow
     return '''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>阶段时间锚点</title>
 <style>body{font:16px system-ui;max-width:1150px;margin:30px auto;padding:0 20px;background:#f3f5f8;color:#17243b}section{background:white;padding:20px;margin:20px 0}table{border-collapse:collapse;width:100%%}th,td{padding:10px;text-align:left;border-bottom:1px solid #ddd}.warning{color:#a33422}</style>
-<h1>阶段时间锚点</h1><p><a href="report.html">返回报告</a></p><p>本页区分阶段准备、接图、客户端调用和连续确认。客户端调用包含网络等待及其内部重试，并不等同于云端纯计算耗时。跨机器ROS时间需要同步。</p>%s%s</html>'''%(
+<h1>阶段时间锚点</h1><p><a href="report.html">返回报告</a></p><p>本页区分阶段准备、接图、客户端调用和识别确认。客户端调用包含网络等待及其内部重试，并不等同于云端纯计算耗时。跨机器ROS时间需要同步。</p>%s%s</html>'''%(
         checks,workflow+(''.join(cards) or '<p>本轮没有可用的观察阶段事件，旧数据不能补造锚点。</p>'))

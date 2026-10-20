@@ -88,15 +88,18 @@ def install_entry(host, staging, target):
 subprocess.run(['/usr/bin/python3',%r,'--install-to',%r],check=True)
 """ % (staging, target))
         print(output.strip())
-    # The user's requested frequency change is the only site config update.
+    # Update only the explicitly requested rate and single-frame confirmation rules.
     remote(host, backup_source() + """import ast,os,shutil,tempfile
 from pathlib import Path
 p=Path(%r)
 s=p.read_text(encoding='utf-8-sig')
 n=next(n for n in ast.parse(s).body if isinstance(n,ast.Assign) and any(isinstance(x,ast.Name) and x.id=='DEFAULT_CONFIG' for x in n.targets))
 c=ast.literal_eval(n.value)
-if c['extra_perception']['inference_period']!=1.0:
- c['extra_perception']['inference_period']=1.0
+original=__import__('copy').deepcopy(c)
+c['extra_perception']['inference_period']=1.0
+for name in ('button','floor'):
+ c['perception'][name].update(confirmations=1,min_span=0.0)
+if c!=original:
  lines=s.splitlines(keepends=True)
  updated=''.join(lines[:n.lineno-1])+'DEFAULT_CONFIG = '+repr(c)+'\\n'+''.join(lines[n.end_lineno:])
  compile(updated,str(p),'exec')
@@ -111,11 +114,14 @@ if c['extra_perception']['inference_period']!=1.0:
     after = json.loads(remote(host, READ_CONFIG % target))
     expected_config = before["config"]
     expected_config["extra_perception"]["inference_period"] = 1.0
+    for name in ("button", "floor"):
+        expected_config["perception"][name].update(confirmations=1, min_span=0.0)
     if after["config"] != expected_config:
         raise RuntimeError("现场配置发生变化：" + target)
     if expected_hash != after["code_sha256"]:
         raise RuntimeError("安装代码校验失败：" + target)
-    return dict(host=host, path=target, code_sha256=expected_hash, site_config_preserved_except_inference_period=True)
+    return dict(host=host, path=target, code_sha256=expected_hash,
+                site_config_preserved_except=["extra_perception.inference_period", "perception.button", "perception.floor"])
 
 
 def main():
@@ -224,6 +230,7 @@ for p,kind in items:
  if kind=='json':
   c=json.loads(before)
   c['extra_perception']['inference_period']=1.0
+  for name in ('button','floor'):c['perception'][name].update(confirmations=1,min_span=0.0)
   after=json.dumps(c,ensure_ascii=False,indent=2)+'\\n'
  else:
   after,n=re.subn(r'(?m)^inference_hz:.*$', 'inference_hz: 1.0',before)

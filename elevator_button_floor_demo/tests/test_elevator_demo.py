@@ -395,6 +395,30 @@ class ParsingTests(unittest.TestCase):
 
 
 class GateTests(unittest.TestCase):
+    def test_current_defaults_confirm_button_and_floor_on_first_valid_frame(self):
+        for config in (controller.DEFAULT_CONFIG, core.load_config(ROOT / "params/elevator_button_floor_demo.json")):
+            for name,mode,field,value in (("button","button_verify","button_lit",True),("floor","floor_monitor","floor",15)):
+                rule=config["perception"][name]
+                self.assertEqual(rule,{"confirmations":1,"min_span":0.0})
+                gate=core.EvidenceGate(15,.72,**rule)
+                gate.arm(mode,field,value,100,request_id="current")
+                item=dict(schema_version=1,mode=mode,request_id="current",sequence=1,image_stamp=101,
+                          status="ok",confidence={field:.9},**{field:value})
+                self.assertTrue(gate.feed(json.dumps(item),101))
+                self.assertEqual(gate.wait(.01,lambda:101)[field],value)
+
+    def test_single_frame_rules_still_reject_invalid_evidence(self):
+        for name,mode,field,value in (("button","button_verify","button_lit",True),("floor","floor_monitor","floor",15)):
+            base=dict(schema_version=1,mode=mode,request_id="current",sequence=1,image_stamp=101,
+                      status="ok",confidence={field:.9},**{field:value})
+            for changes in ({"image_stamp":99},{"image_stamp":80},{"request_id":"old"},
+                            {"confidence":{field:.5}},{"status":"uncertain",field:None},
+                            {field:False if name=="button" else 14},{"message_type":"heartbeat"}):
+                with self.subTest(name=name,changes=changes):
+                    gate=core.EvidenceGate(15,.72,**controller.DEFAULT_CONFIG["perception"][name])
+                    gate.arm(mode,field,value,100,request_id="current")
+                    self.assertFalse(gate.feed(json.dumps(dict(base,**changes)),101))
+
     def setUp(self):
         self.gate = core.EvidenceGate(15, 0.72, 2, 1)
         self.gate.arm("floor_monitor", "floor", 20, 100, request_id="current")
