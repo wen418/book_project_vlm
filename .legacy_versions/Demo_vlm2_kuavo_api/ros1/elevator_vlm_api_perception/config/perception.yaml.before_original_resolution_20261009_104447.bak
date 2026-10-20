@@ -1,0 +1,41 @@
+# Kuavo: cam_h=头部相机，cam_l=左腕相机，cam_r=右腕相机。
+# 节点同时支持 sensor_msgs/Image 和 sensor_msgs/CompressedImage。
+camera:
+  # 默认用头部彩色相机持续观察；实际视角必须在真机上确认。
+  # 当前现场只有原始 yuv422 图像流，直接订阅原图。
+  scene_topic: "/cam_h/color/image_raw"
+  # 2026-09-23 现场对照确认：该相机虽标记 yuv422，实际字节顺序是 YUYV。
+  yuv422_layout: "yuyv"
+  # 若按钮改用腕部相机，可将对应话题填入 button_topic，例如：
+  # /cam_l/color/image_raw/compressed 或 /cam_r/color/image_raw/compressed
+  door_topic: ""
+  button_topic: ""
+
+  # ROI 格式：[x, y, width, height]；空数组表示使用整张图。
+  scene_roi: []
+  door_roi: []
+  button_roi: []
+
+# 云端 API 按请求计费，默认只监测门；需要检查按钮时再切换模式。
+# idle / both / door_monitor / button_verify
+mode: "door_monitor"
+# 规划模块可通过此话题动态切换模式，发布 std_msgs/String。
+mode_topic: "/elevator/perception/mode"
+
+output_topic: "/elevator/perception/state"
+model_config: "config.door_fast.json"
+# API 模式默认每2秒最多请求一次，先做 shadow test 后再按费用和延迟调整。
+inference_hz: 1
+status_hz: 1.0
+max_frame_age_sec: 2.0
+# API 网络往返存在抖动，超过15秒的结果不得进入规划。
+max_result_age_sec: 15.0
+max_pair_skew_sec: 0.5
+jpeg_quality: 80
+# API上传前限制长边，0表示不缩放。ROI仍应优先裁掉无关背景。
+max_image_edge: 768
+temporal_filter: true
+
+# 空字符串表示不把时序状态写盘，只在节点进程内保存。
+state_file: ""
+

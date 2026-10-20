@@ -1,0 +1,429 @@
+#!/usr/bin/python3
+"""Upper-computer launcher for the existing door node, extra node and lower demo."""
+from __future__ import annotations
+
+import argparse
+import base64
+from datetime import datetime
+import fcntl
+import json
+import math
+import os
+from pathlib import Path
+import shlex
+import signal
+import subprocess
+import sys
+import threading
+import time
+
+BOOK = "/home/lab/kuavo-ros-control/src/kuavo_humanoid_sdk/kuavo_humanoid_sdk/kuavo_strategy_pytree/book"
+ENTRY = BOOK + "/elevator_button_floor_main.py"
+DEFAULT_ROOT = Path("/media/data/vlm/Demo_kuavo_vlm_api")
+DOOR_START = Path("/media/data/vlm/Demo_vlm2_kuavo_api/deploy/run_ros_api.sh")
+EXTRA_START = Path("/media/data/vlm/elevator_button_floor_demo/deploy/run_extra_perception.sh")
+QUANT_ROOT = EXTRA_START.parent.parent
+
+
+def remote_metadata_code():
+    # AST reading avoids importing the robot API or constructing action publishers.
+    return """from pathlib import Path
+import ast,json
+p=Path(%r)
+s=p.read_text(encoding='utf-8-sig')
+n=next(n for n in ast.parse(s).body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='DEFAULT_CONFIG' for t in n.targets))
+c=ast.literal_eval(n.value)
+active=[]
+for proc in Path('/proc').iterdir():
+ if not proc.name.isdigit():continue
+ try:
+  a=[v.decode(errors='replace') for v in (proc/'cmdline').read_bytes().split(b'\\0') if v]
+  if len(a)>1 and any(v.endswith('/elevator_button_floor_main.py') or v=='elevator_button_floor_main.py' for v in a[1:3]) and any(v in a for v in ['--run','--observe-only','--head-only']):active.append(int(proc.name))
+ except (OSError,PermissionError):pass
+print(json.dumps({'config':c,'active_pids':active},ensure_ascii=False))
+""" % ENTRY
+
+
+def readiness_reason(values, now, camera_age=2.0):
+    """Require new, live node messages, compatible interfaces and fresh camera input."""
+    for name in ("door", "extra", "ready", "camera"):
+        if name not in values:
+            return "等待 " + name + " 反馈"
+        if name != "ready" and now - values[name][1] > 5:
+            return name + " 反馈已中断"
+    door, extra, ready = (values[name][0] for name in ("door", "extra", "ready"))
+    if door.get("schema_version") != 2 or door.get("mode") != "idle" or door.get("status") != "idle":
+        return "门感知尚未进入 idle：" + str(door.get("errors") or door.get("status"))
+    if ready.get("status") != "ready" or ready.get("schema_version") != 1:
+        return "附加感知未就绪：" + str(ready.get("reason", ready.get("status")))
+    if not {"button_verify", "floor_monitor"}.issubset(ready.get("capabilities", [])):
+        return "附加感知不支持按钮和楼层接口"
+    if extra.get("mode") != "idle" or extra.get("status") != "idle":
+        return "附加感知尚未进入 idle：" + str(extra.get("reason", extra.get("status")))
+    age = extra.get("image_age_sec")
+    if (not extra.get("image_received") or isinstance(age, bool) or
+            not isinstance(age, (int, float)) or not math.isfinite(age) or not -1 <= age <= camera_age):
+        return "附加感知未收到新鲜相机图像"
+    if values["camera"][0] is not True:
+        return "相机图像不完整或时间戳过期"
+    return None
+
+
+class Child:
+    def __init__(self, label, command, log_path, remote=False, on_line=None):
+        self.label, self.remote = label, remote
+        self.on_line = on_line
+        self.log = log_path.open("w", encoding="utf-8", buffering=1)
+        self.process = subprocess.Popen(command, stdin=subprocess.PIPE if remote else subprocess.DEVNULL,
+                                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, start_new_session=True)
+        self.reader = threading.Thread(target=self.relay, daemon=True)
+        self.reader.start()
+
+    def relay(self):
+        try:
+            for raw in iter(self.process.stdout.readline, b""):
+                line = raw.decode("utf-8", errors="replace").rstrip("\r\n")
+                self.log.write(line + "\n")
+                if self.on_line is not None:
+                    self.on_line(line)
+                if not line.startswith("__ELEVATOR_EVENT__"):
+                    print("[" + self.label + "] " + line, flush=True)
+        finally:
+            self.process.stdout.close()
+
+    def stop(self):
+        p = self.process
+        if p.poll() is None:
+            if self.remote:
+                try:
+                    # The remote PTY turns Ctrl+C into SIGINT for the lower process.
+                    p.stdin.write(b"\x03")
+                    p.stdin.flush()
+                except (OSError, BrokenPipeError):
+                    pass
+            else:
+                self.send(signal.SIGINT)
+            try:
+                p.wait(timeout=8)
+            except subprocess.TimeoutExpired:
+                self.send(signal.SIGTERM)
+                try:
+                    p.wait(timeout=3)
+                except subprocess.TimeoutExpired:
+                    self.send(signal.SIGKILL)
+                    p.wait(timeout=3)
+        self.reader.join(timeout=2)
+        if p.stdin:
+            p.stdin.close()
+        if not self.reader.is_alive():
+            self.log.close()
+
+    def send(self, sig):
+        try:
+            os.killpg(self.process.pid, sig)
+        except ProcessLookupError:
+            pass
+
+
+class Launcher:
+    def __init__(self, args):
+        self.args = args
+        self.root = Path(os.environ.get("ELEVATOR_LAUNCH_DIR", str(DEFAULT_ROOT)))
+        self.key = Path.home() / ".ssh/id_ed25519_elevator_demo"
+        self.known_hosts = Path.home() / ".ssh/elevator_demo_known_hosts"
+        self.children = []
+        self.remote_child = None
+        self.values, self.lock = {}, threading.Lock()
+        self.subscribers = []
+        self.rospy = None
+        self.door_pub = self.extra_pub = None
+        self.recorder = None
+        self.exit_code = 1
+
+    def quantifying(self):
+        return getattr(self.args, "program", "demo") == "quantify"
+
+    def ssh_command(self, remote_command, tty=False):
+        return ["ssh", "-tt" if tty else "-T", "-i", str(self.key),
+                "-o", "IdentitiesOnly=yes", "-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=yes",
+                "-o", "UserKnownHostsFile=" + str(self.known_hosts), "-o", "ConnectTimeout=6",
+                "-o", "ServerAliveInterval=5", "-o", "ServerAliveCountMax=2",
+                "lab@" + self.args.lower_host, remote_command]
+
+    def remote(self, command, timeout=30):
+        result = subprocess.run(self.ssh_command(command), stdout=subprocess.PIPE,
+                                stderr=subprocess.STDOUT, timeout=timeout)
+        output = result.stdout.decode("utf-8", errors="replace")
+        if result.returncode:
+            raise RuntimeError("下位机命令失败：\n" + output)
+        return output
+
+    def lower_command(self, arguments, locked=False):
+        command = ["env", "ROS_MASTER_URI=" + os.environ["ROS_MASTER_URI"], "ROS_IP=192.168.26.1",
+                   "/usr/bin/python3", "-u", ENTRY, *arguments]
+        if locked:
+            command = ["flock", "-n", "-E", "73", "/tmp/kuavo_elevator_demo.lock", *command]
+        return "cd " + shlex.quote(BOOK) + " && exec " + shlex.join(command)
+
+    def preflight(self):
+        for path in (DOOR_START, EXTRA_START, self.key, self.known_hosts):
+            if not path.is_file():
+                raise RuntimeError("缺少文件：" + str(path))
+        encoded = base64.b64encode(remote_metadata_code().encode()).decode()
+        metadata = json.loads(self.remote("/usr/bin/python3 -c " + shlex.quote(
+            "import base64;exec(base64.b64decode(" + repr(encoded) + "))")))
+        self.config = metadata["config"]
+        if metadata["active_pids"]:
+            raise RuntimeError("下位机已有测试程序运行，先退出旧程序，PID=" + str(metadata["active_pids"]))
+        self.target_floor = self.config["target_floor"] if self.args.target_floor is None else self.args.target_floor
+        print("下位机：lab@" + self.args.lower_host, flush=True)
+        print("目标楼层：" + str(self.target_floor) + "；头部看屏幕角度：" + str(self.config["head"]["floor"]), flush=True)
+        motion_required = not (self.args.perception_only or self.args.check_startup or
+                               (self.quantifying() and self.args.observe_only))
+        if motion_required and self.config.get("calibrated") is not True:
+            raise RuntimeError("下位机 calibrated 尚未标定；请核对正式入口配置")
+        print(self.remote(self.lower_command(["--check-runtime"])), end="", flush=True)
+        if self.quantifying():
+            # Reject an old lower entry before creating any robot publishers.
+            print(self.remote(self.lower_command(["--quantify"])), end="", flush=True)
+        if motion_required:
+            import rosgraph
+            master = rosgraph.Master("/elevator_launch_preflight")
+            try:
+                ready = master.getParam("/hardware/is_ready")
+            except rosgraph.MasterError:
+                ready = None
+            if type(ready) is not int or ready != 1:
+                raise RuntimeError(f"机器人主控/电机尚未就绪：/hardware/is_ready={ready!r}。"
+                                   "请先完成现场正常启动；本脚本不会自动触发整机初始化。"
+                                   "仅检查感知可用 --check-startup。")
+            print(self.remote(self.lower_command(["--check-head"])), end="", flush=True)
+            if self.quantifying():
+                print(self.remote(self.lower_command(["--check-motion", "--motion-topic", self.args.motion_topic])), end="", flush=True)
+
+    def connect_ros(self):
+        import rospy
+        import rosgraph
+        from sensor_msgs.msg import Image
+        from std_msgs.msg import String
+        self.rospy, self.rosgraph, self.String = rospy, rosgraph, String
+        rospy.init_node("elevator_one_click_launcher", anonymous=True, disable_signals=True)
+        rosgraph.Master(rospy.get_name()).getSystemState()
+        topic = self.config["camera"]["topic"]
+        message = rospy.wait_for_message(topic, Image, timeout=8)
+        if not self.valid_image(message):
+            raise RuntimeError("相机图像不完整或过期：" + topic)
+        print("ROS 与相机已连通：" + topic, flush=True)
+
+    def valid_image(self, msg):
+        return (msg.header.stamp.to_sec() > 0 and msg.width > 0 and msg.height > 0 and msg.step > 0 and
+                len(msg.data) >= msg.step * msg.height and
+                -1 <= self.rospy.Time.now().to_sec() - msg.header.stamp.to_sec() <= 2)
+
+    def remember(self, name, message):
+        try:
+            data = self.valid_image(message) if name == "camera" else json.loads(message.data)
+            if name != "camera" and not isinstance(data, dict):
+                return
+        except (ValueError, TypeError, AttributeError):
+            return
+        with self.lock:
+            self.values[name] = data, time.monotonic()
+
+    def idle(self):
+        if self.door_pub is not None:
+            self.door_pub.publish(self.String(data="idle"))
+            self.extra_pub.publish(self.String(data="idle"))
+
+    def start_perception(self):
+        from sensor_msgs.msg import Image
+        p = self.config["perception"]
+        self.door_pub = self.rospy.Publisher(p["door_mode_topic"], self.String, queue_size=1, latch=True)
+        self.extra_pub = self.rospy.Publisher(p["extra_request_topic"], self.String, queue_size=1, latch=True)
+        for name, topic in (("door", p["door_state_topic"]), ("extra", p["extra_state_topic"]),
+                             ("ready", p["extra_ready_topic"])):
+            self.subscribers.append(self.rospy.Subscriber(topic, self.String,
+                                    lambda msg, name=name: self.remember(name, msg), queue_size=10))
+        self.subscribers.append(self.rospy.Subscriber(self.config["camera"]["topic"], Image,
+                                lambda msg: self.remember("camera", msg), queue_size=1))
+        self.idle()
+        publishers, subscribers, services = self.rosgraph.Master(self.rospy.get_name()).getSystemState()
+        nodes = {node for table in (publishers, subscribers, services) for _, group in table for node in group}
+        publishers = dict(publishers)
+        for label, topic, node, script in (("门感知", p["door_state_topic"], "/elevator_vlm_api_perception", DOOR_START),
+                                           ("按钮楼层感知", p["extra_state_topic"], "/elevator_extra_perception_demo", EXTRA_START)):
+            if publishers.get(topic) or node in nodes:
+                print("复用已运行的" + label + "；退出时保留该节点", flush=True)
+            else:
+                print("启动" + label, flush=True)
+                self.children.append(Child(label, ["bash", str(script)], self.logs / (script.stem + ".log")))
+        deadline = time.monotonic() + self.args.ready_timeout
+        last_report = -math.inf
+        while time.monotonic() < deadline:
+            self.ensure_alive()
+            self.idle()
+            with self.lock:
+                reason = readiness_reason(dict(self.values), time.monotonic())
+            if reason is None:
+                print("两个感知节点已就绪，相机新鲜；当前均为空闲模式。", flush=True)
+                return
+            if time.monotonic() - last_report >= 3:
+                print("等待感知就绪：" + reason, flush=True)
+                last_report = time.monotonic()
+            time.sleep(0.2)
+        raise TimeoutError("感知启动超时：" + reason + "；详见 " + str(self.logs))
+
+    def ensure_alive(self):
+        if self.recorder is not None and self.recorder.fatal:
+            raise RuntimeError("量化记录失败：" + self.recorder.fatal)
+        for child in self.children:
+            code = child.process.poll()
+            if code is not None:
+                raise RuntimeError(child.label + "已退出，返回码 " + str(code) + "；详见 " + str(self.logs))
+        if self.rospy is not None and self.rospy.is_shutdown():
+            raise RuntimeError("ROS 已关闭")
+
+    def run(self):
+        self.preflight()
+        self.connect_ros()
+        if self.args.check:
+            print("检查通过；未启动感知、未发送机器人运动指令。", flush=True)
+            return 0
+        if self.quantifying():
+            sys.path.insert(0, str(QUANT_ROOT))
+            from elevator_quantification import QuantificationSession
+            self.recorder = QuantificationSession(self.args, self.config)
+            self.logs = self.recorder.directory / "logs"
+        else:
+            self.logs = self.root / "logs" / (datetime.now().strftime("%Y%m%d_%H%M%S_") + str(os.getpid()))
+        self.logs.mkdir(parents=True)
+        print("本轮日志：" + str(self.logs), flush=True)
+        self.start_perception()
+        if self.recorder is not None:
+            self.recorder.start(self.rospy)
+        if self.args.check_startup:
+            print("感知启动检查通过；未启动机器人演示。", flush=True)
+            return 0
+        if self.args.perception_only:
+            print("仅运行感知；在此终端按 Ctrl+C 退出。", flush=True)
+            while True:
+                self.ensure_alive()
+                time.sleep(0.5)
+        # Check the complete interfaces only after the two nodes are ready.
+        if not (self.quantifying() and self.args.observe_only):
+            print(self.remote(self.lower_command(["--check-services"])), end="", flush=True)
+        arguments = ["--run", "--preflight-confirmed", "--perception-confirmed", "--estop-ready"]
+        if self.recorder is not None:
+            arguments += ["--quantify", "--run-id", self.recorder.run_id,
+                          "--entry-plan", self.args.entry_plan, "--motion-topic", self.args.motion_topic]
+            if self.args.entry_pose is not None:
+                arguments += ["--entry-pose", *map(str, self.args.entry_pose)]
+            if self.args.entry_only:
+                arguments += ["--entry-only"]
+            if self.args.observe_only:
+                arguments = [a for a in arguments if a != "--run"]
+                arguments += ["--observe-only", self.args.observe_only]
+        if self.args.target_floor is not None:
+            arguments += ["--target-floor", str(self.args.target_floor)]
+        print("启动下位机电梯演示；按 Ctrl+C 中止。现场仍需保持急停可用。", flush=True)
+        self.remote_child = Child("下位机", self.ssh_command(self.lower_command(arguments, locked=True), tty=True),
+                                  self.logs / "elevator_button_floor_main.log", remote=True,
+                                  **({"on_line": self.recorder.on_line} if self.recorder is not None else {}))
+        while self.remote_child.process.poll() is None:
+            self.ensure_alive()
+            time.sleep(0.2)
+        self.remote_child.reader.join(timeout=3) if hasattr(self.remote_child, "reader") else None
+        self.ensure_alive()
+        return self.remote_child.process.returncode
+
+    def close(self):
+        if self.remote_child is not None:
+            self.remote_child.stop()
+        try:
+            self.idle()
+            if self.door_pub is not None:
+                time.sleep(0.2)
+        except Exception:
+            pass
+        for child in reversed(self.children):
+            child.stop()
+        if self.recorder is not None:
+            self.recorder.close(self.exit_code)
+        for subscriber in self.subscribers:
+            subscriber.unregister()
+        if self.rospy is not None:
+            self.rospy.signal_shutdown("一键启动脚本退出")
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="依次启动两个 VLM 感知和下位机电梯程序；默认运行完整演示")
+    parser.add_argument("--target-floor", type=int, help="本次目标楼层；省略则沿用下位机内置配置")
+    parser.add_argument("--lower-host", default="kuavo_master", help="下位机 SSH 主机；默认使用内部稳定地址")
+    parser.add_argument("--ready-timeout", type=float, default=60.0)
+    parser.add_argument("--program", choices=("demo", "quantify"), default="demo", help="demo 原流程；quantify 新量化程序")
+    parser.add_argument("--result-dir", type=Path, default=QUANT_ROOT / "result")
+    parser.add_argument("--entry-plan", choices=("baseline", "origin_no_turn", "reduced_backtrack"),
+                        help="量化默认 origin_no_turn；baseline 对照；reduced_backtrack 指定较近观察点")
+    parser.add_argument("--entry-pose", type=float, nargs=3, metavar=("X", "Y", "THETA"), help="可选覆盖减少回退点；默认 -0.901 0.004 6（米/度）")
+    parser.add_argument("--entry-only", action="store_true", help="量化时完成进梯即结束")
+    parser.add_argument("--observe-only", choices=("button", "floor", "door"), help="量化当前视角感知，不运动")
+    parser.add_argument("--view", choices=("auto", "normal", "turned"), default="auto", help="单独感知时人工记录当前视角")
+    parser.add_argument("--motion-topic", default="/tracked_pose", help="真实定位 PoseStamped 或 Odometry")
+    parser.add_argument("--door-condition", choices=("unknown", "unassisted", "held"), default="unknown", help="计划门条件；实际条件另填人工复核")
+    parser.add_argument("--trial-note", default="")
+    parser.add_argument("--diagnostic", action="store_true", help="本轮仅作部署诊断，不纳入正式实验汇总")
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--check", action="store_true", help="只检查依赖、SSH、硬件、ROS 和相机，不启动感知或运动")
+    modes.add_argument("--perception-only", action="store_true", help="只启动两个感知节点，不启动机器人演示")
+    modes.add_argument("--check-startup", action="store_true", help="启动两个空闲感知、检查就绪后退出；不启动机器人演示")
+    args = parser.parse_args(argv)
+    args.entry_plan = args.entry_plan or ("origin_no_turn" if args.program == "quantify" and not args.observe_only else "baseline")
+    if args.target_floor is not None and not -10 <= args.target_floor <= 150:
+        parser.error("目标楼层须为 -10 到 150 的整数")
+    if not math.isfinite(args.ready_timeout) or args.ready_timeout <= 0:
+        parser.error("ready-timeout 须为正数")
+    if args.program != "quantify" and (args.entry_plan != "baseline" or args.entry_pose or args.entry_only or
+                                       args.observe_only or args.view != "auto" or args.door_condition != "unknown" or args.trial_note or args.diagnostic):
+        parser.error("实验参数须配合 --program quantify")
+    if args.entry_plan != "reduced_backtrack" and args.entry_pose is not None:
+        parser.error("原点方案沿用现场 origin；新观察点请选择 reduced_backtrack")
+    if args.entry_pose and (not all(math.isfinite(v) for v in args.entry_pose) or not -180 <= args.entry_pose[2] <= 180):
+        parser.error("entry-pose 必须为有限米制坐标和 -180 到 180 度朝向")
+    if args.observe_only and (args.entry_only or args.entry_plan != "baseline"):
+        parser.error("单独感知不接受进梯路线参数")
+    launcher = Launcher(args)
+    launcher.root.mkdir(parents=True, exist_ok=True)
+    lock_file = (launcher.root / ".one_click.lock").open("a")
+    try:
+        fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        print("已有一键启动实例运行，请先退出原终端中的实例。", file=sys.stderr)
+        lock_file.close()
+        return 2
+    def interrupted(signum, frame):
+        raise KeyboardInterrupt
+    previous = {sig: signal.signal(sig, interrupted) for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)}
+    try:
+        launcher.exit_code = launcher.run()
+        return launcher.exit_code
+    except KeyboardInterrupt:
+        print("正在退出本次启动的程序；退出脚本不保证底盘制动，请沿用现场急停处理。", flush=True)
+        launcher.exit_code = 130
+        return 130
+    except Exception as exc:
+        print("启动或运行失败：" + str(exc), file=sys.stderr, flush=True)
+        return 1
+    finally:
+        # A second Ctrl+C must not interrupt cleanup halfway through.
+        for sig in previous:
+            signal.signal(sig, signal.SIG_IGN)
+        try:
+            launcher.close()
+        finally:
+            for sig, handler in previous.items():
+                signal.signal(sig, handler)
+            lock_file.close()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

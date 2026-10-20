@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>看图核验识别结果</title>
+<style>
+body{font:17px system-ui;max-width:1120px;margin:24px auto;padding:0 20px;background:#f4f6fa;color:#17243b}
+h1{margin-bottom:8px}p{line-height:1.65}button,input,select,textarea{font:inherit}button,select{padding:9px;margin:4px}
+button{cursor:pointer}button:disabled{cursor:default;opacity:.45}.toolbar,.card{background:white;padding:16px;border-radius:12px;margin:14px 0}
+.layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(260px,1fr);gap:18px;align-items:start}
+img{width:100%;max-height:65vh;object-fit:contain;background:#152133}.image-link{display:block}
+textarea{box-sizing:border-box;width:100%;min-height:90px}input[type=number]{width:115px;padding:9px}
+#judgment{font-weight:700}#notice,#imageNotice{color:#a33422;white-space:pre-wrap}.muted{color:#536174}#meta{white-space:pre-wrap;line-height:1.65}
+@media(max-width:760px){.layout{grid-template-columns:1fr}}
+</style>
+<h1>看图核验识别结果</h1>
+<p>每张图对应一条实际识别结果。看清画面后选择真实状态，页面自动判断识别对错，无需来回查 CSV。这里只标识别结果帧，不用标完约10 Hz的连续核验图像。</p>
+<div class="toolbar">
+<label>对象 <select id="mode"><option value="all">全部</option><option value="door_monitor">电梯门</option><option value="button_verify">下行按钮</option><option value="floor_monitor">楼层显示</option></select></label>
+<label>筛选 <select id="filter"><option value="all">全部结果</option><option value="unreviewed">尚未标注</option><option value="reviewed">已标注</option><option value="incorrect">识别错误</option><option value="correct">识别正确</option><option value="abstained">模型未作答</option><option value="ground_truth_unknown">人工看不清</option><option value="invalid">标注格式错误</option></select></label>
+<label><input id="autoNext" type="checkbox" checked>标注后自动下一张</label>
+<p id="progress"></p><p id="run" class="muted"></p>
+</div>
+<div class="layout">
+<div class="card">
+<a id="imageLink" class="image-link" target="_blank" rel="noopener"><img id="frame" alt="识别所用的源帧；点击放大"></a>
+<p id="imageNotice"></p><p id="meta"></p>
+<button id="prev">← 上一张</button><button id="next">下一张 →</button><button id="nextUnreviewed">跳到下一张未标注</button>
+</div>
+<div class="card">
+<h2>图中实际是什么？</h2><p id="help"></p>
+<div id="booleanChoices"><button id="truthA"></button><button id="truthB"></button></div>
+<div id="floorChoices" hidden><label>实际显示楼层 <input id="floor" type="number" min="-10" max="150" step="1"></label><button id="saveFloor">确认楼层</button></div>
+<button id="unknown">看不清／无法判断</button><button id="clear">清除这张标注</button>
+<p id="truth"></p><p id="judgment"></p>
+<label>本张备注<textarea id="note" placeholder="可选，例如反光、遮挡"></textarea></label>
+<p class="muted">方向键翻图；1 / 2 选择两个状态，U 表示无法判断。输入备注时不会触发快捷键。</p>
+</div>
+</div>
+<div class="toolbar">
+<p>分次标注时，可先导入上次导出的 labels.csv。导入只接收本轮匹配行的人工真值与备注。</p>
+<input id="import" type="file" accept=".csv,text/csv">
+<button id="export">导出 labels.csv</button><p id="notice" role="status"></p>
+<p>把导出的文件放回本轮目录，覆盖原 labels.csv。回传上位机后执行 review，即可更新正式报告。页面中的操作保留在当前页面；关闭前请导出。</p>
+<p><a href="report.html">返回报告</a> · <a href="door_review.html">开门时间核验</a> · <a href="button_review.html">按键点亮时间核验</a></p>
+</div>
+<script>
+'use strict';
+const data=__DATA__, rows=data.observations, labels=data.labels, byId=id=>document.getElementById(id);
+const fields=['id','mode','view','prediction','image','ground_truth','note'];
+const names={door_monitor:'电梯门',button_verify:'下行按钮',floor_monitor:'楼层显示'};
+const views={normal:'正常视角',turned:'转头视角',head_moving:'头部运动中',unverified:'视角未确认'};
+const statuses={ok:'已作答',uncertain:'无法可靠判断',error:'调用错误'};
+const outcomes={unreviewed:'待标注',correct:'识别正确',incorrect:'识别错误',abstained:'模型未作答，人工真值已记录',ground_truth_unknown:'人工无法判断，不计入准确率',invalid:'原标注格式无效，请重新选择真实状态'};
+let currentId=rows.length?rows[0].id:null, imageAvailable=false, dirty=false;
+function label(row){return labels[row.id]||(labels[row.id]={ground_truth:'',note:''});}
+function parseTruth(raw,row){
+ if(raw==='')return undefined;
+ const v=JSON.parse(raw);
+ if(v===null)return null;
+ if(row.field==='floor'){
+  if(!/^-?(0|[1-9]\d*)$/.test(raw)||!Number.isInteger(v)||v < -10||v > 150)throw Error('楼层须为 -10 到 150 的整数，或 null');
+ }else if(typeof v!=='boolean')throw Error('门和按键的真值须为 true、false 或 null');
+ return v;
+}
+function classification(row){
+ const raw=label(row).ground_truth;
+ if(raw==='')return 'unreviewed';
+ let v;try{v=parseTruth(raw,row);}catch(e){return 'invalid';}
+ if(v===null)return 'ground_truth_unknown';
+ if(row.prediction===null||row.status!=='ok')return 'abstained';
+ return typeof v===typeof row.prediction&&v===row.prediction?'correct':'incorrect';
+}
+function meaning(row,value){
+ if(value===undefined)return '尚未标注';if(value===null)return '无法可靠判断';
+ if(row.field==='door_closed')return value?'完全关闭':'完全打开';
+ if(row.field==='button_lit')return value?'已点亮':'未点亮';
+ return value+' 楼';
+}
+function filtered(){return rows.filter(row=>{
+ if(byId('mode').value!=='all'&&row.mode!==byId('mode').value)return false;
+ const c=classification(row), f=byId('filter').value;
+ return f==='all'||(f==='reviewed'?!['unreviewed','invalid'].includes(c):c===f);
+});}
+function current(){return rows.find(row=>row.id===currentId);}
+function enableKnown(enabled){for(const id of ['truthA','truthB','floor','saveFloor'])byId(id).disabled=!enabled;}
+function draw(){
+ const list=filtered();if(!list.some(row=>row.id===currentId))currentId=list.length?list[0].id:null;
+ const row=current(), done=rows.filter(r=>!['unreviewed','invalid'].includes(classification(r))).length;
+ byId('progress').textContent=`本轮 ${done}/${rows.length} 条已标注；当前筛选 ${list.length} 条`+(row?`，第 ${list.findIndex(r=>r.id===currentId)+1} 条`:'');
+ byId('run').textContent='轮次：'+data.run_id+'；这是完整源视野，模型可能使用裁剪或缩放。';
+ byId('frame').onerror=null;byId('frame').onload=null;byId('frame').removeAttribute('src');byId('imageLink').removeAttribute('href');
+ imageAvailable=false;enableKnown(false);
+ for(const id of ['unknown','clear','note','prev','next','nextUnreviewed'])byId(id).disabled=!row;
+ if(!row){byId('imageNotice').textContent=rows.length?'当前筛选没有结果，可以切换筛选或导出。':'本轮没有识别结果。';
+  for(const id of ['meta','help','truth','judgment'])byId(id).textContent='';byId('note').value='';return;}
+ byId('imageNotice').textContent=row.image?'点击图片可在新标签页放大。':'没有匹配到识别所用的源帧，不能用邻帧代替；请跳过或选无法判断。';
+ if(row.image){byId('imageLink').href=row.image;
+  byId('frame').onload=()=>{if(currentId===row.id){imageAvailable=true;enableKnown(true);}};
+  byId('frame').onerror=()=>{imageAvailable=false;enableKnown(false);byId('imageNotice').textContent='图片加载失败。请下载整个轮次文件夹，保留 images 子目录；不要据此猜测真值。';};byId('frame').src=row.image;}
+ byId('meta').textContent=`${row.id} · ${names[row.mode]||row.mode} · ${views[row.view]||row.view}\n程序预测：${meaning(row,row.prediction)}；${statuses[row.status]||row.status}\n图像时间 ${row.image_stamp}`;
+ const floor=row.field==='floor';byId('booleanChoices').hidden=floor;byId('floorChoices').hidden=!floor;
+ byId('truthA').textContent=row.field==='door_closed'?'1 · 门完全关闭':'1 · 按键已点亮';
+ byId('truthB').textContent=row.field==='door_closed'?'2 · 门完全打开':'2 · 按键未点亮';
+ byId('help').textContent=floor?'填写画面实际显示的楼层，不按目标楼层猜测。':row.field==='door_closed'?'半开、开关过程中或遮挡看不清，选“无法判断”。':'只核验下行按钮是否点亮，注意反光。';
+ const c=classification(row),value=c==='invalid'?undefined:parseTruth(label(row).ground_truth,row);byId('floor').value=typeof value==='number'?value:'';
+ byId('truth').textContent='人工真值：'+(c==='invalid'?'原文件格式无效':meaning(row,value));
+ byId('judgment').textContent=outcomes[c];byId('judgment').style.color=c==='incorrect'?'#af2828':c==='correct'?'#207149':'#536174';byId('note').value=label(row).note||'';
+}
+function mark(raw){
+ const row=current();if(!row)return;
+ try{const v=parseTruth(raw,row);if(v!==undefined&&v!==null&&!imageAvailable)throw Error('对应图片不可用，请先检查图片。');
+  const list=filtered(),i=list.findIndex(r=>r.id===currentId),next=list[i+1]||list[i-1];
+  label(row).ground_truth=raw;dirty=true;
+  byId('notice').textContent=`${row.id}：${outcomes[classification(row)]}。关闭前请导出 labels.csv。`;
+  if(byId('autoNext').checked&&next)currentId=next.id;draw();
+ }catch(e){byId('notice').textContent=e.message;}
+}
+function move(delta){const list=filtered(),i=list.findIndex(r=>r.id===currentId),next=list[Math.max(0,Math.min(list.length-1,i+delta))];if(next)currentId=next.id;draw();}
+byId('mode').onchange=draw;byId('filter').onchange=draw;
+byId('prev').onclick=()=>move(-1);byId('next').onclick=()=>move(1);
+byId('nextUnreviewed').onclick=()=>{const list=filtered(),i=list.findIndex(r=>r.id===currentId),order=list.slice(i+1).concat(list.slice(0,i+1));const next=order.find(r=>label(r).ground_truth==='');if(next){currentId=next.id;draw();}else byId('notice').textContent='当前筛选内没有未标注的结果。';};
+byId('truthA').onclick=()=>mark('true');byId('truthB').onclick=()=>mark('false');
+byId('unknown').onclick=()=>mark('null');byId('clear').onclick=()=>mark('');
+byId('saveFloor').onclick=()=>{const raw=byId('floor').value.trim();if(!raw){byId('notice').textContent='请输入实际显示的整数楼层。';return;}mark(raw);};
+byId('note').oninput=()=>{const row=current();if(row){label(row).note=byId('note').value;dirty=true;}};
+document.addEventListener('keydown',event=>{if(event.ctrlKey||event.metaKey||event.altKey||['INPUT','TEXTAREA','SELECT','BUTTON'].includes(event.target.tagName))return;
+ const row=current();if(event.key==='ArrowLeft'){event.preventDefault();move(-1);}else if(event.key==='ArrowRight'){event.preventDefault();move(1);}
+ else if(event.key.toLowerCase()==='u'){event.preventDefault();mark('null');}
+ else if(row&&row.field!=='floor'&&(event.key==='1'||event.key==='2')){event.preventDefault();mark(event.key==='1'?'true':'false');}});
+function parseCSV(text){
+ text=text.replace(/^\uFEFF/,'');const table=[];let record=[],cell='',quoted=false,closed=false;
+ for(let i=0;i<text.length;i++){
+  const c=text[i];if(quoted){if(c==='"'){if(text[i+1]==='"'){cell+='"';i++;}else{quoted=false;closed=true;}}else cell+=c;continue;}
+  if(c===','||c==='\n'||c==='\r'){record.push(cell);cell='';closed=false;if(c!==','){if(record.some(v=>v!==''))table.push(record);record=[];if(c==='\r'&&text[i+1]==='\n')i++;}continue;}
+  if(closed)throw Error('CSV 引号后存在非法字符');
+  if(c==='"'){if(cell!=='')throw Error('CSV 引号格式错误');quoted=true;}else cell+=c;
+ }
+ if(quoted)throw Error('CSV 引号未闭合');if(cell!==''||record.length||closed){record.push(cell);if(record.some(v=>v!==''))table.push(record);}
+ return table;
+}
+function importCSV(text){
+ const table=parseCSV(text),header=table.shift();if(!header||new Set(header).size!==header.length||!fields.every(f=>header.includes(f)))throw Error('CSV 表头不完整或重复，请选择导出的 labels.csv');
+ const pending={},seen=new Set();
+ for(const cells of table){if(cells.length!==header.length)throw Error('CSV 列数不匹配');const item=Object.fromEntries(header.map((h,i)=>[h,cells[i]])),row=rows.find(r=>r.id===item.id);
+  if(!row||seen.has(item.id))throw Error('存在其他轮次或重复的记录编号');seen.add(item.id);
+  if(item.mode!==row.mode||item.image!==(row.image||'')||JSON.stringify(JSON.parse(item.prediction))!==JSON.stringify(row.prediction))throw Error('导入内容与本轮源帧或识别结果不匹配');
+  const raw=item.ground_truth.trim();parseTruth(raw,row);pending[item.id]={ground_truth:raw,note:item.note};
+ }
+ if(!seen.size)throw Error('CSV 中没有可导入的标注行');Object.assign(labels,pending);dirty=true;draw();return seen.size;
+}
+byId('import').onchange=async()=>{try{const n=importCSV(await byId('import').files[0].text());byId('notice').textContent=`已导入 ${n} 条，请继续核验并导出。`;}catch(e){byId('notice').textContent='导入失败：'+e.message;}};
+function csvCell(value){const s=String(value??'');return /[",\r\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}
+function exportCSV(){return '\uFEFF'+[fields,...rows.map(row=>{const l=label(row);parseTruth(l.ground_truth,row);return [row.id,row.mode,row.view,JSON.stringify(row.prediction),row.image||'',l.ground_truth,l.note||''];})].map(record=>record.map(csvCell).join(',')).join('\r\n')+'\r\n';}
+byId('export').onclick=()=>{try{const text=exportCSV(),url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='labels.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);dirty=false;byId('notice').textContent='已导出。把下载文件放回本轮目录覆盖 labels.csv；回传后执行 review。';}catch(e){byId('notice').textContent='导出失败：'+e.message;}};
+window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
+byId('mode').value='all';byId('filter').value='all';draw();
+</script>
+</html>

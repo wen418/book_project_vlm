@@ -1,0 +1,13 @@
+<launch>
+  <arg name="project_dir" default="/media/data/vlm/Demo_vlm2_kuavo_api" />
+
+  <node pkg="elevator_vlm_api_perception"
+        type="elevator_vlm_node.py"
+        name="elevator_vlm_api_perception"
+        output="screen"
+        respawn="false">
+    <rosparam command="load" file="$(find elevator_vlm_api_perception)/config/perception.yaml" />
+    <param name="project_dir" value="$(arg project_dir)" />
+    <param name="inference_hz" value="1.0" />
+  </node>
+</launch>

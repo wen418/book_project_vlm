@@ -1,0 +1,83 @@
+# 上位机一键启动电梯测试
+
+已部署到上位机 `leju_kuavo@192.168.5.244`：
+
+```text
+/media/data/vlm/Demo_kuavo_vlm_api/start_elevator_demo.sh
+/media/data/vlm/Demo_kuavo_vlm_api/elevator_demo_launcher.py
+```
+
+## 一条命令启动
+
+机器人已完成现场正常启动、点位和头部视角已标定、急停可用时，在上位机终端执行：
+
+```bash
+cd /media/data/vlm/Demo_kuavo_vlm_api
+./start_elevator_demo.sh
+```
+
+目标楼层沿用下位机正式程序的 `DEFAULT_CONFIG`。例如本次改为 19 楼：
+
+```bash
+./start_elevator_demo.sh --target-floor 19
+```
+
+脚本检查下位机依赖、硬件就绪、关节控制输出及相机，启动门感知、按钮/楼层感知，等待新鲜状态和相机图像，再通过 SSH 运行下位机原命令：
+
+```bash
+python3 elevator_button_floor_main.py --run --preflight-confirmed --perception-confirmed --estop-ready
+```
+
+传入 `--target-floor` 时同步传给下位机；不传则使用现场默认值。启动信息会显示本次目标楼层和看屏幕的头部角度。它调用的是真正入口 `elevator_button_floor_main.py`，不使用 `.updated.py`。
+
+## 其他模式
+
+```bash
+# 只检查依赖、SSH、硬件、ROS 和相机，不启动感知或机器人动作
+./start_elevator_demo.sh --check
+
+# 启动两个空闲感知节点，验证就绪后退出，不启动机器人动作
+./start_elevator_demo.sh --check-startup
+
+# 只启动两个感知节点，保持运行；可另开下位机终端运行正式程序
+./start_elevator_demo.sh --perception-only
+```
+
+脚本保持在前台，按 `Ctrl+C` 退出。完整演示时会先通知下位机程序中止，再让感知空闲，停止本次启动的感知进程。它会复用已经存在的感知节点，退出时保留那些原有进程。退出脚本不保证底盘制动，现场仍按原程序使用急停。
+
+## 路径与连接
+
+| 项目 | 路径或地址 |
+| --- | --- |
+| 一键入口和说明 | `/media/data/vlm/Demo_kuavo_vlm_api` |
+| 门感知启动脚本 | `/media/data/vlm/Demo_vlm2_kuavo_api/deploy/run_ros_api.sh` |
+| 附加感知启动脚本 | `/media/data/vlm/elevator_button_floor_demo/deploy/run_extra_perception.sh` |
+| 下位机当前 SSH | `lab@192.168.5.133` |
+| 一键脚本使用的下位机内部地址 | `lab@kuavo_master`，解析为 `192.168.26.1` |
+| ROS Master | `http://kuavo_master:11311` |
+| 上位机内部 ROS 地址 | `192.168.26.12` |
+
+已配置上位机到下位机的专用 SSH 密钥与固定主机指纹；无需输入下位机密码，也没有复制电脑上的个人私钥。原 SSH 授权保留，新增公钥只允许来自当前上位机地址，并关闭端口、代理和 X11 转发。专用文件在上位机 `~/.ssh/id_ed25519_elevator_demo` 和 `~/.ssh/elevator_demo_known_hosts`；不要将私钥内容上传到项目或聊天。
+
+下位机地址参数也可显式指定已登记的地址：
+
+```bash
+./start_elevator_demo.sh --lower-host 192.168.5.133 --target-floor 19
+```
+
+如果终端处于 Conda 环境，先退出 Conda。机器人主控、相机、地图和导航应按现场原有流程启动；一键脚本不会替代电机初始化、地图标定，也不自动按电梯按钮。更改目标楼层仍需核对该层地图、出梯坐标及呼梯方向。
+
+## 日志和故障
+
+每次启动的日志位于：
+
+```text
+/media/data/vlm/Demo_kuavo_vlm_api/logs/日期时间_进程号/
+  run_ros_api.log
+  run_extra_perception.log
+  elevator_button_floor_main.log   # 完整演示启动后生成
+```
+
+同一上位机目录的重复启动会被拒绝；下位机已有演示或单独观察/转头程序时，也会提示先退出。感知启动超时会打印正在等待的反馈，并指出日志目录；相机不新鲜或节点未就绪时不会启动机器人演示。节点进程中途退出会中止本次下位机程序，并清理本次启动的感知进程。
+
+2026-10-19 现场验证：上位机到下位机 SSH、现有依赖导入、相机接收、两个感知启动就绪、正常清理、Ctrl+C 清理及重复实例拦截均通过。下位机当时没有 `/hardware/is_ready` 参数，完整运行前检查会明确拦截；没有执行真实导航或转头。远程 Ctrl+C 通道用替代进程验证，未调用机器人动作接口。

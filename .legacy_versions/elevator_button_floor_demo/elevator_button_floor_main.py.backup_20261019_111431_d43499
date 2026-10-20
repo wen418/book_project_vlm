@@ -1,0 +1,590 @@
+#!/usr/bin/env python3
+"""下位机单文件入口：观察下行按钮、入梯、识别20楼并出梯。复用现有 book/api.py。"""
+from __future__ import annotations
+
+import argparse
+import copy
+import math
+import threading
+from datetime import datetime
+import json
+from pathlib import Path
+import signal
+import sys
+import time
+import uuid
+
+# 下位机只需复制本文件到现有 book 目录；不需要新配置文件或共享模块。
+# 现场核对点位和头部视角后，将下面 calibrated 的 False 改成 True。
+# 也可以用 --config 显式指定外部 JSON；未传时始终使用这些内置参数。
+DEFAULT_CONFIG = {'target_floor': 20,
+ 'coordinate_unit': 'm',
+ 'angle_unit': 'deg',
+ 'map_name': '21floorrr',
+ 'calibrated': False,
+ 'calibration_note': '20楼按用户说明复用21楼局部地图；按钮点由用户(110,976)毫米换算，截图X符号需复核。头部角度为初始候选，需现场对准。',
+ 'book_dir': '/home/lab/kuavo-ros-control/src/kuavo_humanoid_sdk/kuavo_humanoid_sdk/kuavo_strategy_pytree/book',
+ 'points': {'origin': {'x': -3.465, 'y': -0.216, 'theta': 0.0},
+            'button': {'x': 0.11, 'y': 0.976, 'theta': 2.0},
+            'inside': {'x': 2.256, 'y': 0.083, 'theta': -178.0},
+            'exit': {'x': -3.465, 'y': -0.216, 'theta': 180.0}},
+ 'head': {'button': {'yaw': 0.0, 'pitch': 0.0},
+          'floor': {'yaw': -20.0, 'pitch': -10.0},
+          'door': {'yaw': 0.0, 'pitch': 0.0}},
+ 'navigation': {'linear_velocity': 0.7,
+                'angular_velocity': 0.4,
+                'position_threshold': 0.05,
+                'angle_threshold': 0.05,
+                'timeout': 120.0,
+                'avoid_enabled': False,
+                'allow_rotation': True},
+ 'settle_seconds': 2.0,
+ 'head_settle_seconds': 2.0,
+ 'perception': {'door_state_topic': '/elevator/perception/state',
+                'door_mode_topic': '/elevator/perception/mode',
+                'extra_state_topic': '/elevator/demo/state',
+                'extra_request_topic': '/elevator/demo/observe',
+                'extra_ready_topic': '/elevator/demo/ready',
+                'button_timeout': 300.0,
+                'floor_timeout': 600.0,
+                'door_timeout': 300.0,
+                'max_result_age': 15.0,
+                'min_confidence': 0.72,
+                'button': {'confirmations': 2, 'min_span': 1.0},
+                'floor': {'confirmations': 2, 'min_span': 1.0},
+                'door': {'confirmations': 1, 'min_span': 0.0}},
+ 'camera': {'topic': '/cam_h/color/image_raw',
+            'yuv422_layout': 'yuyv',
+            'button_roi': None,
+            'floor_roi': None,
+            'max_image_edge': 0,
+            'jpeg_quality': 85},
+ 'extra_perception': {'vlm_project': '/media/data/vlm/Demo_vlm2_kuavo_api',
+                      'model_config': 'config.door_fast.json',
+                      'inference_period': 2.0,
+                      'max_frame_age': 2.0,
+                      'max_result_age': 15.0}}
+
+
+
+HEAD_COMMAND_LIMITS = {"yaw": (-88.0, 88.0), "pitch": (-20.0, 25.0)}
+
+
+
+def finite(value, name, low=None, high=None):
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{name} 必须是数值")
+    result = float(value)
+    if not math.isfinite(result) or (low is not None and result < low) or (high is not None and result > high):
+        raise ValueError(f"{name} 超出范围或不是有限数值")
+    return result
+
+def validate_config(config):
+    if type(config.get("target_floor")) is not int or config["target_floor"] != 20:
+        raise ValueError("本测试的目标楼层必须为 20")
+    if config.get("coordinate_unit") != "m" or config.get("angle_unit") != "deg":
+        raise ValueError("本测试只接受米制坐标和度制角度")
+    if type(config.get("calibrated")) is not bool:
+        raise ValueError("calibrated 必须是布尔值")
+    for name in ("origin", "button", "inside", "exit"):
+        pose = config["points"][name]
+        for axis in ("x", "y"):
+            finite(pose[axis], f"points.{name}.{axis}")
+        finite(pose["theta"], f"points.{name}.theta", -180, 180)
+    for name in ("button", "floor", "door"):
+        pose = config["head"][name]
+        for axis, limits in HEAD_COMMAND_LIMITS.items():
+            finite(pose[axis], f"head.{name}.{axis}", *limits)
+    if not isinstance(config.get("map_name"), str) or not config["map_name"]:
+        raise ValueError("必须记录局部地图名")
+    nav = config["navigation"]
+    if type(nav["avoid_enabled"]) is not bool or nav["allow_rotation"] is not True:
+        raise ValueError("导航参数无效")
+    for key, low, high in (("linear_velocity", 0.01, 0.7), ("angular_velocity", 0.01, 0.4),
+                          ("position_threshold", 0.001, 0.1), ("angle_threshold", 0.001, 0.1),
+                          ("timeout", 1, 300)):
+        finite(nav[key], "navigation." + key, low, high)
+    perception = config["perception"]
+    for key in ("button_timeout", "floor_timeout", "door_timeout"):
+        finite(perception[key], "perception." + key, 1, 1800)
+    finite(perception["max_result_age"], "max_result_age", 0.1, 60)
+    finite(perception["min_confidence"], "min_confidence", 0, 1)
+    for mode in ("button", "floor", "door"):
+        rule = perception[mode]
+        if type(rule["confirmations"]) is not int or not 1 <= rule["confirmations"] <= 10:
+            raise ValueError("confirmations 必须为 1 到 10 的整数")
+        finite(rule["min_span"], "min_span", 0, 30)
+    for key in ("settle_seconds", "head_settle_seconds"):
+        finite(config[key], key, 0.1, 15)
+    camera = config["camera"]
+    if camera["yuv422_layout"] not in ("yuyv", "uyvy"):
+        raise ValueError("相机字节顺序无效")
+    if type(camera["max_image_edge"]) is not int or camera["max_image_edge"] < 0:
+        raise ValueError("max_image_edge 必须为非负整数")
+    if type(camera["jpeg_quality"]) is not int or not 1 <= camera["jpeg_quality"] <= 100:
+        raise ValueError("jpeg_quality 必须为 1 到 100 的整数")
+    for name in ("button_roi", "floor_roi"):
+        roi = camera[name]
+        if roi is not None:
+            if (not isinstance(roi, list) or len(roi) != 4 or
+                    any(type(v) is not int for v in roi) or min(roi[:2]) < 0 or min(roi[2:]) <= 0):
+                raise ValueError(f"camera.{name} 必须为 null 或像素 [x,y,width,height]")
+    for key in ("inference_period", "max_frame_age", "max_result_age"):
+        finite(config["extra_perception"][key], "extra_perception." + key, 0.1, 60)
+    return config
+
+def load_config(path=None):
+    """Use embedded defaults unless an external JSON is explicitly requested."""
+    config = copy.deepcopy(DEFAULT_CONFIG) if path is None else json.loads(
+        Path(path).read_text(encoding="utf-8-sig"))
+    return validate_config(config)
+
+
+class EvidenceGate:
+    """Accept distinct fresh frames from the current observation request only."""
+    def __init__(self, max_age, min_confidence, confirmations, min_span):
+        self.max_age, self.min_confidence = max_age, min_confidence
+        self.confirmations, self.min_span = confirmations, min_span
+        self.condition = threading.Condition()
+        self.mode = None
+        self.reason = "尚未开始观察"
+        self.last_payload = None
+        self.ready = False
+
+    def arm(self, mode, field, expected, not_before, request_id=None, schema_version=1):
+        with self.condition:
+            self.mode, self.field, self.expected = mode, field, expected
+            self.not_before = finite(not_before, "not_before")
+            self.request_id, self.schema_version = request_id, schema_version
+            self.sequence = None
+            self.frame_stamp = None
+            self.count, self.first_stamp, self.ready = 0, None, False
+            self.last_payload = None
+            self.reason = "等待本阶段的新图像"
+
+    def reset(self, reason):
+        self.count, self.first_stamp, self.ready = 0, None, False
+        self.reason = reason
+
+    def feed(self, text, now):
+        with self.condition:
+            if self.mode is None:
+                return False
+            try:
+                payload = json.loads(text)
+                if not isinstance(payload, dict):
+                    raise ValueError("JSON 不是对象")
+                if self.request_id is not None and payload.get("request_id") != self.request_id:
+                    return False  # Late answers to an earlier request are not this request's evidence.
+                if payload.get("mode") != self.mode:
+                    return False
+                if payload.get("schema_version") != self.schema_version or payload.get("status") != "ok":
+                    raise ValueError("状态未知或接口版本不符")
+                seq = payload.get("sequence")
+                if type(seq) is not int:
+                    raise ValueError("sequence 无效")
+                if self.sequence is not None and seq <= self.sequence:
+                    return False
+                self.sequence = seq
+                stamp = finite(payload.get("image_stamp"), "image_stamp")
+                age = finite(now, "now") - stamp
+                if stamp < self.not_before or age < -1 or age > self.max_age:
+                    raise ValueError("图像过期、来自旧阶段或时钟异常")
+                if self.frame_stamp is not None and stamp <= self.frame_stamp:
+                    return False
+                if self.frame_stamp is not None and stamp - self.frame_stamp > self.max_age:
+                    self.reset("两次观察间隔过大")
+                self.frame_stamp = stamp
+                confidence = finite(payload.get("confidence", {}).get(self.field), "confidence", 0, 1)
+                observed = payload.get(self.field)
+                if (confidence < self.min_confidence or type(observed) is not type(self.expected)
+                        or observed != self.expected):
+                    raise ValueError(f"尚未确认 {self.field}={self.expected!r}")
+                if self.count == 0:
+                    self.first_stamp = stamp
+                self.count += 1
+                self.ready = self.count >= self.confirmations and stamp - self.first_stamp >= self.min_span
+                self.last_payload = payload
+                self.reason = f"确认 {self.count}/{self.confirmations} 次，图像跨度 {stamp - self.first_stamp:.1f}s"
+            except (ValueError, TypeError, AttributeError) as exc:
+                self.reset(str(exc))
+            self.condition.notify_all()
+            return self.ready
+
+    def wait(self, timeout, now_fn, stopped=lambda: False):
+        deadline = time.monotonic() + timeout
+        with self.condition:
+            while True:
+                if stopped():
+                    raise RuntimeError("ROS 已关闭")
+                if self.ready:
+                    age = now_fn() - self.last_payload["image_stamp"]
+                    if -1 <= age <= self.max_age:
+                        return self.last_payload
+                    self.reset("已确认的结果在执行前过期")
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise TimeoutError("等待超时：" + self.reason)
+                self.condition.wait(min(0.2, remaining))
+
+def execute_demo(runtime):
+    """Business sequence requested for this demonstration, not an LLM planner."""
+    def require(result, label):
+        if result is not True:
+            raise RuntimeError(label + "未完成，后续步骤已取消")
+
+    try:
+        runtime.idle()
+        print("[1/6] 从原点前往厅外按钮观察点", flush=True)
+        require(runtime.navigate("button"), "前往按钮点")
+        runtime.look("button")
+        print("[2/6] 等待下行按钮点亮；未亮/未知时原地等待，不自动按键", flush=True)
+        runtime.wait_button()
+        runtime.idle()
+        runtime.look("door")
+        require(runtime.navigate("origin"), "返回原点")
+        print("[3/6] 等待门完整打开后进入，并转身面向门", flush=True)
+        runtime.wait_door()
+        runtime.idle()
+        require(runtime.navigate("inside"), "进入电梯")
+        print("[4/6] 头部看右上方，等待显示 20 楼", flush=True)
+        runtime.look("floor")
+        runtime.wait_floor()
+        runtime.idle()
+        print("[5/6] 确认 20 楼后，转头面向门，等待新画面确认完整开门", flush=True)
+        runtime.look("door")
+        runtime.wait_door()
+        runtime.idle()
+        print("[6/6] 退出电梯", flush=True)
+        require(runtime.navigate("exit"), "退出电梯")
+    finally:
+        runtime.close()
+
+ROOT = Path(__file__).resolve().parent
+
+
+def check_connections(rospy, config, require_perception=True):
+    """Read-only discovery and camera check. Never calls navigation/head services."""
+    import rosgraph
+    from sensor_msgs.msg import Image
+    from std_msgs.msg import String
+    publishers, subscribers, services = rosgraph.Master(rospy.get_name()).getSystemState()
+    publishers, subscribers, services = dict(publishers), dict(subscribers), dict(services)
+    p = config["perception"]
+    required = [config["camera"]["topic"]]
+    if require_perception:
+        required += [p["door_state_topic"], p["extra_state_topic"], p["extra_ready_topic"]]
+    missing = [name for name in required if not publishers.get(name)]
+    for name in ("/move_base/move_to_target", "/move_base/check_arrived"):
+        if not services.get(name):
+            missing.append(name)
+    if not subscribers.get("/robot_head_motion_data"):
+        missing.append("/robot_head_motion_data 的订阅者")
+    if missing:
+        raise RuntimeError("缺少连接：" + ", ".join(missing))
+    if require_perception:
+        for name in (p["door_mode_topic"], p["extra_request_topic"]):
+            if not subscribers.get(name):
+                raise RuntimeError("感知程序未订阅 " + name)
+        ready = json.loads(rospy.wait_for_message(p["extra_ready_topic"], String, timeout=5).data)
+        if ready.get("schema_version") != 1 or not {"button_verify", "floor_monitor"}.issubset(ready.get("capabilities", [])):
+            raise RuntimeError("附加感知接口不兼容")
+    message = rospy.wait_for_message(config["camera"]["topic"], Image, timeout=5)
+    stamp = message.header.stamp.to_sec()
+    if (message.height <= 0 or message.width <= 0 or message.step <= 0 or
+            len(message.data) < message.height * message.step or stamp <= 0 or
+            not -1 <= rospy.Time.now().to_sec() - stamp <= config["extra_perception"]["max_frame_age"]):
+        raise RuntimeError("相机图像不完整、过期或时间戳异常")
+    if publishers.get("/robot_head_motion_data"):
+        print("头部话题当前发布者：" + ", ".join(publishers["/robot_head_motion_data"]))
+        print("完整演示时应停止其他持续发送头部姿态的程序，否则会覆盖本演示视角。")
+    print(f"相机连通：{message.width}x{message.height}，{message.encoding}；导航及头部接口已找到。")
+
+
+def import_robot_api(config):
+    book = Path(config["book_dir"])
+    if not (book / "api.py").is_file():
+        raise RuntimeError("未找到 book/api.py，请通过 --book-dir 指定现有生产接口目录")
+    sys.path.insert(0, str(book))
+    import api
+    if Path(api.__file__).resolve() != (book / "api.py").resolve():
+        raise RuntimeError("导入了错误的 api.py")
+    return api
+
+
+def move_head(api, head, pose, wait_seconds, rospy, status, name):
+    """Tick the existing NodeHeadMove, which sends once and waits (no pose feedback)."""
+    deadline = time.monotonic() + 2
+    while head.head_pub.get_num_connections() == 0:
+        if rospy.is_shutdown() or time.monotonic() >= deadline:
+            raise RuntimeError("头部话题没有订阅者，未发送头部指令")
+        time.sleep(0.05)
+    node = api.NodeHeadMove(name=name, head_api=head, yaw=pose["yaw"],
+                            pitch=pose["pitch"], wait_time=wait_seconds)
+    deadline = time.monotonic() + wait_seconds + 5
+    try:
+        while True:
+            if rospy.is_shutdown():
+                raise RuntimeError("ROS 已关闭，头部动作中止")
+            if time.monotonic() >= deadline:
+                raise TimeoutError("等待 NodeHeadMove 超时")
+            node.tick_once()
+            if node.status == status.SUCCESS:
+                return
+            if node.status == status.FAILURE:
+                raise RuntimeError("NodeHeadMove 返回失败")
+            time.sleep(0.05)
+    finally:
+        if node.status == status.RUNNING:
+            node.stop(status.INVALID)
+
+
+class LiveRuntime:
+    def __init__(self, config, log_dir, perception_required=True):
+        import rospy
+        from py_trees.common import Status
+        from std_msgs.msg import String
+        self.config, self.rospy, self.Status, self.String = config, rospy, Status, String
+        self.api = import_robot_api(config)
+        check_connections(rospy, config, require_perception=perception_required)
+        self.head = self.api.HeadAPI(None)  # Current HeadAPI publishes directly; it does not use robot_sdk.
+        p = config["perception"]
+        self.door_pub = rospy.Publisher(p["door_mode_topic"], String, queue_size=1, latch=True)
+        self.extra_pub = rospy.Publisher(p["extra_request_topic"], String, queue_size=1, latch=True)
+        self.gates = {}
+        for name in ("button", "floor", "door"):
+            rule = p[name]
+            self.gates[name] = EvidenceGate(p["max_result_age"], p["min_confidence"],
+                                            rule["confirmations"], rule["min_span"])
+        self.subscribers = [
+            rospy.Subscriber(p["door_state_topic"], String, lambda msg: self.on_state("door", msg), queue_size=10),
+            rospy.Subscriber(p["extra_state_topic"], String, self.on_extra, queue_size=10),
+        ]
+        log_dir.mkdir(parents=True, exist_ok=True)
+        self.log_path = log_dir / (datetime.now().strftime("elevator_%Y%m%d_%H%M%S_") + uuid.uuid4().hex[:6] + ".jsonl")
+        self.current_request = None
+        self.pause(0.5)
+
+    def record(self, event, **data):
+        with self.log_path.open("a", encoding="utf-8") as stream:
+            stream.write(json.dumps({"system_stamp": time.time(), "ros_stamp": self.now(),
+                                     "event": event, **data}, ensure_ascii=False, allow_nan=False) + "\n")
+
+    def now(self):
+        return self.rospy.Time.now().to_sec()
+
+    def on_state(self, name, message):
+        gate = self.gates[name]
+        gate.feed(message.data, self.now())
+        self.rospy.loginfo_throttle(2, "%s: %s", name, gate.reason)
+
+    def on_extra(self, message):
+        for name in ("button", "floor"):
+            self.on_state(name, message)
+
+    def pause(self, seconds):
+        deadline = time.monotonic() + seconds
+        while time.monotonic() < deadline:
+            if self.rospy.is_shutdown():
+                raise RuntimeError("ROS 已关闭")
+            time.sleep(min(0.05, max(0, deadline - time.monotonic())))
+
+    def extra_request(self, mode, stamp=None):
+        request = {"request_id": uuid.uuid4().hex, "mode": mode,
+                   "not_before_stamp": self.now() if stamp is None else stamp}
+        self.current_request = request
+        self.extra_pub.publish(self.String(data=json.dumps(request)))
+        return request
+
+    def idle(self):
+        self.door_pub.publish(self.String(data="idle"))
+        self.extra_request("idle")
+
+    def look(self, name):
+        self.idle()  # In-flight inference is invalidated before moving the head.
+        pose = self.config["head"][name]
+        self.record("head", view=name, **pose)
+        move_head(self.api, self.head, pose, self.config["head_settle_seconds"],
+                  self.rospy, self.Status, "ElevatorDemo_Look_" + name)
+
+    def wait_extra(self, name, mode, field, expected):
+        self.door_pub.publish(self.String(data="idle"))
+        stamp = self.now()  # Only frames captured after head settling may satisfy the gate.
+        request_id = uuid.uuid4().hex
+        request = {"request_id": request_id, "mode": mode, "not_before_stamp": stamp}
+        gate = self.gates[name]
+        gate.arm(mode, field, expected, stamp, request_id=request_id)
+        self.current_request = request
+        self.extra_pub.publish(self.String(data=json.dumps(request)))
+        self.record("observe_start", **request, expected=expected)
+        result = gate.wait(self.config["perception"][name + "_timeout"], self.now, self.rospy.is_shutdown)
+        self.record("observe_confirmed", result=result)
+        return result
+
+    def wait_button(self):
+        return self.wait_extra("button", "button_verify", "button_lit", True)
+
+    def wait_floor(self):
+        return self.wait_extra("floor", "floor_monitor", "floor", self.config["target_floor"])
+
+    def wait_door(self):
+        self.extra_request("idle")
+        gate = self.gates["door"]
+        gate.arm("door_monitor", "door_closed", False, self.now(), schema_version=2)
+        self.door_pub.publish(self.String(data="door_monitor"))
+        self.record("door_wait_start")
+        result = gate.wait(self.config["perception"]["door_timeout"], self.now, self.rospy.is_shutdown)
+        self.record("door_confirmed", result=result)
+        return result
+
+    def navigate(self, name):
+        self.idle()
+        pose = self.config["points"][name]
+        options = dict(self.config["navigation"])
+        timeout = options.pop("timeout")
+        sender = self.api.NodeNavigationToTarget(name="ElevatorDemo_" + name, **pose, **options)
+        waiter = self.api.NodeWaitForArrival("ElevatorDemo_" + name + "_Arrival", timeout=timeout)
+        deadline = time.monotonic() + timeout
+        self.record("navigation_start", point=name, pose=pose)
+        try:
+            for node in (sender, waiter):
+                while True:
+                    if self.rospy.is_shutdown() or time.monotonic() >= deadline:
+                        return False
+                    node.tick_once()
+                    if node.status == self.Status.SUCCESS:
+                        break
+                    if node.status == self.Status.FAILURE:
+                        return False
+                    time.sleep(0.05)
+            self.pause(self.config["settle_seconds"])
+            self.record("navigation_arrived", point=name)
+            return True
+        finally:
+            for node in (sender, waiter):
+                if node.status == self.Status.RUNNING:
+                    node.stop(self.Status.INVALID)
+
+    def close(self):
+        try:
+            self.idle()
+            self.record("finished_or_aborted")
+            if not self.rospy.is_shutdown():
+                self.pause(0.2)
+        finally:
+            for subscriber in self.subscribers:
+                subscriber.unregister()
+            print("运行记录：" + str(self.log_path))
+
+
+class MockRuntime:
+    def __init__(self):
+        self.events = []
+
+    def navigate(self, point):
+        self.events.append(("navigate", point))
+        return True
+
+    def look(self, view):
+        self.events.append(("head", view))
+
+    def idle(self):
+        self.events.append(("mode", "idle"))
+
+    def wait_button(self):
+        self.events.append(("wait", "down_button_lit"))
+
+    def wait_floor(self):
+        self.events.append(("wait", "floor_20"))
+
+    def wait_door(self):
+        self.events.append(("wait", "door_fully_open"))
+
+    def close(self):
+        self.events.append(("close",))
+
+
+def validate_live(config, args):
+    if config["calibrated"] is not True:
+        raise ValueError("新按钮坐标/头部视角尚未标定；核对后将本文件 DEFAULT_CONFIG 的 calibrated 改为 True")
+    if not (args.preflight_confirmed and args.perception_confirmed and args.estop_ready):
+        raise ValueError("实机沿用原程序三个参数：--preflight-confirmed --perception-confirmed --estop-ready")
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--config", type=Path, help="可选外部 JSON；默认使用本文件 DEFAULT_CONFIG")
+    parser.add_argument("--book-dir", type=Path)
+    parser.add_argument("--log-dir", type=Path, default=ROOT / "logs")
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--run", action="store_true")
+    modes.add_argument("--mock", action="store_true")
+    modes.add_argument("--check-services", action="store_true")
+    modes.add_argument("--observe-only", choices=("button", "floor", "door"), help="保持现有姿态，仅测试感知；不导航、不转头")
+    modes.add_argument("--head-only", choices=("button", "floor", "door"), help="只发送一次头部姿态，不导航；用于标定")
+    for name in ("preflight-confirmed", "perception-confirmed", "estop-ready"):
+        parser.add_argument("--" + name, action="store_true")
+    args = parser.parse_args(argv)
+    config = load_config(args.config)
+    print("参数来源：" + (str(args.config) if args.config else "本文件 DEFAULT_CONFIG（内置）"))
+    if args.book_dir:
+        config["book_dir"] = str(args.book_dir)
+    if args.mock:
+        runtime = MockRuntime()
+        execute_demo(runtime)
+        print("[MOCK] " + " -> ".join(map(str, runtime.events)))
+        print("模拟完成；未连接 ROS、未发送运动或真实感知请求。")
+        return 0
+    if not any((args.run, args.check_services, args.observe_only, args.head_only)):
+        print("仅预览：未连接机器人。导航单位为米，角度为度。")
+        for name, pose in config["points"].items():
+            print(name, pose)
+        print("头部姿态：", config["head"])
+        print("目标楼层：20；厅外下行按钮未亮则等待；本程序不按任何按钮。")
+        print("20 楼按用户说明复用 21floorrr 局部坐标；不切图、不改楼层记录。")
+        print("新点位/视角标定状态：", config["calibrated"])
+        return 0
+    if args.run:
+        validate_live(config, args)
+    if args.head_only and not args.estop_ready:
+        raise ValueError("头部标定需沿用 --estop-ready；本模式不移动底盘")
+    import rospy
+    rospy.init_node("elevator_button_floor_demo", anonymous=True, disable_signals=True)
+    signal.signal(signal.SIGINT, signal.default_int_handler)
+    signal.signal(signal.SIGTERM, signal.default_int_handler)
+    if args.check_services:
+        check_connections(rospy, config)
+        print("只读连接检查完成；未发送导航、头部、按键或切图指令。")
+        return 0
+    if args.head_only:
+        from py_trees.common import Status
+        api = import_robot_api(config)
+        head = api.HeadAPI(None)
+        pose = config["head"][args.head_only]
+        move_head(api, head, pose, config["head_settle_seconds"],
+                  rospy, Status, "ElevatorDemo_Calibrate_" + args.head_only)
+        print("仅头部标定完成；未移动底盘。")
+        return 0
+    runtime = LiveRuntime(config, args.log_dir)
+    if args.observe_only:
+        try:
+            runtime.idle()
+            result = {"button": runtime.wait_button, "floor": runtime.wait_floor, "door": runtime.wait_door}[args.observe_only]()
+            print(json.dumps(result, ensure_ascii=False))
+        finally:
+            runtime.close()
+    else:
+        execute_demo(runtime)
+        print("单轮演示完成。")
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except KeyboardInterrupt:
+        print("测试中断；退出脚本不保证底盘停车，沿用原程序的现场急停处理。")
+        raise SystemExit(130)
+    except Exception as error:
+        print("测试未启动或已终止：" + str(error), file=sys.stderr)
+        raise SystemExit(1)

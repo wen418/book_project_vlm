@@ -1,0 +1,222 @@
+"""Experiment validity and integration, without ROS, network or physical actions."""
+import copy
+import csv
+import json
+from pathlib import Path
+import sys
+import tempfile
+import threading
+from types import SimpleNamespace as NS
+import unittest
+from unittest.mock import Mock, patch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import elevator_button_floor_main as controller
+import elevator_quantification as quant
+import test_elevator_launcher as launcher_tests
+launcher = launcher_tests.launcher
+
+
+def args(directory, **overrides):
+    result = dict(result_dir=directory, view="auto", entry_plan="baseline", entry_pose=None,
+                  door_condition="unassisted", trial_note="", entry_only=True,
+                  observe_only=None, motion_topic="/tracked_pose")
+    result.update(overrides)
+    return NS(**result)
+
+
+def entry_events():
+    def e(name, t, **kw):
+        return dict(event=name, monotonic=t, ros_stamp=1000+t, **kw)
+    return [e("door_wait_start", 1),
+            e("door_confirmed", 5, result=dict(latency_ms=750, image_stamp=1004)),
+            e("command_issue", 5.2, point="inside"), e("command_accepted", 5.4, point="inside"),
+            e("motion_started", 5.9, point="inside", onset_monotonic=5.7, onset_ros_stamp=1005.7),
+            e("arrival_reported", 9.7, point="inside"), e("navigation_arrived", 11.7, point="inside"),
+            e("motion_measurement_end", 11.71, point="inside", reason="detected")]
+
+
+class TimingTests(unittest.TestCase):
+    def test_distinguishes_wait_inference_dispatch_feedback_arrival_and_settle(self):
+        m = quant.entry_metrics(entry_events())
+        self.assertEqual(m["door_wait_to_recognition_s"], 4)
+        self.assertEqual(m["door_inference_s"], .75)
+        self.assertEqual(m["recognition_to_command_s"], .2)
+        self.assertEqual(m["command_call_s"], .2)
+        self.assertEqual(m["command_to_motion_s"], .5)
+        self.assertEqual(m["motion_to_entry_s"], 4)
+        self.assertEqual(m["entry_settle_s"], 2)
+        self.assertEqual(m["measurement_status"], "complete")
+
+    def test_exit_door_does_not_contaminate_entry_metrics(self):
+        events = entry_events()
+        events += [dict(event="door_wait_start", monotonic=20, ros_stamp=1020),
+                   dict(event="door_confirmed", monotonic=40, ros_stamp=1040, result=dict(latency_ms=9999))]
+        self.assertEqual(quant.entry_metrics(events), quant.entry_metrics(entry_events()))
+
+    def test_absent_feedback_remains_null_and_incomplete(self):
+        events = [e for e in entry_events() if e["event"] != "motion_started"]
+        m = quant.entry_metrics(events)
+        self.assertIsNone(m["command_to_motion_s"])
+        self.assertIsNone(m["motion_to_entry_s"])
+        self.assertEqual(m["measurement_status"], "incomplete")
+        self.assertEqual(quant.entry_metrics([])["measurement_status"], "entry_not_started")
+
+    def test_bad_clock_order_is_not_clamped_to_zero(self):
+        self.assertIsNone(quant.elapsed(dict(monotonic=1), dict(monotonic=2)))
+
+
+class RecorderTests(unittest.TestCase):
+    def session(self, directory, **overrides):
+        session = quant.QuantificationSession(args(directory, **overrides), controller.load_config())
+        session.rospy = NS(Time=NS(now=lambda: NS(to_sec=lambda: 1010)))
+        session.start_ros = 1000
+        return session
+
+    def observation(self, session, seq=1, stamp=1002, **updates):
+        payload = dict(schema_version=2, sequence=seq, image_stamp=stamp, mode="door_monitor",
+                       status="ok", door_closed=False, confidence=dict(door_closed=.95), latency_ms=50)
+        payload.update(updates)
+        session.on_state("door", NS(data=json.dumps(payload)))
+
+    def test_duplicates_heartbeats_and_previous_run_results_are_ignored(self):
+        with tempfile.TemporaryDirectory() as directory:
+            session = self.session(directory)
+            self.observation(session, stamp=999)
+            self.observation(session, message_type="heartbeat")
+            self.observation(session)
+            self.observation(session)
+            self.assertEqual(len(session.observations), 1)
+            session.close(130)
+            summary = json.loads((session.directory / "summary.json").read_text(encoding="utf-8"))
+            self.assertEqual(summary["exit_code"], 130)
+            self.assertEqual(summary["exact_image_count"], 0)
+            self.assertEqual(session.observations[0]["image_match"], "missing")
+            self.assertTrue((session.directory / "report.html").is_file())
+
+    def test_nearby_camera_frame_is_never_substituted_for_exact_inference_frame(self):
+        with tempfile.TemporaryDirectory() as directory:
+            session = self.session(directory)
+            session.frames[1002.01] = b"neighbor"
+            self.observation(session)
+            self.assertFalse(session.observations[0]["image"])
+            session.frames[1003] = b"exact"
+            self.observation(session, seq=2, stamp=1003)
+            image = session.observations[1]["image"]
+            self.assertEqual((session.directory / image).read_bytes(), b"exact")
+            session.close(0)
+
+    def test_event_gap_fails_recorder_and_final_report_marks_incomplete(self):
+        with tempfile.TemporaryDirectory() as directory:
+            session = self.session(directory)
+            event = dict(event="command_issue", point="inside", monotonic=1, ros_stamp=1001,
+                         run_id=session.run_id, event_sequence=2)
+            session.on_line(quant.EVENT_PREFIX + json.dumps(event))
+            self.assertIsNotNone(session.fatal)
+            session.close(1)
+            summary = json.loads((session.directory / "summary.json").read_text(encoding="utf-8"))
+            self.assertEqual(summary["metrics"]["measurement_status"], "incomplete")
+
+    def test_human_labels_do_not_equate_high_confidence_with_correct(self):
+        with tempfile.TemporaryDirectory() as directory:
+            session = self.session(directory)
+            for seq, updates in enumerate(({}, {}, dict(door_closed=None, status="uncertain"), {}), 1):
+                self.observation(session, seq=seq, stamp=1000+seq, **updates)
+            session.close(130)
+            path = session.directory / "labels.csv"
+            with path.open(encoding="utf-8-sig", newline="") as stream:
+                rows = list(csv.DictReader(stream))
+            for row, truth in zip(rows, ("false", "true", "false", "null")):
+                row["ground_truth"] = truth
+            quant.write_csv(path, rows, list(rows[0]))
+            reviewed = quant.review_run(session.directory)
+            counts = reviewed["review_counts"]["door_monitor/unverified"]
+            self.assertEqual((counts["correct"], counts["incorrect"], counts["abstained"], counts["ground_truth_unknown"]), (1, 1, 1, 1))
+            self.assertEqual(counts["accuracy_including_abstentions"], 1/3)
+            self.assertEqual(counts["accuracy_on_answered"], .5)
+            self.assertEqual(counts["coverage"], 2/3)
+
+    def test_aggregate_separates_points_and_actual_door_conditions(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for n, condition in enumerate(("unassisted", "held")):
+                session = self.session(directory)
+                session.events = entry_events()
+                for seq, e in enumerate(session.events, 1):
+                    e["event_sequence"] = seq
+                session.close(0)
+                trial = dict(actual_door_condition=condition, entry_success=n==0, actual_door_open_ros_stamp=1002, note="verified")
+                quant.write_json(session.directory / "trial_review.json", trial)
+                quant.review_run(session.directory)
+            result = quant.aggregate(Path(directory))
+            self.assertEqual(len(result), 2)
+            self.assertEqual(sorted(g["success_rate"] for g in result.values()), [0, 1])
+
+
+class MotionTests(unittest.TestCase):
+    def monitor(self):
+        monitor = controller.MotionMonitor.__new__(controller.MotionMonitor)
+        monitor.runtime = NS(now=lambda: 1000.4, record=Mock())
+        monitor.topic, monitor.distance, monitor.angle = "/tracked_pose", .015, .03
+        monitor.lock, monitor.samples = threading.RLock(), []
+        baseline = dict(pose=(0, 0, 0), stamp=1000.01, mono=20, frame="map")
+        monitor.pending = dict(point="inside", baseline=baseline, previous=baseline, armed_ros=1000.02, above=[])
+        return monitor
+
+    def sample(self, monitor, stamp, x, frame="map", mono=20.1):
+        message = NS(header=NS(stamp=NS(to_sec=lambda: stamp), frame_id=frame),
+                     pose=NS(position=NS(x=x, y=0), orientation=NS(x=0, y=0, z=0, w=1)))
+        with patch.object(controller.time, "monotonic", return_value=mono):
+            monitor.on_sample(message)
+
+    def test_requires_three_distinct_fresh_position_samples_above_threshold(self):
+        monitor = self.monitor()
+        self.sample(monitor, 999, 10)
+        self.sample(monitor, 1000.01, .02)
+        self.sample(monitor, 1000.1, .005, mono=20.1)
+        self.sample(monitor, 1000.2, .02, mono=20.2)
+        self.sample(monitor, 1000.2, .03, mono=20.21)
+        self.sample(monitor, 1000.3, .03, mono=20.3)
+        self.assertFalse(monitor.pending.get("detected"))
+        self.sample(monitor, 1000.4, .04, mono=20.4)
+        events = [call for call in monitor.runtime.record.call_args_list if call.args[0] == "motion_started"]
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0].kwargs["onset_monotonic"], 20.2)
+
+    def test_map_frame_change_or_position_jump_invalidates_measurement(self):
+        for frame, x in (("odom", .02), ("map", 1)):
+            monitor = self.monitor()
+            self.sample(monitor, 1000.2, x, frame=frame)
+            self.assertTrue(monitor.pending.get("invalid"))
+            self.assertFalse(monitor.pending.get("detected"))
+
+
+class QuantifiedWorkflowTests(unittest.TestCase):
+    def test_custom_wait_point_and_entry_only_use_same_fresh_door_gate(self):
+        runtime = controller.MockRuntime()
+        controller.execute_demo(runtime, "entry_wait", entry_only=True)
+        self.assertIn(("navigate", "entry_wait"), runtime.events)
+        self.assertNotIn(("navigate", "origin"), runtime.events)
+        self.assertLess(runtime.events.index(("wait", "door_fully_open")), runtime.events.index(("navigate", "inside")))
+        self.assertNotIn(("head", "floor"), runtime.events)
+        self.assertEqual(runtime.events[-1], ("close",))
+
+    def test_launcher_passes_quantification_arguments_and_keeps_logs_in_result(self):
+        with tempfile.TemporaryDirectory() as directory:
+            instance = launcher_tests.SequenceTests().make_launcher(directory, program="quantify", **vars(args(directory,
+                entry_plan="center_shift", entry_pose=[-.5, .2, 0])))
+            instance.config = controller.load_config()
+            fake = NS(process=NS(poll=lambda: 0, returncode=0))
+            with patch.dict(sys.modules, {"elevator_quantification": quant}), \
+                    patch.object(quant.QuantificationSession, "start"), \
+                    patch.dict("os.environ", {"ROS_MASTER_URI": "http://kuavo_master:11311"}), \
+                    patch.object(launcher, "Child", return_value=fake) as child:
+                self.assertEqual(instance.run(), 0)
+            command = child.call_args.args[1][-1]
+            for flag in ("--quantify", "--entry-plan center_shift", "--entry-pose -0.5 0.2 0", "--entry-only"):
+                self.assertIn(flag, command)
+            self.assertIn(Path(directory), instance.logs.parents)
+            instance.recorder.close(0)
+
+
+if __name__ == "__main__":
+    unittest.main()
