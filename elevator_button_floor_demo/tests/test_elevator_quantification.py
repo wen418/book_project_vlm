@@ -160,7 +160,7 @@ class RecorderTests(unittest.TestCase):
                 saved = exit_code == 0 and marker and point == "exit"
                 self.assertEqual((directory / session.run_id).exists(), saved)
                 if saved:
-                    self.assertEqual(json.loads((session.directory / "summary.json").read_text())["test_status"], "success")
+                    self.assertEqual(json.loads((session.directory / "summary.json").read_text(encoding="utf-8"))["test_status"], "success")
 
     def test_report_generation_error_removes_pending_data(self):
         with tempfile.TemporaryDirectory() as root:

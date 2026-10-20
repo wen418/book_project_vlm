@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import threading
 import time
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Optional, Sequence, Tuple
@@ -16,6 +17,7 @@ from typing import Any, Dict, Optional, Sequence, Tuple
 from elevator_perception import ElevatorPerception, Settings
 from few_shot import bytes_to_data_url
 from perception_schema import FIELDS, PlannerPayload, error_payload
+from stage_timing import ros_timing
 
 
 VALID_MODES = ("idle", "both", "door_monitor", "button_verify")
@@ -103,6 +105,8 @@ class ContinuousRosNode:
             rospy.get_param("~output_topic", "/elevator/perception/state")
         )
         self.publisher = rospy.Publisher(self.output_topic, String, queue_size=10)
+        self.timing = ros_timing(rospy, String, "door")
+        self.pipeline.client = self.timing.wrap(self.pipeline.client)
 
         self.scene = LatestFrame()
         self.door = LatestFrame()
@@ -172,6 +176,7 @@ class ContinuousRosNode:
             if stamp <= 0:
                 stamp = self.rospy.Time.now().to_sec()
             slot.update(message, stamp)
+            self.timing.frame(stamp)
 
         if topic.endswith("/compressedDepth"):
             raise ValueError("不支持深度压缩话题作为 VLM 彩色输入：%s" % topic)
@@ -194,6 +199,7 @@ class ContinuousRosNode:
             return
         with self._mode_lock:
             self._mode_from_topic = mode
+            self.timing.begin(mode)
 
     def _mode(self) -> str:
         with self._mode_lock:
@@ -341,7 +347,9 @@ class ContinuousRosNode:
         return current, fields, image_stamp, signature
 
     def _publish(self, payload: PlannerPayload) -> None:
-        self.publisher.publish(self.String(data=payload.to_json()))
+        value = json.loads(payload.to_json())
+        value["stage_timing_version"] = 1
+        self.publisher.publish(self.String(data=json.dumps(value, ensure_ascii=False)))
 
     def _publish_waiting(self, message: str, mode: str) -> None:
         now = time.monotonic()
@@ -372,6 +380,13 @@ class ContinuousRosNode:
 
     def _run_once(self) -> None:
         mode = self._mode()
+        with self.timing.lock:
+            if mode == "idle" and self.timing.stage:
+                self.timing.begin("idle")
+            if mode != "idle" and (not self.timing.stage or self.timing.stage["mode"] != mode):
+                self.timing.begin(mode)
+            stage_id = self.timing.stage["stage_id"] if self.timing.stage else None
+            timing_stage = dict(self.timing.stage or {})
         try:
             current, fields, image_stamp, signature = self._collect(mode)
         except WaitingForInput as exc:
@@ -382,6 +397,7 @@ class ContinuousRosNode:
         self._last_signature = signature
         sequence = self._sequence
         self._sequence += 1
+        context = self.timing.select(image_stamp, timing_stage)
         try:
             payload = self.pipeline.infer_data_urls(
                 sequence=sequence,
@@ -390,7 +406,9 @@ class ContinuousRosNode:
                 image_stamp=image_stamp,
                 mode=mode,
             )
-            if self._mode() != mode:
+            current = self.timing.stage
+            if self._mode() != mode or not current or current["stage_id"] != stage_id:
+                self.timing.finish(context, payload.status, accepted=False)
                 self.rospy.loginfo(
                     "elevator_vlm: discard result because mode changed during inference"
                 )
@@ -409,6 +427,7 @@ class ContinuousRosNode:
             payload = error_payload(
                 sequence, self.model_name, str(exc), mode=mode, image_stamp=image_stamp
             )
+        self.timing.finish(context, payload.status, {"door_closed": payload.door_closed})
         self._publish(payload)
 
     def _worker_loop(self) -> None:

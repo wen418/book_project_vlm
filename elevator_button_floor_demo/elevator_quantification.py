@@ -17,6 +17,7 @@ import threading
 import time
 from types import SimpleNamespace
 import uuid
+from stage_timeline import build_timeline, anchor_rows, timeline_html, annotation_alignment
 
 ROOT = Path(__file__).resolve().parent
 EVENT_PREFIX = "__ELEVATOR_EVENT__"
@@ -214,6 +215,7 @@ class QuantificationSession:
         write_json(self.directory / ".pending.json", dict(run_id=self.run_id, pending_root=str(self.pending_root), pid=os.getpid()))
         self.lock = threading.RLock()
         self.events, self.observations, self.seen = [], [], set()
+        self.timing_events, self.timing_seen, self.ready_notified = [], set(), set()
         self.frames, self.frame_bytes = OrderedDict(), 0
         self.views, self.pending_views = [], []
         self.door_frames = []
@@ -232,6 +234,7 @@ class QuantificationSession:
         self.observations_stream = (self.directory / "observations.jsonl").open("a", encoding="utf-8", buffering=1)
         self.door_frames_stream = (self.directory / "door_frames.jsonl").open("a", encoding="utf-8", buffering=1)
         self.button_frames_stream = (self.directory / "button_frames.jsonl").open("a", encoding="utf-8", buffering=1)
+        self.timing_stream = (self.directory / "perception_timing.jsonl").open("a", encoding="utf-8", buffering=1)
         diagnostic = (getattr(args, "check_startup", False) or getattr(args, "perception_only", False) or
                       getattr(args, "diagnostic", False))
         self.metadata = dict(schema_version=1, run_id=self.run_id, data_kind="diagnostic" if diagnostic else "real",
@@ -259,6 +262,9 @@ class QuantificationSession:
         write_json(self.directory / "run.json", self.metadata)
         self.subscribers.append(rospy.Subscriber(self.config["camera"]["topic"], Image, self.on_image,
                                                 queue_size=10, buff_size=32*1024*1024))
+        timing_subscription = rospy.Subscriber("/elevator/perception/stage_timing", String,
+                                               self.on_timing, queue_size=1000)
+        self.subscribers.append(timing_subscription)
         for source, topic in (("door", self.config["perception"]["door_state_topic"]),
                               ("extra", self.config["perception"]["extra_state_topic"])):
             self.subscribers.append(rospy.Subscriber(topic, String,
@@ -267,12 +273,12 @@ class QuantificationSession:
         deadline = time.monotonic() + 5
         while time.monotonic() < deadline:
             with self.lock:
-                if self.frames:
+                if self.frames and timing_subscription.get_num_connections() >= 2:
                     return
                 if self.fatal:
                     raise RuntimeError(self.fatal)
             time.sleep(.05)
-        raise RuntimeError("量化记录器没有收到可解码的新鲜相机帧")
+        raise RuntimeError("量化记录器未收到新鲜图像或未接通两路阶段遥测，请检查相机并重启新版感知节点")
 
     def fail(self, exc):
         self.fatal = str(exc)
@@ -357,6 +363,37 @@ class QuantificationSession:
             self.button_frames.append(row)
             self.last_button_frame = stamp
             self.button_frames_stream.write(json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n")
+
+    def on_timing(self, message):
+        try:
+            row = json.loads(message.data)
+            if (not isinstance(row, dict) or row.get("schema_version") != 1
+                    or row.get("source") not in ("door", "extra")
+                    or row.get("mode") not in ("door_monitor", "button_verify", "floor_monitor")
+                    or not number(row.get("ros_stamp")) or row["ros_stamp"] < self.start_ros
+                    or type(row.get("event_sequence")) is not int
+                    or not row.get("stage_id") or not row.get("instance_id")):
+                return
+            key = (row["instance_id"], row["event_sequence"])
+            with self.lock:
+                if self.closed or key in self.timing_seen:
+                    return
+                self.timing_seen.add(key)
+                self.timing_events.append(row)
+                self.timing_stream.write(json.dumps(row, ensure_ascii=False, allow_nan=False)+"\n")
+                if (row.get("event") == "inference_result" and row.get("mode") == "button_verify"
+                        and row.get("accepted") is True and row.get("status") == "ok"
+                        and row.get("values", {}).get("button_lit") is False
+                        and number(row.get("image_stamp"))
+                        and row["image_stamp"] >= row.get("not_before_stamp", math.inf)
+                        and row["stage_id"] not in self.ready_notified):
+                    self.ready_notified.add(row["stage_id"])
+                    print("[按键测试就绪] 已用本阶段新图像识别到按钮未亮，现在可以人工按下行按钮。"
+                          " ROS时间=%.6f" % row["ros_stamp"], flush=True)
+        except (ValueError, TypeError, KeyError):
+            return
+        except Exception as exc:
+            self.fail(exc)
 
     def on_state(self, source, message):
         try:
@@ -455,7 +492,7 @@ class QuantificationSession:
             self._close(exit_code)
         except BaseException:
             if self.directory.exists() and self.directory.parent == self.pending_root:
-                for stream in (self.events_stream, self.observations_stream, self.door_frames_stream, self.button_frames_stream):
+                for stream in (self.events_stream, self.observations_stream, self.door_frames_stream, self.button_frames_stream, self.timing_stream):
                     stream.close()
                 remove_pending(self.directory, self.pending_root)
             raise
@@ -471,6 +508,7 @@ class QuantificationSession:
             self.observations_stream.close()
             self.door_frames_stream.close()
             self.button_frames_stream.close()
+            self.timing_stream.close()
             contiguous = bool(self.events) and [e.get("event_sequence") for e in self.events] == list(range(1, len(self.events)+1))
             if exit_code != 0 or self.fatal or not contiguous or not workflow_complete(self.events, self.args):
                 remove_pending(self.directory, self.pending_root)
@@ -503,6 +541,7 @@ class QuantificationSession:
                                                for mode in ("door_monitor", "button_verify", "floor_monitor")})
             summary["data_quality"] = dict(missing_exact_images=sum(not bool(o["image"]) for o in self.observations),
                                            pending_view_snapshots=len(self.pending_views))
+            summary["stage_timeline"] = build_timeline(self.events, self.timing_events, self.observations, self.start_ros)
             if self.fatal or not complete_sequences:
                 metrics["measurement_status"] = "incomplete"
             write_json(self.directory / "observations.json", self.observations)
@@ -530,6 +569,17 @@ class QuantificationSession:
 
 def render_report(directory, observations, views, summary, reviews=None):
     reviews = reviews or {}
+    timeline = summary.get("stage_timeline") or load_stage_timeline(directory, observations)
+    trial_path = directory / "trial_review.json"
+    trial = json.loads(trial_path.read_text(encoding="utf-8")) if trial_path.exists() else {}
+    alignments = stage_alignments(timeline, trial, directory)
+    write_json(directory / "stage_timeline.json", timeline)
+    rows_for_csv = anchor_rows(timeline)
+    write_csv(directory / "stage_anchors.csv", rows_for_csv,
+              ["stage", "mode", "anchor", "label", "ros_stamp", "from_run_start_s", "image_stamp", "source", "api_call_id", "status"])
+    write_csv(directory / "workflow_anchors.csv", timeline.get("workflow",[]),
+              ["event_sequence","event","label","ros_stamp","reported_ros_stamp","from_run_start_s","point","view","mode","scope"])
+    (directory / "stage_timeline.html").write_text(timeline_html(timeline, alignments), encoding="utf-8")
     esc = lambda value: html.escape(str(value))
     cards = []
     for row in observations:
@@ -553,15 +603,38 @@ def render_report(directory, observations, views, summary, reviews=None):
              "recognition_to_entry_s": "确认全开 → 导航到点", "return_navigation_s": "回退导航耗时"}
     rows = ''.join('<tr><td>%s</td><td>%s</td></tr>' % (label, ("%.3f 秒" % summary["metrics"][key])
                    if number(summary["metrics"].get(key)) else "未采到") for key, label in names.items())
+    rows = ''.join('<tr><td>%s事件与就绪锚点</td><td>%s</td></tr>' % ("按键" if kind=="button" else "开门", esc(check["message"]))
+                   for kind,check in alignments.items()) + rows
     page = '''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>电梯量化记录</title>
 <style>body{font:16px system-ui;max-width:1200px;margin:32px auto;padding:0 20px;background:#f3f5f8;color:#17243b}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
 article,pre{background:white;padding:16px;border-radius:10px;overflow:auto}img{width:100%%;height:auto}.incorrect{border:3px solid #c53939}.correct{border:3px solid #328052}</style>
 <h1>电梯进梯量化记录</h1><p><a href="labels_review.html">看图核验识别对错</a>：逐张选真实状态，导出 labels.csv，无需对照表格找图片。</p><p>各段耗时已自动记录，不需要人工计时。门全开与按键点亮的画面可人工核对：<a href="door_review.html">打开开门时间核验</a> / <a href="button_review.html">打开按键点亮时间核验</a>。完成进梯以导航到点反馈为准，需结合人工验收。</p>
+<p><a href="stage_timeline.html">打开阶段时间锚点</a>：查看到点、头部稳定、接图、VLM调用与确认的先后关系；人工提前操作的情况会单独提示。</p>
 <h2>自动计时结果</h2><table cellpadding="9"><tbody>%s</tbody></table><details><summary>完整记录</summary><pre>%s</pre></details><h2>正常及转头视角</h2><div class="grid">%s</div><h2>识别实例</h2><div class="grid">%s</div></html>''' % (
         rows, esc(json.dumps(summary, ensure_ascii=False, indent=2)), snapshots, ''.join(cards))
     (directory / "report.html").write_text(page, encoding="utf-8")
     render_labels_review(directory, observations, summary["run_id"])
+
+
+def load_stage_timeline(directory, observations=None):
+    def read_lines(name):
+        path = directory / name
+        return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()] if path.exists() else []
+    return build_timeline(read_lines("events.jsonl"), read_lines("perception_timing.jsonl"), observations or [])
+
+
+def stage_alignments(timeline, trial, directory=None):
+    checks = {}
+    for kind,key in (("button","actual_button_lit"),("door","actual_door_open")):
+        opened,previous=trial.get(key+"_ros_stamp"),trial.get(key+"_prev_ros_stamp")
+        checks[kind]=annotation_alignment(timeline,kind,opened,previous)
+        index=directory/(kind+"_frames.json") if directory else None
+        if index and index.exists() and opened is not None and previous is None:
+            frames=json.loads(index.read_text(encoding="utf-8")).get("frames",[])
+            if frames and opened==frames[0].get("image_stamp"):
+                checks[kind]=dict(status="onset_not_observed",message="首张核验图已变化且缺少变化前画面，起点未完整记录，不计算该事件延迟")
+    return checks
 
 
 def render_labels_review(directory, observations, run_id):
@@ -590,7 +663,9 @@ def prepare_review(directory):
 def render_door_review(directory):
     """One page keeps door and button annotations together in the same export."""
     trial = json.loads((directory / "trial_review.json").read_text(encoding="utf-8"))
-    metrics = json.loads((directory / "summary.json").read_text(encoding="utf-8"))["metrics"]
+    summary = json.loads((directory / "summary.json").read_text(encoding="utf-8"))
+    metrics = summary["metrics"]
+    timeline = summary.get("stage_timeline") or load_stage_timeline(directory)
     data = dict(trial=trial, kinds={})
     for kind, name, key, label in (("door", "门完全打开", "actual_door_open", "全开"),
                                    ("button", "下行按钮点亮", "actual_button_lit", "点亮")):
@@ -598,6 +673,8 @@ def render_door_review(directory):
         data["kinds"][kind] = dict(index=json.loads(index.read_text(encoding="utf-8")) if index.exists() else dict(frames=[]),
             name=name, key=key, label=label, recognized=metrics.get(kind + "_confirmed_ros_stamp"),
             first=metrics.get("button_first_positive_ros_stamp") if kind == "button" else None)
+        stage = next((s for s in timeline.get("stages", []) if s["mode"] == ("button_verify" if kind=="button" else "door_monitor")), {})
+        data["kinds"][kind]["anchors"] = stage.get("anchors", {})
     page = r'''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>门与按键时间核验</title>
 <style>body{font:17px system-ui;max-width:1000px;margin:24px auto;padding:0 20px;background:#f4f6fa;color:#17243b}img{width:100%;max-height:60vh;object-fit:contain;background:#152133}button,select{font:inherit;padding:8px;margin:5px}input[type=range]{width:100%}textarea{display:block;width:95%;min-height:65px}pre{white-space:pre-wrap;background:white;padding:16px}</style>
 <h1>门与按键时间核验</h1><p>自动记录的推理、确认、发令和运动耗时无需手工计时。这里只需选出画面变化前后的两帧，程序读取图片时间。</p>
@@ -626,6 +703,21 @@ if(o!=null&&current.recognized!=null){let d=current.recognized-o;text+=`\n第一
 if(d<0)text+='（确认早于人工标记，需检查误识别或标记）';
 if(p!=null&&p<o)text+=`\n画面变化位于两帧之间，间隔 ${(o-p).toFixed(3)} 秒；延迟范围 [${d.toFixed(3)}, ${(current.recognized-p).toFixed(3)}) 秒。`;}
 if(o!=null&&current.first!=null)text+=`\n第一张点亮帧 → 首次有效识别：${(current.first-o).toFixed(3)} 秒`;
+let anchors=current.anchors||{}, sent=anchors.stage_request_sent?.ros_stamp, fresh=anchors.first_frame_captured?.ros_stamp,
+ready=(byId('kind').value==='button'?anchors.button_unlit_ready:anchors.first_frame_captured)?.ros_stamp,nl=String.fromCharCode(10);
+let onsetMissing=o!=null&&frames.length&&o===frames[0].image_stamp&&p==null;
+if(onsetMissing)text=text.split(nl).slice(0,2).join(nl);
+text+=nl+`本阶段开始：${sent??'未记录'}；首张新图像拍摄：${fresh??'未记录'}`;
+text+=nl+`${byId('kind').value==='button'?'识别未亮、允许按键':'新图像就绪'}：${ready??'未记录'}`;
+if(o!=null){
+ if(onsetMissing)text+=nl+'⚠ 首张图已变化，变化起点未被完整记录，请清除，不能据此测延迟。';
+ else if(sent!=null&&o<sent)text+=nl+'⚠ 事件早于阶段开始，耗时包含准备等待。';
+ else if(fresh!=null&&o<=fresh)text+=nl+'⚠ 事件早于或就在首张新图像，需检查是否漏拍变化起点。';
+ else if(ready==null)text+=nl+'⚠ 缺少事件前就绪基准，不能把端到端耗时当作纯推理耗时。';
+ else if(o<ready)text+=nl+'⚠ 点亮早于未亮识别就绪提示，耗时包含识别准备阶段。';
+ else if(p==null)text+=nl+'仅标变化后画面，缺少前边界。';
+ else if(p<ready)text+=nl+'⚠ 变化时间范围跨过就绪锚点，无法确定是否提前操作。';
+ else text+=nl+'变化前后画面均晚于就绪锚点。';}
 byId('selection').textContent=text;}
 function choose(){stop();current=data.kinds[byId('kind').value];frames=current.index.frames||[];slider.value=0;slider.max=Math.max(0,frames.length-1);
 byId('markPrev').textContent='标记未'+current.label;byId('markOpen').textContent='标记'+current.label;
@@ -663,14 +755,22 @@ def visual_delay(directory, trial, metrics, kind):
         if opened not in stamps or (previous is not None and previous not in stamps):
             raise ValueError("选择的核验帧不在本轮连续图像索引中")
     delay = recognized-opened if opened is not None and number(recognized) else None
+    index_path = directory / (kind + "_frames.json")
+    origin_missing = False
+    if previous is None and opened is not None and index_path.exists():
+        frames = json.loads(index_path.read_text(encoding="utf-8")).get("frames", [])
+        origin_missing = bool(frames) and opened == frames[0].get("image_stamp")
+        if origin_missing:
+            delay = None
     prefix = "door_open" if kind == "door" else "button_lit"
     result = {key + "_to_recognition_s": delay,
               key + "_to_recognition_interval_s": dict(min=delay, max_exclusive=recognized-previous) if delay is not None and previous is not None else None,
               prefix + "_annotation_gap_s": opened-previous if previous is not None else None,
               kind + "_confirmation_precedes_marked_" + ("open" if kind == "door" else "lit") + "_frame": delay < 0 if delay is not None else None}
+    result[kind+"_visual_onset_status"] = "onset_not_observed" if origin_missing else ("bracketed" if previous is not None else "single_frame_only" if opened is not None else "unmarked")
     if kind == "button":
         first = metrics.get("button_first_positive_ros_stamp")
-        first_delay = first-opened if opened is not None and number(first) else None
+        first_delay = first-opened if opened is not None and number(first) and not origin_missing else None
         result["actual_button_lit_to_first_positive_s"] = first_delay
         result["actual_button_lit_to_first_positive_interval_s"] = dict(min=first_delay, max_exclusive=first-previous) if first_delay is not None and previous is not None else None
     return result
@@ -716,6 +816,8 @@ def review_run(directory):
     summary.update(review_counts=counts, trial_review=trial,
                    **visual_delay(directory, trial, summary["metrics"], "door"),
                    **visual_delay(directory, trial, summary["metrics"], "button"))
+    summary["stage_timeline"] = summary.get("stage_timeline") or load_stage_timeline(directory, observations)
+    summary["timing_alignment"] = stage_alignments(summary["stage_timeline"], trial, directory)
     for key in ("actual_door_open_to_recognition_s", "actual_button_lit_to_recognition_s", "actual_button_lit_to_first_positive_s"):
         summary["metrics"][key] = summary[key]
     write_csv(directory / "timings.csv", [dict(run_id=summary["run_id"], **summary["metrics"])], ["run_id", *summary["metrics"]])

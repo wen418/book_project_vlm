@@ -114,6 +114,12 @@ class ExtraPerceptionNode:
         self.revision, self.sequence = 0, 0
         self.last_signature = None
         self.instance_id = uuid.uuid4().hex
+        project = Path(config["extra_perception"]["vlm_project"])
+        if not (project / "stage_timing.py").is_file():
+            project = Path(__file__).resolve().parent.parent / "Demo_vlm2_kuavo_api"
+        sys.path.insert(0, str(project))
+        from stage_timing import ros_timing
+        self.timing = ros_timing(rospy, String, "extra")
         self.last_result = None
         self.state = {"status": "starting", "reason": "正在初始化附加感知"}
         self.client_error = ""
@@ -135,8 +141,10 @@ class ExtraPerceptionNode:
             self.client_error = self.client_error or "VLM 客户端未配置"
             self.set_state("error", "VLM 初始化失败：" + self.client_error)
         else:
+            self.client = self.timing.wrap(self.client)
             self.set_state("idle", "节点已启动，等待下位机观察请求；当前不调用模型")
         self.ready.publish(String(data=json.dumps({"schema_version": 1, "instance_id": self.instance_id,
+                                                 "stage_timing_version": 1,
                                                  "capabilities": list(PROMPTS),
                                                  "inference_hz": 1.0 / config["extra_perception"]["inference_period"],
                                                  "status": "error" if self.client_error else "ready",
@@ -149,6 +157,8 @@ class ExtraPerceptionNode:
         with self.lock:
             self.revision += 1
             self.frame = (message, message.header.stamp.to_sec(), self.revision)
+        if getattr(self, "timing", None):
+            self.timing.frame(message.header.stamp.to_sec())
 
     def on_request(self, message):
         try:
@@ -166,6 +176,8 @@ class ExtraPerceptionNode:
                 raise ValueError("请求时间超前，请同步上下位机时钟")
             with self.lock:
                 self.request = dict(request)
+                if getattr(self, "timing", None):
+                    self.timing.begin(request["mode"], request["request_id"], stamp)
                 self.last_result = None
                 self.state = {"status": "idle" if request["mode"] == "idle" else "waiting_image",
                               "reason": "感知已暂停" if request["mode"] == "idle" else "已接收观察请求，等待新图像"}
@@ -230,6 +242,7 @@ class ExtraPerceptionNode:
     def run_once(self):
         with self.lock:
             request, frame = dict(self.request), self.frame
+            timing_stage = dict(self.timing.stage or {}) if getattr(self, "timing", None) else None
         if self.client_error:
             self.set_state("error", "VLM 初始化失败：" + self.client_error)
             return
@@ -237,6 +250,7 @@ class ExtraPerceptionNode:
             return
         field = "button_lit" if request["mode"] == "button_verify" else "floor"
         stamp = frame[1] if frame is not None else None
+        timing, context = getattr(self, "timing", None), None
         try:
             now = self.rospy.Time.now().to_sec()
             if frame is None:
@@ -250,6 +264,8 @@ class ExtraPerceptionNode:
                 self.set_state("waiting_new_frame", "当前帧已经处理，等待不同的新帧", request)
                 return
             self.last_signature = signature
+            if timing:
+                context = timing.select(stamp, timing_stage)
             image = decode_image(frame[0], self.config["camera"]["yuv422_layout"], self.cv2, self.np, self.bridge)
             data_url = encode_image(image, self.config["camera"], request["mode"], self.cv2)
             start = time.monotonic()
@@ -271,7 +287,11 @@ class ExtraPerceptionNode:
                       "evidence": {field: ""}, "error": str(exc)[:200], "reason": str(exc)[:200]}
         with self.lock:
             if self.request["request_id"] != request["request_id"] or self.request["mode"] != request["mode"]:
+                if context:
+                    timing.finish(context, result["status"], {field: result.get(field)}, accepted=False)
                 return  # A head/stage change invalidates the in-flight answer, including ABA switches.
+        if context:
+            timing.finish(context, result["status"], {field: result.get(field)})
         self.publish(request, stamp, result)
 
     def run(self):

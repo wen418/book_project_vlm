@@ -69,3 +69,7 @@ python3 -m unittest discover -s tests
 ```
 
 这些测试不连接机器人、不发送动作。新机器还需安装 ROS Noetic、相机与机器人 SDK，并恢复站点参数和秘密配置；在 `/media/data/vlm/elevator_vlm_api_ws` 运行 `catkin_make` 后才能恢复工作空间编译环境。参见 `docs/GIT使用说明.md`。
+
+## 新增阶段时间锚点
+
+量化报告新增stage_timeline.html入口，区分到点、头部到位、接图、每次VLM客户端调用、有效识别、确认及最终退出；数据仍在本轮result目录。请在按钮实际未亮且终端出现“[按键测试就绪]”后按键。提前操作或未完整拍到变化起点时，报告会提示，起点不完整的该项延迟留空。详见elevator_button_floor_demo/README.md。

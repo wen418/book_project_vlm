@@ -60,6 +60,8 @@ def readiness_reason(values, now, camera_age=2.0):
         return "附加感知不支持按钮和楼层接口"
     if ready.get("inference_hz") != 1.0:
         return "按钮/楼层感知不是 1 Hz，请重启感知节点"
+    if door.get("stage_timing_version") != 1 or ready.get("stage_timing_version") != 1:
+        return "感知节点缺少新版阶段时间锚点接口，请退出旧节点后重新启动"
     if extra.get("mode") != "idle" or extra.get("status") != "idle":
         return "附加感知尚未进入 idle：" + str(extra.get("reason", extra.get("status")))
     age = extra.get("image_age_sec")

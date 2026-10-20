@@ -18,6 +18,12 @@ with patch.dict(sys.modules, {"fcntl": SimpleNamespace()} if os.name == "nt" els
 
 
 class ReadinessTests(unittest.TestCase):
+    def test_old_nodes_without_timing_capability_are_not_reused(self):
+        for name in ("door", "ready"):
+            values=self.values()
+            values[name][0].pop("stage_timing_version")
+            self.assertIn("时间锚点",launcher.readiness_reason(values,100))
+
     def test_old_rate_node_cannot_be_silently_reused(self):
         for frequency in (None, .5, 2.0):
             values = self.values()
@@ -25,9 +31,9 @@ class ReadinessTests(unittest.TestCase):
             self.assertIn("1 Hz", launcher.readiness_reason(values, 100))
     def values(self):
         return {
-            "door": ({"schema_version": 2, "mode": "idle", "status": "idle"}, 100),
+            "door": ({"schema_version": 2, "mode": "idle", "status": "idle", "stage_timing_version": 1}, 100),
             "extra": ({"mode": "idle", "status": "idle", "image_received": True, "image_age_sec": 0.1}, 100),
-            "ready": ({"schema_version": 1, "status": "ready", "inference_hz": 1.0, "capabilities": ["button_verify", "floor_monitor"]}, 50),
+            "ready": ({"schema_version": 1, "status": "ready", "inference_hz": 1.0, "stage_timing_version": 1, "capabilities": ["button_verify", "floor_monitor"]}, 50),
             "camera": (True, 100),
         }
 

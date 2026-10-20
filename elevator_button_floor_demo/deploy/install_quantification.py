@@ -158,6 +158,9 @@ if (p/'.git').exists():
     installed = [install_entry(args.lower, staging + "/controller.py", LOWER_ENTRY),
                  install_entry(args.upper, staging + "/controller.py", UPPER_ROOT + "/elevator_button_floor_main.py")]
     files = {
+        "stage_timeline.py": UPPER_ROOT + "/stage_timeline.py",
+        "../Demo_vlm2_kuavo_api/stage_timing.py": "/media/data/vlm/Demo_vlm2_kuavo_api/stage_timing.py",
+        "../Demo_vlm2_kuavo_api/ros_stream_node.py": "/media/data/vlm/Demo_vlm2_kuavo_api/ros_stream_node.py",
         "templates/labels_review.html": UPPER_ROOT + "/templates/labels_review.html",
         "elevator_quantification.py": UPPER_ROOT + "/elevator_quantification.py",
         "elevator_extra_perception.py": UPPER_ROOT + "/elevator_extra_perception.py",
@@ -170,6 +173,8 @@ if (p/'.git').exists():
         "../Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/launch/elevator_vlm.launch":
             "/media/data/vlm/Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/launch/elevator_vlm.launch",
         "tests/test_elevator_quantification.py": UPPER_ROOT + "/tests/test_elevator_quantification.py",
+        "tests/test_elevator_stage_timing.py": UPPER_ROOT + "/tests/test_elevator_stage_timing.py",
+        "tests/timing_review_ui.cjs": UPPER_ROOT + "/tests/timing_review_ui.cjs",
         "tests/labels_review_ui.cjs": UPPER_ROOT + "/tests/labels_review_ui.cjs",
         "tests/test_elevator_demo.py": UPPER_ROOT + "/tests/test_elevator_demo.py",
         "tests/test_elevator_launcher.py": UPPER_ROOT + "/tests/test_elevator_launcher.py",
