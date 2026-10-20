@@ -230,6 +230,22 @@ result/北京时间_随机编号/
 - 减少回退视野、无人挡门实际效果及按键点亮物理延迟仍需现场采集和选帧核验。详细部署记录见 `验证记录.md` 最新节。
 
 原按钮/楼层说明另见 `电梯按钮与20楼进出测试说明.md`、`下位机单文件部署.md` 与 `上位机一键启动说明.md`。
+## 启动时报头部图像等待超时
+
+报错 `timeout exceeded while waiting for message on topic /cam_h/color/image_raw` 表示启动阶段未收到头部图像，尚未进入VLM识别。先看相机日志与 `/tmp/camera_startup_status.json`，不能只看服务是否active。
+
+2026-10-20现场确认：默认三相机启动中，左腕cam_l未找到或不可用，三相机必须全部成功的门禁会关闭已出图的头部相机，导致反复重启。本次电梯测试临时启用了相机系统已有的head_only档位，只使用头部相机。临时配置位于 `/run/systemd/system/start_camera.service.d/90-elevator-head-only.conf`，重启上位机后失效。VLM最多1Hz识别保持原设置。
+
+恢复三相机数采前，先检查左右腕USB连接和设备枚举，再恢复默认相机档位：
+
+```bash
+sudo rm -f /run/systemd/system/start_camera.service.d/90-elevator-head-only.conf
+sudo systemctl daemon-reload
+sudo systemctl restart start_camera.service
+```
+
+只删除上面指定的单个临时文件，保留其他服务配置。重新开始测试前确认头部图像连续更新，三相机数采还需确认三个画面均正常。
+
 # 上位机源码版本管理（version1.0）
 
 上位机统一仓库根目录为 `/media/data/vlm`，远程为 `https://github.com/wen418/book_project_vlm.git`，主分支 `main`，首个发布标签 `version1.0`。本目录与 `Demo_kuavo_vlm_api` 一键目录、`Demo_vlm2_kuavo_api` 门感知目录由同一个 Git 仓库管理，原启动路径保留。
