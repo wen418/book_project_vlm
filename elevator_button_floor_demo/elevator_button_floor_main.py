@@ -403,6 +403,36 @@ def check_runtime(config):
         return 1
 
 
+def backup_before_update(target, suffix):
+    """Use a committed Git version, or keep a file backup outside version control."""
+    import subprocess
+    from pathlib import Path
+    import shutil
+
+    target = Path(target).resolve()
+    if shutil.which("git"):
+        root = subprocess.run(["git", "-C", str(target.parent), "rev-parse", "--show-toplevel"],
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if root.returncode == 0:
+            repository = Path(root.stdout.strip())
+            relative = target.relative_to(repository).as_posix()
+            command = ["git", "-C", str(repository)]
+            tracked = subprocess.run(command + ["ls-files", "--error-unmatch", "--", relative],
+                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if tracked.returncode == 0:
+                checks = [["cat-file", "-e", "HEAD:" + relative],
+                          ["diff", "--quiet", "HEAD", "--", relative],
+                          ["diff", "--cached", "--quiet", "--", relative]]
+                if any(subprocess.run(command + check, stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode
+                       for check in checks):
+                    raise RuntimeError("文件尚未完整提交到 Git，先提交再更新：" + str(target))
+                print("原版本已保存在 Git HEAD：", target)
+                return None
+    backup = target.with_name(target.name + suffix)
+    shutil.copy2(target, backup)
+    return backup
+
+
 def install_update(target):
     """Install this single-file update while preserving the site's literal DEFAULT_CONFIG."""
     source = Path(__file__).resolve()
@@ -429,8 +459,7 @@ def install_update(target):
     compile(updated, str(target), "exec")
     backup = None
     if previous is not None:
-        backup = target.with_name(target.name + ".backup_" + datetime.now().strftime("%Y%m%d_%H%M%S_") + uuid.uuid4().hex[:6])
-        shutil.copy2(target, backup)
+        backup = backup_before_update(target, ".backup_" + datetime.now().strftime("%Y%m%d_%H%M%S_") + uuid.uuid4().hex[:6])
     temporary = None
     try:
         with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", newline="\n", dir=str(target.parent), delete=False) as stream:
@@ -967,7 +996,7 @@ def main(argv=None):
     modes.add_argument("--check-head", action="store_true", help="只读检查头部硬件就绪、实测角度和控制器输出")
     modes.add_argument("--check-motion", action="store_true", help="只读检查定位反馈新鲜且静止，不发布运动指令")
     modes.add_argument("--check-runtime", action="store_true", help="仅检查机器人接口依赖，输出完整错误链，不发送动作")
-    modes.add_argument("--install-to", type=Path, help="安装本文件补丁到指定原入口，保留原 DEFAULT_CONFIG 并备份")
+    modes.add_argument("--install-to", type=Path, help="安装到指定原入口，保留现场配置，优先使用已提交的 Git 版本留底")
     modes.add_argument("--observe-only", choices=("button", "floor", "door"), help="保持现有姿态，仅测试感知；不导航、不转头")
     modes.add_argument("--head-only", choices=("button", "floor", "door"), help="只发送一次头部姿态，不导航；用于标定")
     for name in ("preflight-confirmed", "perception-confirmed", "estop-ready"):

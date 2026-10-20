@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install over existing SSH credentials; preserve literal site config and backups."""
+"""Install over SSH; preserve site config and prefer committed Git versions to backups."""
 import argparse
 import ast
 import base64
@@ -16,6 +16,13 @@ UPPER_ROOT = "/media/data/vlm/elevator_button_floor_demo"
 LAUNCH_ROOT = "/media/data/vlm/Demo_kuavo_vlm_api"
 LOWER_ENTRY = "/home/lab/kuavo-ros-control/src/kuavo_humanoid_sdk/kuavo_humanoid_sdk/kuavo_strategy_pytree/book/elevator_button_floor_main.py"
 SSH_OPTIONS = {}
+
+
+def backup_source():
+    source = (SOURCE / "elevator_button_floor_main.py").read_text(encoding="utf-8")
+    node = next(n for n in ast.parse(source).body
+                if isinstance(n, ast.FunctionDef) and n.name == "backup_before_update")
+    return ast.get_source_segment(source, node) + "\n"
 
 
 def run(command):
@@ -75,13 +82,14 @@ def install_entry(host, staging, target):
     lines = source.splitlines(keepends=True)
     normalized = ''.join(lines[:node.lineno-1])+'DEFAULT_CONFIG = None\n'+''.join(lines[node.end_lineno:])
     expected_hash = hashlib.sha256(normalized.encode()).hexdigest()
-    if before["code_sha256"] != expected_hash:
+    controller_updated = before["code_sha256"] != expected_hash
+    if controller_updated:
         output = remote(host, """import subprocess
 subprocess.run(['/usr/bin/python3',%r,'--install-to',%r],check=True)
 """ % (staging, target))
         print(output.strip())
     # The user's requested frequency change is the only site config update.
-    remote(host, """import ast,os,shutil,tempfile
+    remote(host, backup_source() + """import ast,os,shutil,tempfile
 from pathlib import Path
 p=Path(%r)
 s=p.read_text(encoding='utf-8-sig')
@@ -92,13 +100,14 @@ if c['extra_perception']['inference_period']!=1.0:
  lines=s.splitlines(keepends=True)
  updated=''.join(lines[:n.lineno-1])+'DEFAULT_CONFIG = '+repr(c)+'\\n'+''.join(lines[n.end_lineno:])
  compile(updated,str(p),'exec')
- shutil.copy2(p,str(p)+'.backup_rate_'+__import__('uuid').uuid4().hex[:8])
+ # The single-file installer already saved the original when it changed code.
+ if not %r:backup_before_update(p,'.backup_rate_'+__import__('uuid').uuid4().hex[:8])
  with tempfile.NamedTemporaryFile(mode='w',encoding='utf-8',dir=str(p.parent),delete=False) as f:
   f.write(updated)
   temporary=f.name
  shutil.copymode(p,temporary)
  os.replace(temporary,str(p))
-""" % target)
+""" % (target, controller_updated))
     after = json.loads(remote(host, READ_CONFIG % target))
     expected_config = before["config"]
     expected_config["extra_perception"]["inference_period"] = 1.0
@@ -133,6 +142,14 @@ def main():
         SSH_OPTIONS[args.lower] += ["-o", "HostKeyAlias="+args.lower_host_key_alias]
     active_check(args.upper)
     active_check(args.lower)
+    # Refuse before touching either machine if the upper's tracked work is unsaved.
+    remote(args.upper, """import subprocess
+from pathlib import Path
+p=Path('/media/data/vlm')
+if (p/'.git').exists():
+ result=subprocess.run(['git','-C',str(p),'status','--porcelain','--untracked-files=no'],stdout=subprocess.PIPE,check=True,text=True)
+ if result.stdout.strip():raise RuntimeError('上位机有未提交的 Git 修改；先提交再部署。')
+""")
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S_") + uuid.uuid4().hex[:6]
     staging = "/tmp/elevator_quant_install_" + stamp
     for host in (args.upper, args.lower):
@@ -171,7 +188,7 @@ def main():
             path.write_bytes(content)
             upload(args.upper, path, item["staging"])
         manifest.append(item)
-    install_code = """from pathlib import Path
+    install_code = backup_source() + """from pathlib import Path
 import hashlib,json,os,shutil,tempfile
 manifest=%r
 for item in manifest:
@@ -180,7 +197,7 @@ for item in manifest:
 for item in manifest:
  p,t=Path(item['staging']),Path(item['target'])
  t.parent.mkdir(parents=True,exist_ok=True)
- if t.exists():shutil.copy2(t,str(t)+'.backup_'+%r)
+ if t.exists():backup_before_update(t,'.backup_'+%r)
  with tempfile.NamedTemporaryFile(dir=str(t.parent),delete=False) as stream:
   stream.write(p.read_bytes())
   temporary=stream.name
@@ -194,7 +211,7 @@ shutil.copy2(%r,%r)
 print(json.dumps([dict(path=i['target'],sha256=i['sha256']) for i in manifest],ensure_ascii=False))
 """ % (manifest, stamp, UPPER_ROOT + "/result", LAUNCH_ROOT + "/elevator_demo_launcher.py", UPPER_ROOT + "/deploy/elevator_demo_launcher.py")
     installed += json.loads(remote(args.upper, install_code))
-    print(remote(args.upper, """import json,os,re,shutil,tempfile
+    print(remote(args.upper, backup_source() + """import json,os,re,shutil,tempfile
 from pathlib import Path
 items=[(Path(%r), 'json'), (Path('/media/data/vlm/Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/config/perception.yaml'), 'yaml')]
 for p,kind in items:
@@ -208,7 +225,7 @@ for p,kind in items:
   if n!=1:raise RuntimeError('Cannot locate unique inference_hz')
   after=re.sub(r'(?m)^#.*每[0-9]+秒最多请求一次.*$', '# 门、按键、楼层统一最多每秒请求一次；慢推理会降低实际输出频率。', after)
  if after!=before:
-  shutil.copy2(p,str(p)+'.backup_'+%r)
+  backup_before_update(p,'.backup_'+%r)
   with tempfile.NamedTemporaryFile(mode='w',encoding='utf-8',dir=str(p.parent),delete=False) as f:
    f.write(after)
    temporary=f.name
@@ -219,7 +236,8 @@ for p,kind in items:
     for host in (args.upper, args.lower):
         # Delete only our known staging files, never recursively remove a computed path.
         remote(host, "from pathlib import Path\np=Path(%r)\nfor f in p.iterdir():f.unlink()\np.rmdir()" % staging)
-    print(json.dumps(dict(installed=installed, backup_suffix=".backup_"+stamp), ensure_ascii=False, indent=2))
+    print(json.dumps(dict(installed=installed, untracked_file_backup_suffix=".backup_"+stamp,
+                         git_tracked_files="原版本在 Git HEAD，更新后请提交并推送"), ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

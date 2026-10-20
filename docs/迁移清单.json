@@ -1,0 +1,2374 @@
+{
+  "archive_commit": "01fd966b660c4a2aa267bd0dc4efa1b2b6faf7ee",
+  "archive_tree": "906a45aced76156f5ea149ae27a385980aae52c1",
+  "archived_files": [
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/README.md.backup_20261019_111501_f6055c",
+      "blob": "30742d2b16aa9cfef5865f068f933be776c8ed39",
+      "sha256": "9d40767377df1e5c1875027512b9774e33299ef253c7e96c08b549c940dacc83",
+      "bytes": 4252
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/README.md.backup_20261019_111650_704945",
+      "blob": "3cda12873d9c579be94c1f0c7efde4759a969f62",
+      "sha256": "d28d330ac71a829a7d2d2e15f4455d84484ac27eac47fdba8277ba22e988d39f",
+      "bytes": 5230
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/README.md.backup_20261019_122144_5d257c",
+      "blob": "3cda12873d9c579be94c1f0c7efde4759a969f62",
+      "sha256": "d28d330ac71a829a7d2d2e15f4455d84484ac27eac47fdba8277ba22e988d39f",
+      "bytes": 5230
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/README.md.backup_20261019_175453_66bd31",
+      "blob": "8cc229b336c4de2f8c4694b52574801f794cc57e",
+      "sha256": "194536f653c9f45c3c913bb98460d90a1dd637cbb02c42510559cdf7a9b0e886",
+      "bytes": 5521
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/README.md.backup_20261020_143309_5d0cc6",
+      "blob": "8cc229b336c4de2f8c4694b52574801f794cc57e",
+      "sha256": "194536f653c9f45c3c913bb98460d90a1dd637cbb02c42510559cdf7a9b0e886",
+      "bytes": 5521
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/README.md.backup_20261020_145510_e57a0c",
+      "blob": "2ad45d7163717c99072a720d1b397126f740d018",
+      "sha256": "097e9d1365a45ff6a4cbf4c3f58549f3a551f908141ee1b51e5601960fa8c519",
+      "bytes": 5583
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/README.md.backup_20261020_visual_df484fd6",
+      "blob": "ffee2101e26bc28213520468475639dc8e4c5637",
+      "sha256": "f0610c7ac7ecd35176a38e50f84fa6e16ba853ee2d1504da13cc1f445200da17",
+      "bytes": 6041
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/elevator_demo_launcher.py.backup_20261019_111501_f6055c",
+      "blob": "2393b65b1591ac28b6252cca18618720b11291a8",
+      "sha256": "413f7db77e1500d9dfe1505a0d4f2dae2e35fe30ad194fa129df056dda6fbb71",
+      "bytes": 17985
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/elevator_demo_launcher.py.backup_20261019_111650_704945",
+      "blob": "bb82cc729043cfd02285bf1fdc5fb54449f3109b",
+      "sha256": "69588991265b6b445d95a4aa7b28496ed887de809de213b4f514f138eb8a3f3f",
+      "bytes": 22580
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/elevator_demo_launcher.py.backup_20261019_122144_5d257c",
+      "blob": "6bbe7860e559b34237fb8f23727b075d38c3659b",
+      "sha256": "51a55016dab8f056c3fc42326f6293a27b8395d2a7f87e3cce82d793797ac15f",
+      "bytes": 22723
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/elevator_demo_launcher.py.backup_20261019_175453_66bd31",
+      "blob": "7500a9b5f3826176f979ca1e4897aadda14f2b80",
+      "sha256": "e7ad4c9bc8691411b4a49b5b8fc51ab927ee27356de5ec6285ba651da152dbd9",
+      "bytes": 22820
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/elevator_demo_launcher.py.backup_20261020_143309_5d0cc6",
+      "blob": "7500a9b5f3826176f979ca1e4897aadda14f2b80",
+      "sha256": "e7ad4c9bc8691411b4a49b5b8fc51ab927ee27356de5ec6285ba651da152dbd9",
+      "bytes": 22820
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/elevator_demo_launcher.py.backup_20261020_145510_e57a0c",
+      "blob": "168456447dbad3ddc96397a41c38478f6c36cc42",
+      "sha256": "fbb9f5e1667106356872e3ba5d4678ed4e32c8998fc3c4d668d09a50ea9ea2aa",
+      "bytes": 23222
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/start_elevator_demo.sh.backup_20261019_111501_f6055c",
+      "blob": "71bd7a74d279bbce6b606b4800f54c97b3741305",
+      "sha256": "84724ee128355554a43858f25d28034d040cf059d729909ba3c3db1b219bfb5d",
+      "bytes": 549
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/start_elevator_demo.sh.backup_20261019_111650_704945",
+      "blob": "71bd7a74d279bbce6b606b4800f54c97b3741305",
+      "sha256": "84724ee128355554a43858f25d28034d040cf059d729909ba3c3db1b219bfb5d",
+      "bytes": 549
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/start_elevator_demo.sh.backup_20261019_122144_5d257c",
+      "blob": "71bd7a74d279bbce6b606b4800f54c97b3741305",
+      "sha256": "84724ee128355554a43858f25d28034d040cf059d729909ba3c3db1b219bfb5d",
+      "bytes": 549
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/start_elevator_demo.sh.backup_20261019_175453_66bd31",
+      "blob": "71bd7a74d279bbce6b606b4800f54c97b3741305",
+      "sha256": "84724ee128355554a43858f25d28034d040cf059d729909ba3c3db1b219bfb5d",
+      "bytes": 549
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/start_elevator_demo.sh.backup_20261020_143309_5d0cc6",
+      "blob": "71bd7a74d279bbce6b606b4800f54c97b3741305",
+      "sha256": "84724ee128355554a43858f25d28034d040cf059d729909ba3c3db1b219bfb5d",
+      "bytes": 549
+    },
+    {
+      "git_path": ".legacy_versions/Demo_kuavo_vlm_api/start_elevator_demo.sh.backup_20261020_145510_e57a0c",
+      "blob": "71bd7a74d279bbce6b606b4800f54c97b3741305",
+      "sha256": "84724ee128355554a43858f25d28034d040cf059d729909ba3c3db1b219bfb5d",
+      "bytes": 549
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/.gitignore",
+      "blob": "ff385ef2aa3d378aa70efe906fd9bf2b93ada6d3",
+      "sha256": "e2f44978eede957b8165ddcc9d325910999cf880ed43017a9b4120533faa57bd",
+      "bytes": 39
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/README.md",
+      "blob": "79dfa6599d462fd3375c500f52718a3dc0434ff0",
+      "sha256": "68c2cd0cdd644f6ba45a9165553ea56c7ba0c7cd97c9b4005dd3d4e5b860e924",
+      "bytes": 1727
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/config.api.json",
+      "blob": "f3df2ba92098221b4a8ff24a23029290a5bbe529",
+      "sha256": "cb359f91ac56c1dee3abee3ea00cb41428be689ed3b623d4fdeb8f81a0e4d5c1",
+      "bytes": 334
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/config.door_fast.json",
+      "blob": "dca25518a6b87caebec6be07b31aa5465debdb1a",
+      "sha256": "10b1f893c97573bfe44f2d2c1fb6c902975e06251f52427e6b8b327334d60ab2",
+      "bytes": 354
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/deploy/API_DEPLOY.md",
+      "blob": "df52204c991300c3f44cb39d400baba0cef9b0fc",
+      "sha256": "a7eff72adba7915030a71543f719f2e06943ba41cab9f315d2e0b6729e4746f1",
+      "bytes": 12914
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/deploy/DOOR_ONLY_FAST.md",
+      "blob": "a696820f7ffba68ac05e1df1f0b038ed65a8c7c8",
+      "sha256": "70241d8ace30eb3c59ab6fb4856baa735bab20fd3c9ea54c9c2d3d0cf17df4b4",
+      "bytes": 5266
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/deploy/api_env.sh",
+      "blob": "145c64cf206ecfa78263eb990c6487fa960d99fe",
+      "sha256": "93f3b8d2a19f6b7efbe90e21cd513c2777dcde888571f7d2f2155bb465885a3c",
+      "bytes": 532
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/deploy/run_ros_api.sh",
+      "blob": "6b9eb2e2dd63f2ddc6568db7f3c3af69ae2352a4",
+      "sha256": "f8216af6beec1c42bce0ee37d44996b3da1f7eb48608a50cc62ae341666ffd5f",
+      "bytes": 1072
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/elevator_perception.py",
+      "blob": "af493c7df80eee60d232630bdef3a80b2cd2b682",
+      "sha256": "a21e41a112c899282feb3fc0d8bcd8b2788b4aee71598d0ccadf2d577d8a138a",
+      "bytes": 8905
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/BUTTON_EXAMPLES_NEEDED.md",
+      "blob": "b081bf04e494d0082891ee0a0006b22af61d0763",
+      "sha256": "d041677cd3cb938cefe82444f975207102ee084867688c3263de4892f35f2e10",
+      "bytes": 694
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inclose.jpg",
+      "blob": "92f1db8421d468378eedf45382eef1712407d90a",
+      "sha256": "87ab5400c6df3205fba426ce875763f0d45142ba7702c1cdef4812e5252cc4b5",
+      "bytes": 69872
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inclose12f.jpg",
+      "blob": "0bb789df956b6d534f0d0a1aabc06ce7ecafd022",
+      "sha256": "64cd79d71a3c69416c9cd8dba7511039891061e1944e6acf225f24f806c3f61c",
+      "bytes": 71007
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inclose1f.jpg",
+      "blob": "a512f72fc2bc029a15e501488ef965a0cd520552",
+      "sha256": "3ed7ede4c2cca3f24b522f6b0bca3e95ad833bd21a469dde2f1e65b591ae5108",
+      "bytes": 83637
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inclose2.jpg",
+      "blob": "83a3c6a4f00d78cd7d2e5dee1b617b6e4a8ac970",
+      "sha256": "1b03f9b7985d82ff45735e97913334b07116031ca3453053f9100211deabc425",
+      "bytes": 56045
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inclose4f.jpg",
+      "blob": "249ab855da4957e4f55b74dc04ac88df55594329",
+      "sha256": "bd060ea29a79e90a10c59b794ed35df65d3a2c3018612db1b834d23f451803de",
+      "bytes": 87929
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inclose9f.jpg",
+      "blob": "8edb24276070fae4e42eb31022f56640421518e8",
+      "sha256": "f448e310ed7488d7fc709e24e762374723d72260dcbf419d6b5be65db8d06d3c",
+      "bytes": 85143
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inopen.jpg",
+      "blob": "05c1450b43f54b853f7772e5aafb8573ca5fb294",
+      "sha256": "cd4cbf54ca6e49eccde5ae12ce2d2c595e4af2f60d46f584ec8e26be737d1de0",
+      "bytes": 190784
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inopen2.jpg",
+      "blob": "c552b782e25e94225c0ed17c9d116e318ceaa268",
+      "sha256": "a1cfe18e93dfdf23d672006b89a99f9c7f972365ce942a71f945c255a10aa930",
+      "bytes": 159341
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inopen21f.jpg",
+      "blob": "ee49598d339ac5aa3369335fde06e260cce42178",
+      "sha256": "2d413468a2316454e5684dcef3813db5536ec614475b440414fbfab653168642",
+      "bytes": 113967
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inopen21f2.jpg",
+      "blob": "55680189b7a20891864e4caf17a6723b8e155c5e",
+      "sha256": "1024efec87b41fcd8c99f86cd4c8062e03ffc428221992d64789bcfecc82160f",
+      "bytes": 100906
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inopen21f3.jpg",
+      "blob": "f3e9d7ba3c3373972e99357eea00f0bc923d6f54",
+      "sha256": "db264d0cd552e182bb1625819749f2670908a8e51c7575d2d4bd639e4c00885e",
+      "bytes": 114826
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inopen3.jpg",
+      "blob": "baffc4c0c8b69ce42c4ef670d19fe68c55e390cc",
+      "sha256": "ceaabc595d548ba87c7563a10db76aa18f437ce3b80dbe3910657cd326500739",
+      "bytes": 185276
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inopen4.jpg",
+      "blob": "a1b84ae04c9351a3446a79fc34ea6b08945908f6",
+      "sha256": "b766291271d86d4e08fc2fc23ed59434be087efde2566466930980682167afe5",
+      "bytes": 194015
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/manifest.json",
+      "blob": "40a5976cdbf59021255e8c3ebd39879b2300b71f",
+      "sha256": "2a018c57f78b17cbb252bfc72b73d2b2e6c0b5b2234230a303ebbdbdab21e580",
+      "bytes": 3844
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/outclose.jpg",
+      "blob": "ef06b43c4e842e682e8083ed6864b7d00872e7ed",
+      "sha256": "1de7ce20a313fd4102bd39291406906bc3b7533e52275baf9ace5af1329cbfe2",
+      "bytes": 52788
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/outclose2.jpg",
+      "blob": "4589103a558dd7f3dcd6023cc918a7abb24c5aad",
+      "sha256": "875ff9cd5ff6e07c6b8c0f934789b789cbee305f7bf1df881ef490c0d6b0c834",
+      "bytes": 206486
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/outclose3.jpg",
+      "blob": "652baff47beeeeb0abc6e2fe0917ccc764d4f992",
+      "sha256": "617aea717c1fea12ec4c23e904351bbf59ad5cd49e707f17ccef39742b39fde9",
+      "bytes": 211037
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/outopen.jpg",
+      "blob": "4fa0a4a05180bff04a72b930a15d7c517497b143",
+      "sha256": "1a037c11c9de6e6af4081d2189d05a10758ba19bc6114ac5624f0a9feedbf531",
+      "bytes": 118157
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/outopen2.jpg",
+      "blob": "bbce856ff5e42718bd3dd99d2f000cb427a8637a",
+      "sha256": "ef73c0d819f8d7ecacd922f6e93b050a5434d8b78d6e98749ab2da43b3a3895d",
+      "bytes": 138187
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/outopen3.jpg",
+      "blob": "f096646aab5a07d7699dd42ed4a3a5f9f5dda9cf",
+      "sha256": "fb3247df182457bdad4d14f8af8d4fb8ad6f0a1138f9eab0c9846243ea1c74da",
+      "bytes": 147025
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/outopen4.jpg",
+      "blob": "eb78c314a62add35b95709b5814fa9018839c5ec",
+      "sha256": "2ace7b2df73bb3fae46fde33b8f927dbba80ff04eff9af35308af68992d8d32a",
+      "bytes": 126948
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_off&down_off.jpg",
+      "blob": "28349b3971d202e5cedd19403147545c5ab46901",
+      "sha256": "de988ab793cb2b695d7b275294fd85f8c77d57519c4f47f19e53f7bfab9ef1c8",
+      "bytes": 153028
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_off&down_off2.jpg",
+      "blob": "e2748e27af36e671c703f5c21331c6065e9f26d8",
+      "sha256": "da0d9acd23467d6ce4028a3fff6e2d72d3ccf97f870641a52037e6e1098b584c",
+      "bytes": 93383
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_off&down_off3.jpg",
+      "blob": "41ed1f5bf565f02b8575c18fb529f6dee958b5c5",
+      "sha256": "5a20efe165c990d13f88667e8d31f52c0a3e888188e991e9bedbb0b244a43209",
+      "bytes": 153227
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_off&down_on.jpg",
+      "blob": "35187c91aba6ffb95d493d1b43eda6b2d307196f",
+      "sha256": "31a301ffcf1f305e7f652a6b3b1599cab8668c43b81f4d3ed61551fcae23444d",
+      "bytes": 173611
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_off&down_on2.jpg",
+      "blob": "01b9f450133cf6b5cbc661719f84496913c72e6e",
+      "sha256": "a8befc1cf00176e0dcdfe191b602fa6a221ed3c96320fdcd346ab5ce2c06f787",
+      "bytes": 88301
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_off&down_on3.jpg",
+      "blob": "4082edf325714f8a6505aa9e52bfce86ac525979",
+      "sha256": "84993250710d7050ff87ace25cccf189e947c1e0a527a18185dca149412b485a",
+      "bytes": 133207
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_on&down_off.jpg",
+      "blob": "9a44fd89b124f442d6622078417530926f207dce",
+      "sha256": "ca393a8d74688d6f4539500eea8e436aca39f995b2aae49927428bca28d5c1c1",
+      "bytes": 162904
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_on&down_off2.jpg",
+      "blob": "d3bf2b6cc6facb7edb1ea3ef8c9b3f0c39e51cbd",
+      "sha256": "edd460ec53aca0b302f62d5ab0e709bda624d70a54f9f0b9d9e21af63184fec7",
+      "bytes": 102080
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_on&down_off3.jpg",
+      "blob": "445a5e670f7a7c0c70556d3cf28567129f0f34ea",
+      "sha256": "d104a09d75f7efc6379d12d8ab4e2527bc8734822fc5c39b53d0ed9e3efc6ae2",
+      "bytes": 110375
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_on&down_on.jpg",
+      "blob": "84297e3de0921f447eea0977b15811bca34424b1",
+      "sha256": "56e79842b8d8ede3dc01a327f2ef462938b6361ca1bdda4992939a1b55e4b0cb",
+      "bytes": 166923
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_on&down_on2.jpg",
+      "blob": "6e76db30d3819754e84c0c93c049a722291aaa60",
+      "sha256": "6234ca1900a2eb04e422e51af537ee512d672bb7e54a42c059a264eacab6be13",
+      "bytes": 103707
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_on&down_on3.jpg",
+      "blob": "f0a00707ac6adf5ac004e390bb613aafe096277c",
+      "sha256": "149ce5b02abeb31ea15ec5212e6e376d09650407a6c3e924f23d39f0e543d772",
+      "bytes": 118460
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/few_shot.py",
+      "blob": "2a55ad2d4fccc55a13c51b8371524b8cc6da8506",
+      "sha256": "827b6ab0dbc6b213d09ca4544f0b810b14d3b9ed73ffe07a9516b1661558c317",
+      "bytes": 6826
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/main.py",
+      "blob": "bfee377f3637ad1497a2b71712941baf64e4ff50",
+      "sha256": "d067d2e28b01e179c81a68b0dbc9033afa09812b8cc62fff25cfb143d0ac1c6a",
+      "bytes": 2596
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/perception_schema.py",
+      "blob": "3ab41801cae9c0282deab5ef84089913b5083620",
+      "sha256": "30fbd601157c618a14d2792656b19e3054e5b9844277ba49a3488bf28937de01",
+      "bytes": 5657
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/prompts.py",
+      "blob": "461f080616cbfb48b981b62819a3864451fcadc5",
+      "sha256": "3cbeee6bfcf262782d47197ba011ef6560706b25aa553215a3da3bb520f4e3ee",
+      "bytes": 3843
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/ros1/elevator_vlm_api_perception/CMakeLists.txt",
+      "blob": "079399580aa892e9947a0ca942ee9541b52561bc",
+      "sha256": "a415afac2a7f5f1ddacfe8fa258ea71642fd3f6f1e02177c165136bd24bcb5e9",
+      "bytes": 383
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/ros1/elevator_vlm_api_perception/config/perception.yaml",
+      "blob": "695e5994a563c726586aabb8cc7e960583f52ad6",
+      "sha256": "b678ceaf5ab946a2a5441f4acb6fb64667ccf4ea054fb02494d0c21016a0db8b",
+      "bytes": 1488
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/ros1/elevator_vlm_api_perception/launch/elevator_vlm.launch",
+      "blob": "28e57d4f4d781290226f3a43a6031cf8ed0e4005",
+      "sha256": "251b1ac980c4ce4ca1a7a9ffa2104aaa1965a640e734136d2a45d9c7d92c6072",
+      "bytes": 433
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/ros1/elevator_vlm_api_perception/package.xml",
+      "blob": "4c218dbb647211e19577750e6ddcd733527fe71d",
+      "sha256": "2c3b44e36ff99e25f7f14b60d3db7179aca2a3629cbe59c56a29827f45fc98d9",
+      "bytes": 505
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/ros1/elevator_vlm_api_perception/scripts/elevator_vlm_node.py",
+      "blob": "359542c3086f23955638d6a5bb006c8b4eb9a5ec",
+      "sha256": "2f62c74e99ef8ad4e17e53b14b591b8d9e747b39bc88be88dba61797f093187d",
+      "bytes": 614
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/ros_stream_node.py",
+      "blob": "9d3424a49238079706a993799d2c08a3b0ccfc6a",
+      "sha256": "67a669f1068e071713084ce8eae0debcca8f80329428f3f6242ea2e13073119c",
+      "bytes": 17383
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/temporal_filter.py",
+      "blob": "64b3c383cde88da0731e5c096532426f43d1bf96",
+      "sha256": "fd4a4ab743585fb83ab6650ba0f92131e0f0b50fd5ee68eddfc2f015fe173b05",
+      "bytes": 3629
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/tests/test_pipeline.py",
+      "blob": "37fb87aa07d4dfed0711b7f631a66e44ca4351ee",
+      "sha256": "4ad6cfac6aa4dfab6da02ddb1513e028a0b702379beccb12731d1795e45c99d9",
+      "bytes": 12270
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api.backup.20260922_171403/vlm_client.py",
+      "blob": "1686e21d51db3b9b2a48442bcd93c4d23258bafd",
+      "sha256": "6c95afe2ccba5bd0a8e0ded57d649c87b0ec735ee86b3f14f9d33bd3e131e5d9",
+      "bytes": 4407
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/config/perception.yaml.backup_20261020_145510_e57a0c",
+      "blob": "8cc65627d4083ee4e67e96b8a0e51b7acec09301",
+      "sha256": "1b53f0fa6599deba887542a5e9fd882731c156b18b1648dd98241c296e116b32",
+      "bytes": 1629
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/config/perception.yaml.before_original_resolution_20261009_104447.bak",
+      "blob": "2bbb9ce6042638138cf58dfb425944a85b403e59",
+      "sha256": "3ea7e084d9a8ad67396e6231de9e55bc13df7491bf2ac1bbe7bb75a60c3ff3c8",
+      "bytes": 1664
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/launch/elevator_vlm.launch.backup_20261020_145510_e57a0c",
+      "blob": "28e57d4f4d781290226f3a43a6031cf8ed0e4005",
+      "sha256": "251b1ac980c4ce4ca1a7a9ffa2104aaa1965a640e734136d2a45d9c7d92c6072",
+      "bytes": 433
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api/最近工作交接_2026-10-19.md.backup_20261020_visual_df484fd6",
+      "blob": "5590851673cc6fc6bf89d7196f792b672404756e",
+      "sha256": "bebfc8deaf0b4dfc74f7f81bb805c6eb175a624d315442cd5a15eb67183729a6",
+      "bytes": 30168
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api/最近工作交接_2026-10-19.md.backup_cleanup_docs_db7c6444",
+      "blob": "a76022965f8dd041d0ef14f1da9ba1ea3c8a9593",
+      "sha256": "dee5c471c50261a98f32eaa79429b0ca3752426fdcc66755ded39dba77a1b2ae",
+      "bytes": 31356
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api/最近工作交接_2026-10-19.md.backup_visual_docs_5b2ba1d2",
+      "blob": "6fce2aa3db4dd679f795cc444b5606ed6c48f693",
+      "sha256": "fdf0e9b00848b849532dbbf64cf90c441105a6524f6724536b4afd3f42fd054b",
+      "bytes": 31107
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/.gitignore",
+      "blob": "ff385ef2aa3d378aa70efe906fd9bf2b93ada6d3",
+      "sha256": "e2f44978eede957b8165ddcc9d325910999cf880ed43017a9b4120533faa57bd",
+      "bytes": 39
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/README.md",
+      "blob": "79dfa6599d462fd3375c500f52718a3dc0434ff0",
+      "sha256": "68c2cd0cdd644f6ba45a9165553ea56c7ba0c7cd97c9b4005dd3d4e5b860e924",
+      "bytes": 1727
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/config.api.json",
+      "blob": "f3df2ba92098221b4a8ff24a23029290a5bbe529",
+      "sha256": "cb359f91ac56c1dee3abee3ea00cb41428be689ed3b623d4fdeb8f81a0e4d5c1",
+      "bytes": 334
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/config.door_fast.json",
+      "blob": "dca25518a6b87caebec6be07b31aa5465debdb1a",
+      "sha256": "10b1f893c97573bfe44f2d2c1fb6c902975e06251f52427e6b8b327334d60ab2",
+      "bytes": 354
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/deploy/API_DEPLOY.md",
+      "blob": "df52204c991300c3f44cb39d400baba0cef9b0fc",
+      "sha256": "a7eff72adba7915030a71543f719f2e06943ba41cab9f315d2e0b6729e4746f1",
+      "bytes": 12914
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/deploy/DOOR_ONLY_FAST.md",
+      "blob": "a696820f7ffba68ac05e1df1f0b038ed65a8c7c8",
+      "sha256": "70241d8ace30eb3c59ab6fb4856baa735bab20fd3c9ea54c9c2d3d0cf17df4b4",
+      "bytes": 5266
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/deploy/api_env.sh",
+      "blob": "145c64cf206ecfa78263eb990c6487fa960d99fe",
+      "sha256": "93f3b8d2a19f6b7efbe90e21cd513c2777dcde888571f7d2f2155bb465885a3c",
+      "bytes": 532
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/deploy/run_ros_api.sh",
+      "blob": "6b9eb2e2dd63f2ddc6568db7f3c3af69ae2352a4",
+      "sha256": "f8216af6beec1c42bce0ee37d44996b3da1f7eb48608a50cc62ae341666ffd5f",
+      "bytes": 1072
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/elevator_perception.py",
+      "blob": "af493c7df80eee60d232630bdef3a80b2cd2b682",
+      "sha256": "a21e41a112c899282feb3fc0d8bcd8b2788b4aee71598d0ccadf2d577d8a138a",
+      "bytes": 8905
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/BUTTON_EXAMPLES_NEEDED.md",
+      "blob": "b081bf04e494d0082891ee0a0006b22af61d0763",
+      "sha256": "d041677cd3cb938cefe82444f975207102ee084867688c3263de4892f35f2e10",
+      "bytes": 694
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/inclose.jpg",
+      "blob": "92f1db8421d468378eedf45382eef1712407d90a",
+      "sha256": "87ab5400c6df3205fba426ce875763f0d45142ba7702c1cdef4812e5252cc4b5",
+      "bytes": 69872
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/inclose12f.jpg",
+      "blob": "0bb789df956b6d534f0d0a1aabc06ce7ecafd022",
+      "sha256": "64cd79d71a3c69416c9cd8dba7511039891061e1944e6acf225f24f806c3f61c",
+      "bytes": 71007
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/inclose1f.jpg",
+      "blob": "a512f72fc2bc029a15e501488ef965a0cd520552",
+      "sha256": "3ed7ede4c2cca3f24b522f6b0bca3e95ad833bd21a469dde2f1e65b591ae5108",
+      "bytes": 83637
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/inclose2.jpg",
+      "blob": "83a3c6a4f00d78cd7d2e5dee1b617b6e4a8ac970",
+      "sha256": "1b03f9b7985d82ff45735e97913334b07116031ca3453053f9100211deabc425",
+      "bytes": 56045
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/inclose4f.jpg",
+      "blob": "249ab855da4957e4f55b74dc04ac88df55594329",
+      "sha256": "bd060ea29a79e90a10c59b794ed35df65d3a2c3018612db1b834d23f451803de",
+      "bytes": 87929
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/inclose9f.jpg",
+      "blob": "8edb24276070fae4e42eb31022f56640421518e8",
+      "sha256": "f448e310ed7488d7fc709e24e762374723d72260dcbf419d6b5be65db8d06d3c",
+      "bytes": 85143
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/inopen.jpg",
+      "blob": "05c1450b43f54b853f7772e5aafb8573ca5fb294",
+      "sha256": "cd4cbf54ca6e49eccde5ae12ce2d2c595e4af2f60d46f584ec8e26be737d1de0",
+      "bytes": 190784
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/inopen2.jpg",
+      "blob": "c552b782e25e94225c0ed17c9d116e318ceaa268",
+      "sha256": "a1cfe18e93dfdf23d672006b89a99f9c7f972365ce942a71f945c255a10aa930",
+      "bytes": 159341
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/inopen21f.jpg",
+      "blob": "ee49598d339ac5aa3369335fde06e260cce42178",
+      "sha256": "2d413468a2316454e5684dcef3813db5536ec614475b440414fbfab653168642",
+      "bytes": 113967
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/inopen21f2.jpg",
+      "blob": "55680189b7a20891864e4caf17a6723b8e155c5e",
+      "sha256": "1024efec87b41fcd8c99f86cd4c8062e03ffc428221992d64789bcfecc82160f",
+      "bytes": 100906
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/inopen21f3.jpg",
+      "blob": "f3e9d7ba3c3373972e99357eea00f0bc923d6f54",
+      "sha256": "db264d0cd552e182bb1625819749f2670908a8e51c7575d2d4bd639e4c00885e",
+      "bytes": 114826
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/inopen3.jpg",
+      "blob": "baffc4c0c8b69ce42c4ef670d19fe68c55e390cc",
+      "sha256": "ceaabc595d548ba87c7563a10db76aa18f437ce3b80dbe3910657cd326500739",
+      "bytes": 185276
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/inopen4.jpg",
+      "blob": "a1b84ae04c9351a3446a79fc34ea6b08945908f6",
+      "sha256": "b766291271d86d4e08fc2fc23ed59434be087efde2566466930980682167afe5",
+      "bytes": 194015
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/manifest.json",
+      "blob": "40a5976cdbf59021255e8c3ebd39879b2300b71f",
+      "sha256": "2a018c57f78b17cbb252bfc72b73d2b2e6c0b5b2234230a303ebbdbdab21e580",
+      "bytes": 3844
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/outclose.jpg",
+      "blob": "ef06b43c4e842e682e8083ed6864b7d00872e7ed",
+      "sha256": "1de7ce20a313fd4102bd39291406906bc3b7533e52275baf9ace5af1329cbfe2",
+      "bytes": 52788
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/outclose2.jpg",
+      "blob": "4589103a558dd7f3dcd6023cc918a7abb24c5aad",
+      "sha256": "875ff9cd5ff6e07c6b8c0f934789b789cbee305f7bf1df881ef490c0d6b0c834",
+      "bytes": 206486
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/outclose3.jpg",
+      "blob": "652baff47beeeeb0abc6e2fe0917ccc764d4f992",
+      "sha256": "617aea717c1fea12ec4c23e904351bbf59ad5cd49e707f17ccef39742b39fde9",
+      "bytes": 211037
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/outopen.jpg",
+      "blob": "4fa0a4a05180bff04a72b930a15d7c517497b143",
+      "sha256": "1a037c11c9de6e6af4081d2189d05a10758ba19bc6114ac5624f0a9feedbf531",
+      "bytes": 118157
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/outopen2.jpg",
+      "blob": "bbce856ff5e42718bd3dd99d2f000cb427a8637a",
+      "sha256": "ef73c0d819f8d7ecacd922f6e93b050a5434d8b78d6e98749ab2da43b3a3895d",
+      "bytes": 138187
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/outopen3.jpg",
+      "blob": "f096646aab5a07d7699dd42ed4a3a5f9f5dda9cf",
+      "sha256": "fb3247df182457bdad4d14f8af8d4fb8ad6f0a1138f9eab0c9846243ea1c74da",
+      "bytes": 147025
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/outopen4.jpg",
+      "blob": "eb78c314a62add35b95709b5814fa9018839c5ec",
+      "sha256": "2ace7b2df73bb3fae46fde33b8f927dbba80ff04eff9af35308af68992d8d32a",
+      "bytes": 126948
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_off&down_off.jpg",
+      "blob": "28349b3971d202e5cedd19403147545c5ab46901",
+      "sha256": "de988ab793cb2b695d7b275294fd85f8c77d57519c4f47f19e53f7bfab9ef1c8",
+      "bytes": 153028
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_off&down_off2.jpg",
+      "blob": "e2748e27af36e671c703f5c21331c6065e9f26d8",
+      "sha256": "da0d9acd23467d6ce4028a3fff6e2d72d3ccf97f870641a52037e6e1098b584c",
+      "bytes": 93383
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_off&down_off3.jpg",
+      "blob": "41ed1f5bf565f02b8575c18fb529f6dee958b5c5",
+      "sha256": "5a20efe165c990d13f88667e8d31f52c0a3e888188e991e9bedbb0b244a43209",
+      "bytes": 153227
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_off&down_on.jpg",
+      "blob": "35187c91aba6ffb95d493d1b43eda6b2d307196f",
+      "sha256": "31a301ffcf1f305e7f652a6b3b1599cab8668c43b81f4d3ed61551fcae23444d",
+      "bytes": 173611
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_off&down_on2.jpg",
+      "blob": "01b9f450133cf6b5cbc661719f84496913c72e6e",
+      "sha256": "a8befc1cf00176e0dcdfe191b602fa6a221ed3c96320fdcd346ab5ce2c06f787",
+      "bytes": 88301
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_off&down_on3.jpg",
+      "blob": "4082edf325714f8a6505aa9e52bfce86ac525979",
+      "sha256": "84993250710d7050ff87ace25cccf189e947c1e0a527a18185dca149412b485a",
+      "bytes": 133207
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_on&down_off.jpg",
+      "blob": "9a44fd89b124f442d6622078417530926f207dce",
+      "sha256": "ca393a8d74688d6f4539500eea8e436aca39f995b2aae49927428bca28d5c1c1",
+      "bytes": 162904
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_on&down_off2.jpg",
+      "blob": "d3bf2b6cc6facb7edb1ea3ef8c9b3f0c39e51cbd",
+      "sha256": "edd460ec53aca0b302f62d5ab0e709bda624d70a54f9f0b9d9e21af63184fec7",
+      "bytes": 102080
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_on&down_off3.jpg",
+      "blob": "445a5e670f7a7c0c70556d3cf28567129f0f34ea",
+      "sha256": "d104a09d75f7efc6379d12d8ab4e2527bc8734822fc5c39b53d0ed9e3efc6ae2",
+      "bytes": 110375
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_on&down_on.jpg",
+      "blob": "84297e3de0921f447eea0977b15811bca34424b1",
+      "sha256": "56e79842b8d8ede3dc01a327f2ef462938b6361ca1bdda4992939a1b55e4b0cb",
+      "bytes": 166923
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_on&down_on2.jpg",
+      "blob": "6e76db30d3819754e84c0c93c049a722291aaa60",
+      "sha256": "6234ca1900a2eb04e422e51af537ee512d672bb7e54a42c059a264eacab6be13",
+      "bytes": 103707
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_on&down_on3.jpg",
+      "blob": "f0a00707ac6adf5ac004e390bb613aafe096277c",
+      "sha256": "149ce5b02abeb31ea15ec5212e6e376d09650407a6c3e924f23d39f0e543d772",
+      "bytes": 118460
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/few_shot.py",
+      "blob": "2a55ad2d4fccc55a13c51b8371524b8cc6da8506",
+      "sha256": "827b6ab0dbc6b213d09ca4544f0b810b14d3b9ed73ffe07a9516b1661558c317",
+      "bytes": 6826
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/main.py",
+      "blob": "bfee377f3637ad1497a2b71712941baf64e4ff50",
+      "sha256": "d067d2e28b01e179c81a68b0dbc9033afa09812b8cc62fff25cfb143d0ac1c6a",
+      "bytes": 2596
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/perception_schema.py",
+      "blob": "3ab41801cae9c0282deab5ef84089913b5083620",
+      "sha256": "30fbd601157c618a14d2792656b19e3054e5b9844277ba49a3488bf28937de01",
+      "bytes": 5657
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/prompts.py",
+      "blob": "461f080616cbfb48b981b62819a3864451fcadc5",
+      "sha256": "3cbeee6bfcf262782d47197ba011ef6560706b25aa553215a3da3bb520f4e3ee",
+      "bytes": 3843
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/CMakeLists.txt",
+      "blob": "079399580aa892e9947a0ca942ee9541b52561bc",
+      "sha256": "a415afac2a7f5f1ddacfe8fa258ea71642fd3f6f1e02177c165136bd24bcb5e9",
+      "bytes": 383
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/config/perception.yaml",
+      "blob": "695e5994a563c726586aabb8cc7e960583f52ad6",
+      "sha256": "b678ceaf5ab946a2a5441f4acb6fb64667ccf4ea054fb02494d0c21016a0db8b",
+      "bytes": 1488
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/launch/elevator_vlm.launch",
+      "blob": "28e57d4f4d781290226f3a43a6031cf8ed0e4005",
+      "sha256": "251b1ac980c4ce4ca1a7a9ffa2104aaa1965a640e734136d2a45d9c7d92c6072",
+      "bytes": 433
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/package.xml",
+      "blob": "4c218dbb647211e19577750e6ddcd733527fe71d",
+      "sha256": "2c3b44e36ff99e25f7f14b60d3db7179aca2a3629cbe59c56a29827f45fc98d9",
+      "bytes": 505
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/scripts/elevator_vlm_node.py",
+      "blob": "359542c3086f23955638d6a5bb006c8b4eb9a5ec",
+      "sha256": "2f62c74e99ef8ad4e17e53b14b591b8d9e747b39bc88be88dba61797f093187d",
+      "bytes": 614
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/ros_stream_node.py",
+      "blob": "9d3424a49238079706a993799d2c08a3b0ccfc6a",
+      "sha256": "67a669f1068e071713084ce8eae0debcca8f80329428f3f6242ea2e13073119c",
+      "bytes": 17383
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/temporal_filter.py",
+      "blob": "64b3c383cde88da0731e5c096532426f43d1bf96",
+      "sha256": "fd4a4ab743585fb83ab6650ba0f92131e0f0b50fd5ee68eddfc2f015fe173b05",
+      "bytes": 3629
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/tests/test_pipeline.py",
+      "blob": "37fb87aa07d4dfed0711b7f631a66e44ca4351ee",
+      "sha256": "4ad6cfac6aa4dfab6da02ddb1513e028a0b702379beccb12731d1795e45c99d9",
+      "bytes": 12270
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_door_fast.tar.gz/Demo_vlm2_kuavo_api/vlm_client.py",
+      "blob": "1686e21d51db3b9b2a48442bcd93c4d23258bafd",
+      "sha256": "6c95afe2ccba5bd0a8e0ded57d649c87b0ec735ee86b3f14f9d33bd3e131e5d9",
+      "bytes": 4407
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/.gitignore",
+      "blob": "ff385ef2aa3d378aa70efe906fd9bf2b93ada6d3",
+      "sha256": "e2f44978eede957b8165ddcc9d325910999cf880ed43017a9b4120533faa57bd",
+      "bytes": 39
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/Kuavo_demo/elevator_text_main.py",
+      "blob": "fd72e866c17686960e394de76d689a999f5361dc",
+      "sha256": "8d0a1eda42b907256a2625d0cf56b247d94a5656c39163b83346f7ccf7566d14",
+      "bytes": 18630
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/Kuavo_demo/params/elevator_demo.yaml",
+      "blob": "bd677dd2c96e5b46afbb6720a770e2d52eb8b565",
+      "sha256": "2dabb7fa31aebf3153f51e4574c87fee1b0c68ed732137796538e744c83f4e24",
+      "bytes": 809
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/Kuavo_demo/tests/test_elevator_text_main.py",
+      "blob": "ff6a2e100ee6b8011cf268293e59d1eb3c8e6c81",
+      "sha256": "d653e9db050aba5a89ce5d4f049616586010cc4674d10e5d7b0b7a6a047baade",
+      "bytes": 5287
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/Kuavo_demo/电梯测试文件交接说明.md",
+      "blob": "d94e6b69184787d79b58053038e8ceca1717774c",
+      "sha256": "a1acb42c709a2899b3941fe52a0ca33c0cfbaa4ce7318fb05e450d90aa199a5a",
+      "bytes": 3318
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/Kuavo_demo/部署与合并说明.md",
+      "blob": "6969dd1b216b252e44ab4c93109b4536b96fa36f",
+      "sha256": "717b4cf9844b7ada2a405012bc2ff0afe259adcdfd69886d51d2049f58bc217d",
+      "bytes": 13913
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/README.md",
+      "blob": "1010a87909efee4e6bbfb05658fcb949a8a67a1b",
+      "sha256": "881f4b2b10807d96348f1601622423a51c388df6720e15c80fef4e39aa3f8af8",
+      "bytes": 2036
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/config.api.json",
+      "blob": "f3df2ba92098221b4a8ff24a23029290a5bbe529",
+      "sha256": "cb359f91ac56c1dee3abee3ea00cb41428be689ed3b623d4fdeb8f81a0e4d5c1",
+      "bytes": 334
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/config.door_fast.json",
+      "blob": "dca25518a6b87caebec6be07b31aa5465debdb1a",
+      "sha256": "10b1f893c97573bfe44f2d2c1fb6c902975e06251f52427e6b8b327334d60ab2",
+      "bytes": 354
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/deploy/API_DEPLOY.md",
+      "blob": "df52204c991300c3f44cb39d400baba0cef9b0fc",
+      "sha256": "a7eff72adba7915030a71543f719f2e06943ba41cab9f315d2e0b6729e4746f1",
+      "bytes": 12914
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/deploy/DOOR_ONLY_FAST.md",
+      "blob": "7c93c57bfd1632ed3a9d377e640a19efb05c4783",
+      "sha256": "9128cccdd5dcade52aefdaa0477c14f73047580e91b81ce826d20a694bdfeed8",
+      "bytes": 5387
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/deploy/api_env.sh",
+      "blob": "145c64cf206ecfa78263eb990c6487fa960d99fe",
+      "sha256": "93f3b8d2a19f6b7efbe90e21cd513c2777dcde888571f7d2f2155bb465885a3c",
+      "bytes": 532
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/deploy/run_ros_api.sh",
+      "blob": "6b9eb2e2dd63f2ddc6568db7f3c3af69ae2352a4",
+      "sha256": "f8216af6beec1c42bce0ee37d44996b3da1f7eb48608a50cc62ae341666ffd5f",
+      "bytes": 1072
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/elevator_perception.py",
+      "blob": "af493c7df80eee60d232630bdef3a80b2cd2b682",
+      "sha256": "a21e41a112c899282feb3fc0d8bcd8b2788b4aee71598d0ccadf2d577d8a138a",
+      "bytes": 8905
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/BUTTON_EXAMPLES_NEEDED.md",
+      "blob": "b081bf04e494d0082891ee0a0006b22af61d0763",
+      "sha256": "d041677cd3cb938cefe82444f975207102ee084867688c3263de4892f35f2e10",
+      "bytes": 694
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/inclose.jpg",
+      "blob": "92f1db8421d468378eedf45382eef1712407d90a",
+      "sha256": "87ab5400c6df3205fba426ce875763f0d45142ba7702c1cdef4812e5252cc4b5",
+      "bytes": 69872
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/inclose12f.jpg",
+      "blob": "0bb789df956b6d534f0d0a1aabc06ce7ecafd022",
+      "sha256": "64cd79d71a3c69416c9cd8dba7511039891061e1944e6acf225f24f806c3f61c",
+      "bytes": 71007
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/inclose1f.jpg",
+      "blob": "a512f72fc2bc029a15e501488ef965a0cd520552",
+      "sha256": "3ed7ede4c2cca3f24b522f6b0bca3e95ad833bd21a469dde2f1e65b591ae5108",
+      "bytes": 83637
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/inclose2.jpg",
+      "blob": "83a3c6a4f00d78cd7d2e5dee1b617b6e4a8ac970",
+      "sha256": "1b03f9b7985d82ff45735e97913334b07116031ca3453053f9100211deabc425",
+      "bytes": 56045
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/inclose4f.jpg",
+      "blob": "249ab855da4957e4f55b74dc04ac88df55594329",
+      "sha256": "bd060ea29a79e90a10c59b794ed35df65d3a2c3018612db1b834d23f451803de",
+      "bytes": 87929
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/inclose9f.jpg",
+      "blob": "8edb24276070fae4e42eb31022f56640421518e8",
+      "sha256": "f448e310ed7488d7fc709e24e762374723d72260dcbf419d6b5be65db8d06d3c",
+      "bytes": 85143
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/inopen.jpg",
+      "blob": "05c1450b43f54b853f7772e5aafb8573ca5fb294",
+      "sha256": "cd4cbf54ca6e49eccde5ae12ce2d2c595e4af2f60d46f584ec8e26be737d1de0",
+      "bytes": 190784
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/inopen2.jpg",
+      "blob": "c552b782e25e94225c0ed17c9d116e318ceaa268",
+      "sha256": "a1cfe18e93dfdf23d672006b89a99f9c7f972365ce942a71f945c255a10aa930",
+      "bytes": 159341
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/inopen21f.jpg",
+      "blob": "ee49598d339ac5aa3369335fde06e260cce42178",
+      "sha256": "2d413468a2316454e5684dcef3813db5536ec614475b440414fbfab653168642",
+      "bytes": 113967
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/inopen21f2.jpg",
+      "blob": "55680189b7a20891864e4caf17a6723b8e155c5e",
+      "sha256": "1024efec87b41fcd8c99f86cd4c8062e03ffc428221992d64789bcfecc82160f",
+      "bytes": 100906
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/inopen21f3.jpg",
+      "blob": "f3e9d7ba3c3373972e99357eea00f0bc923d6f54",
+      "sha256": "db264d0cd552e182bb1625819749f2670908a8e51c7575d2d4bd639e4c00885e",
+      "bytes": 114826
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/inopen3.jpg",
+      "blob": "baffc4c0c8b69ce42c4ef670d19fe68c55e390cc",
+      "sha256": "ceaabc595d548ba87c7563a10db76aa18f437ce3b80dbe3910657cd326500739",
+      "bytes": 185276
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/inopen4.jpg",
+      "blob": "a1b84ae04c9351a3446a79fc34ea6b08945908f6",
+      "sha256": "b766291271d86d4e08fc2fc23ed59434be087efde2566466930980682167afe5",
+      "bytes": 194015
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/manifest.json",
+      "blob": "40a5976cdbf59021255e8c3ebd39879b2300b71f",
+      "sha256": "2a018c57f78b17cbb252bfc72b73d2b2e6c0b5b2234230a303ebbdbdab21e580",
+      "bytes": 3844
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/outclose.jpg",
+      "blob": "ef06b43c4e842e682e8083ed6864b7d00872e7ed",
+      "sha256": "1de7ce20a313fd4102bd39291406906bc3b7533e52275baf9ace5af1329cbfe2",
+      "bytes": 52788
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/outclose2.jpg",
+      "blob": "4589103a558dd7f3dcd6023cc918a7abb24c5aad",
+      "sha256": "875ff9cd5ff6e07c6b8c0f934789b789cbee305f7bf1df881ef490c0d6b0c834",
+      "bytes": 206486
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/outclose3.jpg",
+      "blob": "652baff47beeeeb0abc6e2fe0917ccc764d4f992",
+      "sha256": "617aea717c1fea12ec4c23e904351bbf59ad5cd49e707f17ccef39742b39fde9",
+      "bytes": 211037
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/outopen.jpg",
+      "blob": "4fa0a4a05180bff04a72b930a15d7c517497b143",
+      "sha256": "1a037c11c9de6e6af4081d2189d05a10758ba19bc6114ac5624f0a9feedbf531",
+      "bytes": 118157
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/outopen2.jpg",
+      "blob": "bbce856ff5e42718bd3dd99d2f000cb427a8637a",
+      "sha256": "ef73c0d819f8d7ecacd922f6e93b050a5434d8b78d6e98749ab2da43b3a3895d",
+      "bytes": 138187
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/outopen3.jpg",
+      "blob": "f096646aab5a07d7699dd42ed4a3a5f9f5dda9cf",
+      "sha256": "fb3247df182457bdad4d14f8af8d4fb8ad6f0a1138f9eab0c9846243ea1c74da",
+      "bytes": 147025
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/outopen4.jpg",
+      "blob": "eb78c314a62add35b95709b5814fa9018839c5ec",
+      "sha256": "2ace7b2df73bb3fae46fde33b8f927dbba80ff04eff9af35308af68992d8d32a",
+      "bytes": 126948
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_off&down_off.jpg",
+      "blob": "28349b3971d202e5cedd19403147545c5ab46901",
+      "sha256": "de988ab793cb2b695d7b275294fd85f8c77d57519c4f47f19e53f7bfab9ef1c8",
+      "bytes": 153028
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_off&down_off2.jpg",
+      "blob": "e2748e27af36e671c703f5c21331c6065e9f26d8",
+      "sha256": "da0d9acd23467d6ce4028a3fff6e2d72d3ccf97f870641a52037e6e1098b584c",
+      "bytes": 93383
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_off&down_off3.jpg",
+      "blob": "41ed1f5bf565f02b8575c18fb529f6dee958b5c5",
+      "sha256": "5a20efe165c990d13f88667e8d31f52c0a3e888188e991e9bedbb0b244a43209",
+      "bytes": 153227
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_off&down_on.jpg",
+      "blob": "35187c91aba6ffb95d493d1b43eda6b2d307196f",
+      "sha256": "31a301ffcf1f305e7f652a6b3b1599cab8668c43b81f4d3ed61551fcae23444d",
+      "bytes": 173611
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_off&down_on2.jpg",
+      "blob": "01b9f450133cf6b5cbc661719f84496913c72e6e",
+      "sha256": "a8befc1cf00176e0dcdfe191b602fa6a221ed3c96320fdcd346ab5ce2c06f787",
+      "bytes": 88301
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_off&down_on3.jpg",
+      "blob": "4082edf325714f8a6505aa9e52bfce86ac525979",
+      "sha256": "84993250710d7050ff87ace25cccf189e947c1e0a527a18185dca149412b485a",
+      "bytes": 133207
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_on&down_off.jpg",
+      "blob": "9a44fd89b124f442d6622078417530926f207dce",
+      "sha256": "ca393a8d74688d6f4539500eea8e436aca39f995b2aae49927428bca28d5c1c1",
+      "bytes": 162904
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_on&down_off2.jpg",
+      "blob": "d3bf2b6cc6facb7edb1ea3ef8c9b3f0c39e51cbd",
+      "sha256": "edd460ec53aca0b302f62d5ab0e709bda624d70a54f9f0b9d9e21af63184fec7",
+      "bytes": 102080
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_on&down_off3.jpg",
+      "blob": "445a5e670f7a7c0c70556d3cf28567129f0f34ea",
+      "sha256": "d104a09d75f7efc6379d12d8ab4e2527bc8734822fc5c39b53d0ed9e3efc6ae2",
+      "bytes": 110375
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_on&down_on.jpg",
+      "blob": "84297e3de0921f447eea0977b15811bca34424b1",
+      "sha256": "56e79842b8d8ede3dc01a327f2ef462938b6361ca1bdda4992939a1b55e4b0cb",
+      "bytes": 166923
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_on&down_on2.jpg",
+      "blob": "6e76db30d3819754e84c0c93c049a722291aaa60",
+      "sha256": "6234ca1900a2eb04e422e51af537ee512d672bb7e54a42c059a264eacab6be13",
+      "bytes": 103707
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few-shots/up_on&down_on3.jpg",
+      "blob": "f0a00707ac6adf5ac004e390bb613aafe096277c",
+      "sha256": "149ce5b02abeb31ea15ec5212e6e376d09650407a6c3e924f23d39f0e543d772",
+      "bytes": 118460
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/few_shot.py",
+      "blob": "2a55ad2d4fccc55a13c51b8371524b8cc6da8506",
+      "sha256": "827b6ab0dbc6b213d09ca4544f0b810b14d3b9ed73ffe07a9516b1661558c317",
+      "bytes": 6826
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/main.py",
+      "blob": "bfee377f3637ad1497a2b71712941baf64e4ff50",
+      "sha256": "d067d2e28b01e179c81a68b0dbc9033afa09812b8cc62fff25cfb143d0ac1c6a",
+      "bytes": 2596
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/perception_schema.py",
+      "blob": "3ab41801cae9c0282deab5ef84089913b5083620",
+      "sha256": "30fbd601157c618a14d2792656b19e3054e5b9844277ba49a3488bf28937de01",
+      "bytes": 5657
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/prompts.py",
+      "blob": "921110972d33c21177cba70986129fa10eb591d9",
+      "sha256": "d102e92bbb4cef93d5e2d1ecd74bd86dc135941913be97b468a583e4b9729ff9",
+      "bytes": 3985
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/CMakeLists.txt",
+      "blob": "079399580aa892e9947a0ca942ee9541b52561bc",
+      "sha256": "a415afac2a7f5f1ddacfe8fa258ea71642fd3f6f1e02177c165136bd24bcb5e9",
+      "bytes": 383
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/config/perception.yaml",
+      "blob": "695e5994a563c726586aabb8cc7e960583f52ad6",
+      "sha256": "b678ceaf5ab946a2a5441f4acb6fb64667ccf4ea054fb02494d0c21016a0db8b",
+      "bytes": 1488
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/launch/elevator_vlm.launch",
+      "blob": "28e57d4f4d781290226f3a43a6031cf8ed0e4005",
+      "sha256": "251b1ac980c4ce4ca1a7a9ffa2104aaa1965a640e734136d2a45d9c7d92c6072",
+      "bytes": 433
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/package.xml",
+      "blob": "4c218dbb647211e19577750e6ddcd733527fe71d",
+      "sha256": "2c3b44e36ff99e25f7f14b60d3db7179aca2a3629cbe59c56a29827f45fc98d9",
+      "bytes": 505
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/scripts/elevator_vlm_node.py",
+      "blob": "359542c3086f23955638d6a5bb006c8b4eb9a5ec",
+      "sha256": "2f62c74e99ef8ad4e17e53b14b591b8d9e747b39bc88be88dba61797f093187d",
+      "bytes": 614
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/ros_stream_node.py",
+      "blob": "9d3424a49238079706a993799d2c08a3b0ccfc6a",
+      "sha256": "67a669f1068e071713084ce8eae0debcca8f80329428f3f6242ea2e13073119c",
+      "bytes": 17383
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/temporal_filter.py",
+      "blob": "64b3c383cde88da0731e5c096532426f43d1bf96",
+      "sha256": "fd4a4ab743585fb83ab6650ba0f92131e0f0b50fd5ee68eddfc2f015fe173b05",
+      "bytes": 3629
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/tests/test_pipeline.py",
+      "blob": "827ced94031dedc9f7934406b5f825f2ddea6e25",
+      "sha256": "5bd5ca49dc312fc262c75a501d99bf91594fa4dd6f384d1241a3982cdd263aca",
+      "bytes": 12606
+    },
+    {
+      "git_path": ".legacy_versions/Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz/Demo_vlm2_kuavo_api/vlm_client.py",
+      "blob": "1686e21d51db3b9b2a48442bcd93c4d23258bafd",
+      "sha256": "6c95afe2ccba5bd0a8e0ded57d649c87b0ec735ee86b3f14f9d33bd3e131e5d9",
+      "bytes": 4407
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/README.md.backup_20261019_111650_704945",
+      "blob": "1a7cbd2c85dae1905d8ac84d0d48295f8e77679a",
+      "sha256": "ceaa78a3bc4f0d5aee2e4cf3f5ec05211ea71439ddc16cb2c1c2989f042e8b15",
+      "bytes": 11379
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/README.md.backup_20261019_122144_5d257c",
+      "blob": "cae663df4431095d1f6d726e15793d915208860f",
+      "sha256": "c14a020bd901cb60b1e9a0e1e6ac3ae72abb3c214144fb95467b4a161ad7afe2",
+      "bytes": 11379
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/README.md.backup_20261019_175453_66bd31",
+      "blob": "5913153ca0eabac02b0a1b6383d50b3b4da7a002",
+      "sha256": "e0bb9bba93702919c9b2f28ac5eceb2e98737abf539f6f7124f05dce0cc96c9f",
+      "bytes": 14326
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/README.md.backup_20261020_143309_5d0cc6",
+      "blob": "2f3fc12ca6738e603474979bc1c121fb519a64b7",
+      "sha256": "31b6d7d0254e18733f1f9887d884f5e33d13eb01298770a3dcd030db91a796d4",
+      "bytes": 17635
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/README.md.backup_20261020_145510_e57a0c",
+      "blob": "a376f0d6c1ca2803f2b96f9236a85694f5426312",
+      "sha256": "4c7c6a8540f4244f80a9ceef9842784d375617ed489417f79ef59a6e2275f9ae",
+      "bytes": 18024
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/README.md.backup_20261020_final_fae963d3",
+      "blob": "24a59136ba83bab02e96e1a0893f98949ebfca60",
+      "sha256": "15ef2aea7cf58d1d36e5840683ad93ba7e445cec69df04e7d19edfdf83a30450",
+      "bytes": 21596
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/README.md.backup_20261020_visual_df484fd6",
+      "blob": "b1399aad2ced66796cd60349e4e578739becf530",
+      "sha256": "96d0ce5ea539034c9ce8f289390906e097b07715bd31b14496f039a2989ff32d",
+      "bytes": 21751
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/README.md.backup_cleanup_docs_db7c6444",
+      "blob": "88619d535148e01db28afcd2fcebad56588cab0b",
+      "sha256": "463555268b7a6e85820ecef1e5d0cb820a8787c6949529599c140ea694977b96",
+      "bytes": 24345
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/README.md.backup_visual_docs_5b2ba1d2",
+      "blob": "1e455a6e1cf6be155ce0ca15121a0c56d9beb2c5",
+      "sha256": "dd7d7451bfa31e1ef5e085ed7b9d0d4e5e56d2e6c5533d45bd08b2bf574d23e4",
+      "bytes": 24141
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/deploy/run_extra_perception.sh.backup_20261020_145510_e57a0c",
+      "blob": "581a16a87c7a1ff1191d65ef3d6a461c2ccbddbb",
+      "sha256": "00ec25c3e9d3e6b348d6cf0b0b2bab1b5627c8573807e400b6d107be9580c853",
+      "bytes": 764
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/elevator_button_floor_main.py.backup_20261019_111431_d43499",
+      "blob": "a8baab60169a1313b72afa69b3110c2ac5681da2",
+      "sha256": "ff66afb25c50c4df3d134e1581ace4a4c726778cd6d78245bfee424d6c70d61b",
+      "bytes": 28018
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/elevator_button_floor_main.py.backup_20261019_111700_66d7f2",
+      "blob": "c16d151a84107570a123e9662eaa16ab771da56c",
+      "sha256": "be531d1e32d56395e359e5285001961d922b4b49e764c5b02bf8a24334a51ada",
+      "bytes": 53461
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/elevator_button_floor_main.py.backup_20261019_122150_8dc827",
+      "blob": "909f8a4f5794561a4fc605445803f1f70d3d297d",
+      "sha256": "6e1d8210afbf35116756771e8abebf3fb3f3e67d064a2fff1ef08df72060a9f6",
+      "bytes": 53422
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/elevator_button_floor_main.py.backup_20261020_143316_b96aa3",
+      "blob": "1a30a2ac2eee887dc6eef13830313e26ff5ba78e",
+      "sha256": "395a743f8268ba6b03eec6dd6e0ae4654351121dcbce1782523b750eab19fa57",
+      "bytes": 57015
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/elevator_button_floor_main.py.backup_20261020_145519_4b2acb",
+      "blob": "9cf3df7f17fe25e91722f0b94485ca21f9a062d9",
+      "sha256": "b77825f9f481511b78831a6ffaaee0347b0a230239f63b64f856e93012d6b16f",
+      "bytes": 57514
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/elevator_button_floor_main.py.backup_rate_f5427e45",
+      "blob": "586da20c78df859e31f680d01350a29a8a3b8077",
+      "sha256": "932094392df83d9e080b913d65cf3426f5b4519e1262ff7e0e6d22ee9be52076",
+      "bytes": 58136
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/elevator_extra_perception.py.backup_20261015_161343",
+      "blob": "1404c56fb1c2665ccd419e4245c6506bea33edcb",
+      "sha256": "399b3990b6b50b79baec918b6d1aa013e743caee7bb9249757dee159537c5af7",
+      "bytes": 12386
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/elevator_extra_perception.py.backup_20261020_145510_e57a0c",
+      "blob": "4bf4053df155c6200981ef415602eaad0d5ac2d7",
+      "sha256": "60dc3d4f7ba761f3dba775ee24e7df5018577110e896584bf5e0250bf916a916",
+      "bytes": 17834
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/elevator_quantification.py.backup_20261019_111650_704945",
+      "blob": "080214400763e3126c2e20efe525ce59b1b606f1",
+      "sha256": "61e52b315209b6a1f14b21efcb4bd36c306f90ef62dec256871a79140bbf7db9",
+      "bytes": 26925
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/elevator_quantification.py.backup_20261019_122144_5d257c",
+      "blob": "155918f08b95f32cdf967f6155678e5f5bc17443",
+      "sha256": "3bf9cc779a4180ffb5bdaf7f87cf004a24abde0d46f5dfc8fe29b145c080a074",
+      "bytes": 26987
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/elevator_quantification.py.backup_20261019_175453_66bd31",
+      "blob": "4b3875ae29ae8feba416657af6feef06c3d6a098",
+      "sha256": "ec830e2068d8774ba0a312d4bef47e1a0e2b749d55fae4ff71217f82143b3be7",
+      "bytes": 29545
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/elevator_quantification.py.backup_20261020_143309_5d0cc6",
+      "blob": "c6a499a84d61a2d7350dd06e95c3b65d5ab3faa6",
+      "sha256": "fc968347f9ba8063b7d0f4288c794daf79aa3278fa81cf7df5ee747812f48fe8",
+      "bytes": 39942
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/elevator_quantification.py.backup_20261020_145510_e57a0c",
+      "blob": "c6a499a84d61a2d7350dd06e95c3b65d5ab3faa6",
+      "sha256": "fc968347f9ba8063b7d0f4288c794daf79aa3278fa81cf7df5ee747812f48fe8",
+      "bytes": 39942
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/elevator_quantification.py.backup_20261020_final_fae963d3",
+      "blob": "d4496e281dc30ce4b61cc1617fe2441a1e4a13eb",
+      "sha256": "f655b8c10ff519df289bc9b292cb15d80391b19c21e28614a4418dd055f5333e",
+      "bytes": 50337
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/elevator_quantification.py.backup_20261020_visual_df484fd6",
+      "blob": "3cd9e30df79dbed74a88b11a430129b22b6d4bd9",
+      "sha256": "c6fa4730db25661fe17443b61557df44cc40baa02398fa58ecfd207af9bf86c6",
+      "bytes": 50568
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/params/elevator_button_floor_demo.json.backup_20261020_145510_e57a0c",
+      "blob": "a2bca081ab75301184a521d01ddd5ac7553bf6b0",
+      "sha256": "d4761f80a23637d72abb850c4bc9cc87de58b8863896b2b93c3492c3d10eddfc",
+      "bytes": 2053
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/tests/test_elevator_demo.py.backup_20261019_111501_f6055c",
+      "blob": "c47abab2b51890d8f96a3d116ad76743d5e869ac",
+      "sha256": "b2ecf08dc8f175f95ecabe6b5bccb60d33f3b37e9480082f99ce9c3a7e65da23",
+      "bytes": 17710
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/tests/test_elevator_demo.py.backup_20261019_111650_704945",
+      "blob": "2e680d6165322556e7681e01207e557b4d52a40b",
+      "sha256": "f00e5897f5c8630ddaa5290ff70f127fedd120b11eb354bf2ed2b54aca943c77",
+      "bytes": 33886
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/tests/test_elevator_demo.py.backup_20261019_122144_5d257c",
+      "blob": "2e680d6165322556e7681e01207e557b4d52a40b",
+      "sha256": "f00e5897f5c8630ddaa5290ff70f127fedd120b11eb354bf2ed2b54aca943c77",
+      "bytes": 33886
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/tests/test_elevator_demo.py.backup_20261019_175453_66bd31",
+      "blob": "2e680d6165322556e7681e01207e557b4d52a40b",
+      "sha256": "f00e5897f5c8630ddaa5290ff70f127fedd120b11eb354bf2ed2b54aca943c77",
+      "bytes": 33886
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/tests/test_elevator_demo.py.backup_20261020_143309_5d0cc6",
+      "blob": "2e680d6165322556e7681e01207e557b4d52a40b",
+      "sha256": "f00e5897f5c8630ddaa5290ff70f127fedd120b11eb354bf2ed2b54aca943c77",
+      "bytes": 33886
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/tests/test_elevator_demo.py.backup_20261020_145510_e57a0c",
+      "blob": "2e680d6165322556e7681e01207e557b4d52a40b",
+      "sha256": "f00e5897f5c8630ddaa5290ff70f127fedd120b11eb354bf2ed2b54aca943c77",
+      "bytes": 33886
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/tests/test_elevator_launcher.py.backup_20261019_111650_704945",
+      "blob": "92e80afb6f0c769b29d91fab26eb81f81ff82663",
+      "sha256": "29ca4cf179350b910fecc7e39a383a65ff56e7749442de15ab6984d246ea07c7",
+      "bytes": 8120
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/tests/test_elevator_launcher.py.backup_20261019_122144_5d257c",
+      "blob": "92e80afb6f0c769b29d91fab26eb81f81ff82663",
+      "sha256": "29ca4cf179350b910fecc7e39a383a65ff56e7749442de15ab6984d246ea07c7",
+      "bytes": 8120
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/tests/test_elevator_launcher.py.backup_20261019_175453_66bd31",
+      "blob": "92e80afb6f0c769b29d91fab26eb81f81ff82663",
+      "sha256": "29ca4cf179350b910fecc7e39a383a65ff56e7749442de15ab6984d246ea07c7",
+      "bytes": 8120
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/tests/test_elevator_launcher.py.backup_20261020_143309_5d0cc6",
+      "blob": "92e80afb6f0c769b29d91fab26eb81f81ff82663",
+      "sha256": "29ca4cf179350b910fecc7e39a383a65ff56e7749442de15ab6984d246ea07c7",
+      "bytes": 8120
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/tests/test_elevator_launcher.py.backup_20261020_145510_e57a0c",
+      "blob": "92e80afb6f0c769b29d91fab26eb81f81ff82663",
+      "sha256": "29ca4cf179350b910fecc7e39a383a65ff56e7749442de15ab6984d246ea07c7",
+      "bytes": 8120
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/tests/test_elevator_quantification.py.backup_20261019_111650_704945",
+      "blob": "d53dc9d42055d63f476fb61c423a0e89c73b0052",
+      "sha256": "9ad4f3a8779313111dc2d1abd469b8aa172b6ee2ca87ef72f078127df83e0cf0",
+      "bytes": 11749
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/tests/test_elevator_quantification.py.backup_20261019_122144_5d257c",
+      "blob": "86171ea26848dcdf318176dcad36037e3a0dcce7",
+      "sha256": "cf07cca27a47ef8f871b9b0a26714c70568f7a0a0307bdf813dbd3d8a923f246",
+      "bytes": 12827
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/tests/test_elevator_quantification.py.backup_20261019_175453_66bd31",
+      "blob": "cf319af098c9d3ebfeaa6fc40c9ed0d593b97bbf",
+      "sha256": "b5e3e10f19d065e5719db96221c98a9d2908d4c212087afd164c38009b814898",
+      "bytes": 17900
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/tests/test_elevator_quantification.py.backup_20261020_143309_5d0cc6",
+      "blob": "e009dcf0b3517c4b0bb4fa6e71fba2596c9440c4",
+      "sha256": "aa29b7417bb568883134466c5691c0788fd964bb90ca9d907fa627a7d53d5836",
+      "bytes": 21848
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/tests/test_elevator_quantification.py.backup_20261020_145510_e57a0c",
+      "blob": "a29612f378dd47b7643aa3c547be82432fd5675c",
+      "sha256": "d09f3b0a29ce71285cc4ce330440025e9b673632cba7808a02261a2cc9636338",
+      "bytes": 23940
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/tests/test_elevator_quantification.py.backup_20261020_visual_df484fd6",
+      "blob": "51005b4deb409d3cd37c49f0602bd51fca87a445",
+      "sha256": "54db9bdab30cc40c0872f34c412d624b892ea552b7fad3ac865e18cdfc2fc4e4",
+      "bytes": 29313
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/验证记录.md.backup_20261019_111501_f6055c",
+      "blob": "b60ad51635c1882a8320236533bde1c2d52fd2b4",
+      "sha256": "c57f1f637996262841c39a5320622c72147410673d75b832874057a0d40104db",
+      "bytes": 5405
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/验证记录.md.backup_20261019_111650_704945",
+      "blob": "f3711c0c2ca85b5b064ca824a0fb0ee27cc00069",
+      "sha256": "8b109c2094063de2cd91bc4ce796d823329888a59d35f1e8ac94a18cabcf483e",
+      "bytes": 13421
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/验证记录.md.backup_20261019_122144_5d257c",
+      "blob": "ef801b0ac41c4f28fbf0d16a4856fda80a4a585b",
+      "sha256": "b3725083615c47d11ef716708cb7bc0b9fdc7422343c5d36049bb8717f26e2de",
+      "bytes": 16836
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/验证记录.md.backup_20261019_175453_66bd31",
+      "blob": "2cee65170ca159888152734b989c3533e6db037c",
+      "sha256": "033b2a88d57bb71adbb282a3ac44363f8f914ce9e24b651ab1e5dbeac66086f9",
+      "bytes": 19313
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/验证记录.md.backup_20261020_143309_5d0cc6",
+      "blob": "9b98a067c8da062a6f8cae6ee47d36a65ba42904",
+      "sha256": "25c1ab7063788d576312ad9b1c69906f4e57517adc8e7a3b1a144c87d1e1d7cc",
+      "bytes": 22890
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/验证记录.md.backup_20261020_145510_e57a0c",
+      "blob": "eca89c91689be7ec6bd959d955d3b069ebe67bbb",
+      "sha256": "d073092dd859eefeb736c7734e77f01f06c22bcfd1797dcdd230fdcf994af4a1",
+      "bytes": 25314
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/验证记录.md.backup_20261020_final_fae963d3",
+      "blob": "51a8ed973f7c298c95ef598467d4934758997335",
+      "sha256": "389e1e4b28f44947a782e9b49a09b663178386ee4e7b2e16389d6b8608890d95",
+      "bytes": 27676
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/验证记录.md.backup_20261020_visual_df484fd6",
+      "blob": "a9f546fed9133d51176dd246fbaeae74bb152f74",
+      "sha256": "75282b2dedfcb00fc108591348ea948da6ed0b7bb20f246e4269825037a87565",
+      "bytes": 28525
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/验证记录.md.backup_cleanup_docs_db7c6444",
+      "blob": "53ea025ea3623820f4b737f63c39ac3db7f3baf2",
+      "sha256": "4a3394992602f568acb734b10ad88996ed91385e29fa80170f3257d6e6348850",
+      "bytes": 30992
+    },
+    {
+      "git_path": ".legacy_versions/elevator_button_floor_demo/验证记录.md.backup_visual_docs_5b2ba1d2",
+      "blob": "a2dca0d49ae3cbc6e6243048d35e72bfaac9cd7c",
+      "sha256": "882accc9b4e2f34aa62d4a2dd194f256f5d66df27df03408a03a1224f796fd3e",
+      "bytes": 30321
+    }
+  ],
+  "cleanup": [
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/README.md.backup_20261019_111501_f6055c",
+      "sha256": "9d40767377df1e5c1875027512b9774e33299ef253c7e96c08b549c940dacc83",
+      "bytes": 4252
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/README.md.backup_20261019_111650_704945",
+      "sha256": "d28d330ac71a829a7d2d2e15f4455d84484ac27eac47fdba8277ba22e988d39f",
+      "bytes": 5230
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/README.md.backup_20261019_122144_5d257c",
+      "sha256": "d28d330ac71a829a7d2d2e15f4455d84484ac27eac47fdba8277ba22e988d39f",
+      "bytes": 5230
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/README.md.backup_20261019_175453_66bd31",
+      "sha256": "194536f653c9f45c3c913bb98460d90a1dd637cbb02c42510559cdf7a9b0e886",
+      "bytes": 5521
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/README.md.backup_20261020_143309_5d0cc6",
+      "sha256": "194536f653c9f45c3c913bb98460d90a1dd637cbb02c42510559cdf7a9b0e886",
+      "bytes": 5521
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/README.md.backup_20261020_145510_e57a0c",
+      "sha256": "097e9d1365a45ff6a4cbf4c3f58549f3a551f908141ee1b51e5601960fa8c519",
+      "bytes": 5583
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/README.md.backup_20261020_visual_df484fd6",
+      "sha256": "f0610c7ac7ecd35176a38e50f84fa6e16ba853ee2d1504da13cc1f445200da17",
+      "bytes": 6041
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/elevator_demo_launcher.py.backup_20261019_111501_f6055c",
+      "sha256": "413f7db77e1500d9dfe1505a0d4f2dae2e35fe30ad194fa129df056dda6fbb71",
+      "bytes": 17985
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/elevator_demo_launcher.py.backup_20261019_111650_704945",
+      "sha256": "69588991265b6b445d95a4aa7b28496ed887de809de213b4f514f138eb8a3f3f",
+      "bytes": 22580
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/elevator_demo_launcher.py.backup_20261019_122144_5d257c",
+      "sha256": "51a55016dab8f056c3fc42326f6293a27b8395d2a7f87e3cce82d793797ac15f",
+      "bytes": 22723
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/elevator_demo_launcher.py.backup_20261019_175453_66bd31",
+      "sha256": "e7ad4c9bc8691411b4a49b5b8fc51ab927ee27356de5ec6285ba651da152dbd9",
+      "bytes": 22820
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/elevator_demo_launcher.py.backup_20261020_143309_5d0cc6",
+      "sha256": "e7ad4c9bc8691411b4a49b5b8fc51ab927ee27356de5ec6285ba651da152dbd9",
+      "bytes": 22820
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/elevator_demo_launcher.py.backup_20261020_145510_e57a0c",
+      "sha256": "fbb9f5e1667106356872e3ba5d4678ed4e32c8998fc3c4d668d09a50ea9ea2aa",
+      "bytes": 23222
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/start_elevator_demo.sh.backup_20261019_111501_f6055c",
+      "sha256": "84724ee128355554a43858f25d28034d040cf059d729909ba3c3db1b219bfb5d",
+      "bytes": 549
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/start_elevator_demo.sh.backup_20261019_111650_704945",
+      "sha256": "84724ee128355554a43858f25d28034d040cf059d729909ba3c3db1b219bfb5d",
+      "bytes": 549
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/start_elevator_demo.sh.backup_20261019_122144_5d257c",
+      "sha256": "84724ee128355554a43858f25d28034d040cf059d729909ba3c3db1b219bfb5d",
+      "bytes": 549
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/start_elevator_demo.sh.backup_20261019_175453_66bd31",
+      "sha256": "84724ee128355554a43858f25d28034d040cf059d729909ba3c3db1b219bfb5d",
+      "bytes": 549
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/start_elevator_demo.sh.backup_20261020_143309_5d0cc6",
+      "sha256": "84724ee128355554a43858f25d28034d040cf059d729909ba3c3db1b219bfb5d",
+      "bytes": 549
+    },
+    {
+      "type": "file",
+      "path": "Demo_kuavo_vlm_api/start_elevator_demo.sh.backup_20261020_145510_e57a0c",
+      "sha256": "84724ee128355554a43858f25d28034d040cf059d729909ba3c3db1b219bfb5d",
+      "bytes": 549
+    },
+    {
+      "type": "file",
+      "path": "Demo_vlm2_kuavo_api/最近工作交接_2026-10-19.md.backup_20261020_visual_df484fd6",
+      "sha256": "bebfc8deaf0b4dfc74f7f81bb805c6eb175a624d315442cd5a15eb67183729a6",
+      "bytes": 30168
+    },
+    {
+      "type": "file",
+      "path": "Demo_vlm2_kuavo_api/最近工作交接_2026-10-19.md.backup_cleanup_docs_db7c6444",
+      "sha256": "dee5c471c50261a98f32eaa79429b0ca3752426fdcc66755ded39dba77a1b2ae",
+      "bytes": 31356
+    },
+    {
+      "type": "file",
+      "path": "Demo_vlm2_kuavo_api/最近工作交接_2026-10-19.md.backup_visual_docs_5b2ba1d2",
+      "sha256": "fdf0e9b00848b849532dbbf64cf90c441105a6524f6724536b4afd3f42fd054b",
+      "bytes": 31107
+    },
+    {
+      "type": "file",
+      "path": "Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/config/perception.yaml.backup_20261020_145510_e57a0c",
+      "sha256": "1b53f0fa6599deba887542a5e9fd882731c156b18b1648dd98241c296e116b32",
+      "bytes": 1629
+    },
+    {
+      "type": "file",
+      "path": "Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/config/perception.yaml.before_original_resolution_20261009_104447.bak",
+      "sha256": "3ea7e084d9a8ad67396e6231de9e55bc13df7491bf2ac1bbe7bb75a60c3ff3c8",
+      "bytes": 1664
+    },
+    {
+      "type": "file",
+      "path": "Demo_vlm2_kuavo_api/ros1/elevator_vlm_api_perception/launch/elevator_vlm.launch.backup_20261020_145510_e57a0c",
+      "sha256": "251b1ac980c4ce4ca1a7a9ffa2104aaa1965a640e734136d2a45d9c7d92c6072",
+      "bytes": 433
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/README.md.backup_20261019_111650_704945",
+      "sha256": "ceaa78a3bc4f0d5aee2e4cf3f5ec05211ea71439ddc16cb2c1c2989f042e8b15",
+      "bytes": 11379
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/README.md.backup_20261019_122144_5d257c",
+      "sha256": "c14a020bd901cb60b1e9a0e1e6ac3ae72abb3c214144fb95467b4a161ad7afe2",
+      "bytes": 11379
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/README.md.backup_20261019_175453_66bd31",
+      "sha256": "e0bb9bba93702919c9b2f28ac5eceb2e98737abf539f6f7124f05dce0cc96c9f",
+      "bytes": 14326
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/README.md.backup_20261020_143309_5d0cc6",
+      "sha256": "31b6d7d0254e18733f1f9887d884f5e33d13eb01298770a3dcd030db91a796d4",
+      "bytes": 17635
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/README.md.backup_20261020_145510_e57a0c",
+      "sha256": "4c7c6a8540f4244f80a9ceef9842784d375617ed489417f79ef59a6e2275f9ae",
+      "bytes": 18024
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/README.md.backup_20261020_final_fae963d3",
+      "sha256": "15ef2aea7cf58d1d36e5840683ad93ba7e445cec69df04e7d19edfdf83a30450",
+      "bytes": 21596
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/README.md.backup_20261020_visual_df484fd6",
+      "sha256": "96d0ce5ea539034c9ce8f289390906e097b07715bd31b14496f039a2989ff32d",
+      "bytes": 21751
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/README.md.backup_cleanup_docs_db7c6444",
+      "sha256": "463555268b7a6e85820ecef1e5d0cb820a8787c6949529599c140ea694977b96",
+      "bytes": 24345
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/README.md.backup_visual_docs_5b2ba1d2",
+      "sha256": "dd7d7451bfa31e1ef5e085ed7b9d0d4e5e56d2e6c5533d45bd08b2bf574d23e4",
+      "bytes": 24141
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/elevator_button_floor_main.py.backup_20261019_111431_d43499",
+      "sha256": "ff66afb25c50c4df3d134e1581ace4a4c726778cd6d78245bfee424d6c70d61b",
+      "bytes": 28018
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/elevator_button_floor_main.py.backup_20261019_111700_66d7f2",
+      "sha256": "be531d1e32d56395e359e5285001961d922b4b49e764c5b02bf8a24334a51ada",
+      "bytes": 53461
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/elevator_button_floor_main.py.backup_20261019_122150_8dc827",
+      "sha256": "6e1d8210afbf35116756771e8abebf3fb3f3e67d064a2fff1ef08df72060a9f6",
+      "bytes": 53422
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/elevator_button_floor_main.py.backup_20261020_143316_b96aa3",
+      "sha256": "395a743f8268ba6b03eec6dd6e0ae4654351121dcbce1782523b750eab19fa57",
+      "bytes": 57015
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/elevator_button_floor_main.py.backup_20261020_145519_4b2acb",
+      "sha256": "b77825f9f481511b78831a6ffaaee0347b0a230239f63b64f856e93012d6b16f",
+      "bytes": 57514
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/elevator_button_floor_main.py.backup_rate_f5427e45",
+      "sha256": "932094392df83d9e080b913d65cf3426f5b4519e1262ff7e0e6d22ee9be52076",
+      "bytes": 58136
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/elevator_extra_perception.py.backup_20261015_161343",
+      "sha256": "399b3990b6b50b79baec918b6d1aa013e743caee7bb9249757dee159537c5af7",
+      "bytes": 12386
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/elevator_extra_perception.py.backup_20261020_145510_e57a0c",
+      "sha256": "60dc3d4f7ba761f3dba775ee24e7df5018577110e896584bf5e0250bf916a916",
+      "bytes": 17834
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/elevator_quantification.py.backup_20261019_111650_704945",
+      "sha256": "61e52b315209b6a1f14b21efcb4bd36c306f90ef62dec256871a79140bbf7db9",
+      "bytes": 26925
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/elevator_quantification.py.backup_20261019_122144_5d257c",
+      "sha256": "3bf9cc779a4180ffb5bdaf7f87cf004a24abde0d46f5dfc8fe29b145c080a074",
+      "bytes": 26987
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/elevator_quantification.py.backup_20261019_175453_66bd31",
+      "sha256": "ec830e2068d8774ba0a312d4bef47e1a0e2b749d55fae4ff71217f82143b3be7",
+      "bytes": 29545
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/elevator_quantification.py.backup_20261020_143309_5d0cc6",
+      "sha256": "fc968347f9ba8063b7d0f4288c794daf79aa3278fa81cf7df5ee747812f48fe8",
+      "bytes": 39942
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/elevator_quantification.py.backup_20261020_145510_e57a0c",
+      "sha256": "fc968347f9ba8063b7d0f4288c794daf79aa3278fa81cf7df5ee747812f48fe8",
+      "bytes": 39942
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/elevator_quantification.py.backup_20261020_final_fae963d3",
+      "sha256": "f655b8c10ff519df289bc9b292cb15d80391b19c21e28614a4418dd055f5333e",
+      "bytes": 50337
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/elevator_quantification.py.backup_20261020_visual_df484fd6",
+      "sha256": "c6fa4730db25661fe17443b61557df44cc40baa02398fa58ecfd207af9bf86c6",
+      "bytes": 50568
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/验证记录.md.backup_20261019_111501_f6055c",
+      "sha256": "c57f1f637996262841c39a5320622c72147410673d75b832874057a0d40104db",
+      "bytes": 5405
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/验证记录.md.backup_20261019_111650_704945",
+      "sha256": "8b109c2094063de2cd91bc4ce796d823329888a59d35f1e8ac94a18cabcf483e",
+      "bytes": 13421
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/验证记录.md.backup_20261019_122144_5d257c",
+      "sha256": "b3725083615c47d11ef716708cb7bc0b9fdc7422343c5d36049bb8717f26e2de",
+      "bytes": 16836
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/验证记录.md.backup_20261019_175453_66bd31",
+      "sha256": "033b2a88d57bb71adbb282a3ac44363f8f914ce9e24b651ab1e5dbeac66086f9",
+      "bytes": 19313
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/验证记录.md.backup_20261020_143309_5d0cc6",
+      "sha256": "25c1ab7063788d576312ad9b1c69906f4e57517adc8e7a3b1a144c87d1e1d7cc",
+      "bytes": 22890
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/验证记录.md.backup_20261020_145510_e57a0c",
+      "sha256": "d073092dd859eefeb736c7734e77f01f06c22bcfd1797dcdd230fdcf994af4a1",
+      "bytes": 25314
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/验证记录.md.backup_20261020_final_fae963d3",
+      "sha256": "389e1e4b28f44947a782e9b49a09b663178386ee4e7b2e16389d6b8608890d95",
+      "bytes": 27676
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/验证记录.md.backup_20261020_visual_df484fd6",
+      "sha256": "75282b2dedfcb00fc108591348ea948da6ed0b7bb20f246e4269825037a87565",
+      "bytes": 28525
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/验证记录.md.backup_cleanup_docs_db7c6444",
+      "sha256": "4a3394992602f568acb734b10ad88996ed91385e29fa80170f3257d6e6348850",
+      "bytes": 30992
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/验证记录.md.backup_visual_docs_5b2ba1d2",
+      "sha256": "882accc9b4e2f34aa62d4a2dd194f256f5d66df27df03408a03a1224f796fd3e",
+      "bytes": 30321
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/deploy/run_extra_perception.sh.backup_20261020_145510_e57a0c",
+      "sha256": "00ec25c3e9d3e6b348d6cf0b0b2bab1b5627c8573807e400b6d107be9580c853",
+      "bytes": 764
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/params/elevator_button_floor_demo.json.backup_20261020_145510_e57a0c",
+      "sha256": "d4761f80a23637d72abb850c4bc9cc87de58b8863896b2b93c3492c3d10eddfc",
+      "bytes": 2053
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/tests/test_elevator_demo.py.backup_20261019_111501_f6055c",
+      "sha256": "b2ecf08dc8f175f95ecabe6b5bccb60d33f3b37e9480082f99ce9c3a7e65da23",
+      "bytes": 17710
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/tests/test_elevator_demo.py.backup_20261019_111650_704945",
+      "sha256": "f00e5897f5c8630ddaa5290ff70f127fedd120b11eb354bf2ed2b54aca943c77",
+      "bytes": 33886
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/tests/test_elevator_demo.py.backup_20261019_122144_5d257c",
+      "sha256": "f00e5897f5c8630ddaa5290ff70f127fedd120b11eb354bf2ed2b54aca943c77",
+      "bytes": 33886
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/tests/test_elevator_demo.py.backup_20261019_175453_66bd31",
+      "sha256": "f00e5897f5c8630ddaa5290ff70f127fedd120b11eb354bf2ed2b54aca943c77",
+      "bytes": 33886
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/tests/test_elevator_demo.py.backup_20261020_143309_5d0cc6",
+      "sha256": "f00e5897f5c8630ddaa5290ff70f127fedd120b11eb354bf2ed2b54aca943c77",
+      "bytes": 33886
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/tests/test_elevator_demo.py.backup_20261020_145510_e57a0c",
+      "sha256": "f00e5897f5c8630ddaa5290ff70f127fedd120b11eb354bf2ed2b54aca943c77",
+      "bytes": 33886
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/tests/test_elevator_launcher.py.backup_20261019_111650_704945",
+      "sha256": "29ca4cf179350b910fecc7e39a383a65ff56e7749442de15ab6984d246ea07c7",
+      "bytes": 8120
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/tests/test_elevator_launcher.py.backup_20261019_122144_5d257c",
+      "sha256": "29ca4cf179350b910fecc7e39a383a65ff56e7749442de15ab6984d246ea07c7",
+      "bytes": 8120
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/tests/test_elevator_launcher.py.backup_20261019_175453_66bd31",
+      "sha256": "29ca4cf179350b910fecc7e39a383a65ff56e7749442de15ab6984d246ea07c7",
+      "bytes": 8120
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/tests/test_elevator_launcher.py.backup_20261020_143309_5d0cc6",
+      "sha256": "29ca4cf179350b910fecc7e39a383a65ff56e7749442de15ab6984d246ea07c7",
+      "bytes": 8120
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/tests/test_elevator_launcher.py.backup_20261020_145510_e57a0c",
+      "sha256": "29ca4cf179350b910fecc7e39a383a65ff56e7749442de15ab6984d246ea07c7",
+      "bytes": 8120
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/tests/test_elevator_quantification.py.backup_20261019_111650_704945",
+      "sha256": "9ad4f3a8779313111dc2d1abd469b8aa172b6ee2ca87ef72f078127df83e0cf0",
+      "bytes": 11749
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/tests/test_elevator_quantification.py.backup_20261019_122144_5d257c",
+      "sha256": "cf07cca27a47ef8f871b9b0a26714c70568f7a0a0307bdf813dbd3d8a923f246",
+      "bytes": 12827
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/tests/test_elevator_quantification.py.backup_20261019_175453_66bd31",
+      "sha256": "b5e3e10f19d065e5719db96221c98a9d2908d4c212087afd164c38009b814898",
+      "bytes": 17900
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/tests/test_elevator_quantification.py.backup_20261020_143309_5d0cc6",
+      "sha256": "aa29b7417bb568883134466c5691c0788fd964bb90ca9d907fa627a7d53d5836",
+      "bytes": 21848
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/tests/test_elevator_quantification.py.backup_20261020_145510_e57a0c",
+      "sha256": "d09f3b0a29ce71285cc4ce330440025e9b673632cba7808a02261a2cc9636338",
+      "bytes": 23940
+    },
+    {
+      "type": "file",
+      "path": "elevator_button_floor_demo/tests/test_elevator_quantification.py.backup_20261020_visual_df484fd6",
+      "sha256": "54db9bdab30cc40c0872f34c412d624b892ea552b7fad3ac865e18cdfc2fc4e4",
+      "bytes": 29313
+    },
+    {
+      "path": "Demo_vlm2_kuavo_api.backup.20260922_171403",
+      "type": "directory",
+      "members": [
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/.gitignore",
+          "sha256": "e2f44978eede957b8165ddcc9d325910999cf880ed43017a9b4120533faa57bd",
+          "bytes": 39
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/README.md",
+          "sha256": "68c2cd0cdd644f6ba45a9165553ea56c7ba0c7cd97c9b4005dd3d4e5b860e924",
+          "bytes": 1727
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/__pycache__/elevator_perception.cpython-314.pyc",
+          "sha256": "af8bdd2328c514c0c854b30c7852dbf4fb526991cce5964439758dfbe455cf34",
+          "bytes": 13434
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/__pycache__/elevator_perception.cpython-38.pyc",
+          "sha256": "7d06112abcdfbb8f15c0ecb67c8e94b38991a75f0ef44720b67890b47a7a6ce7",
+          "bytes": 7445
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/__pycache__/few_shot.cpython-314.pyc",
+          "sha256": "91237a1953013771bc017e90835d7cba080014622c35afe63463c1d020af7907",
+          "bytes": 11358
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/__pycache__/few_shot.cpython-38.pyc",
+          "sha256": "673633f3273e4163a1d65a0fcb44faef622275b401f0d1fd9dbd416d1160db97",
+          "bytes": 6202
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/__pycache__/main.cpython-314.pyc",
+          "sha256": "c8cba907cd34e103d70b7645f8c667de92488f091551a44258044ae0bc53f784",
+          "bytes": 4454
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/__pycache__/perception_schema.cpython-314.pyc",
+          "sha256": "bcbfc01699579b0dc254311f9254255484e8cb3fad1ff6e17ca3d8e28ef30c48",
+          "bytes": 9676
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/__pycache__/perception_schema.cpython-38.pyc",
+          "sha256": "bd0b71808da0dda21eac5395264c2c42a45245b02bb8a2b4bf7485ac481ab007",
+          "bytes": 5927
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/__pycache__/prompts.cpython-314.pyc",
+          "sha256": "d4ed00839e926dfb33bd4fe573a4c04e37c41d1456b8c323d2592ea721be53db",
+          "bytes": 3758
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/__pycache__/prompts.cpython-38.pyc",
+          "sha256": "03e5680a30d67c46d13c1a4e5ce707d8cf10ff01483de2a702548f13a438f796",
+          "bytes": 3759
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/__pycache__/ros_stream_node.cpython-314.pyc",
+          "sha256": "2f54274e60579b8802c879f75d6e218dd660760a04319e0e45f1f20a406f5e1b",
+          "bytes": 30471
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/__pycache__/ros_stream_node.cpython-38.pyc",
+          "sha256": "c5fa644aa014e4e01db9f2e0ddc18bc1a06c49b8b9acddaa7836154d4b01c636",
+          "bytes": 14600
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/__pycache__/temporal_filter.cpython-314.pyc",
+          "sha256": "83338aedd45a84057db73906c4b5cc0d593bdb62cb23d71452b12ee75d320ef6",
+          "bytes": 5793
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/__pycache__/temporal_filter.cpython-38.pyc",
+          "sha256": "beae17622f35d453b3b38b0013b5c76a298f98d66f23fa7f5240bc8382f301a1",
+          "bytes": 3288
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/__pycache__/vlm_client.cpython-314.pyc",
+          "sha256": "a34a89f6e959038c1ebae845c2514f8aeefcefd6b0af757a8fa74c7148ef9ef7",
+          "bytes": 7061
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/__pycache__/vlm_client.cpython-38.pyc",
+          "sha256": "b3eafdfd1e68f45c57a2715f9a390183d46a09d936c69c95ced03be42e99c717",
+          "bytes": 4020
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/config.api.json",
+          "sha256": "cb359f91ac56c1dee3abee3ea00cb41428be689ed3b623d4fdeb8f81a0e4d5c1",
+          "bytes": 334
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/config.door_fast.json",
+          "sha256": "10b1f893c97573bfe44f2d2c1fb6c902975e06251f52427e6b8b327334d60ab2",
+          "bytes": 354
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/deploy/API_DEPLOY.md",
+          "sha256": "a7eff72adba7915030a71543f719f2e06943ba41cab9f315d2e0b6729e4746f1",
+          "bytes": 12914
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/deploy/DOOR_ONLY_FAST.md",
+          "sha256": "70241d8ace30eb3c59ab6fb4856baa735bab20fd3c9ea54c9c2d3d0cf17df4b4",
+          "bytes": 5266
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/deploy/api_env.sh",
+          "sha256": "93f3b8d2a19f6b7efbe90e21cd513c2777dcde888571f7d2f2155bb465885a3c",
+          "bytes": 532
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/deploy/run_ros_api.sh",
+          "sha256": "f8216af6beec1c42bce0ee37d44996b3da1f7eb48608a50cc62ae341666ffd5f",
+          "bytes": 1072
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/elevator_perception.py",
+          "sha256": "a21e41a112c899282feb3fc0d8bcd8b2788b4aee71598d0ccadf2d577d8a138a",
+          "bytes": 8905
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/BUTTON_EXAMPLES_NEEDED.md",
+          "sha256": "d041677cd3cb938cefe82444f975207102ee084867688c3263de4892f35f2e10",
+          "bytes": 694
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inclose.jpg",
+          "sha256": "87ab5400c6df3205fba426ce875763f0d45142ba7702c1cdef4812e5252cc4b5",
+          "bytes": 69872
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inclose12f.jpg",
+          "sha256": "64cd79d71a3c69416c9cd8dba7511039891061e1944e6acf225f24f806c3f61c",
+          "bytes": 71007
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inclose1f.jpg",
+          "sha256": "3ed7ede4c2cca3f24b522f6b0bca3e95ad833bd21a469dde2f1e65b591ae5108",
+          "bytes": 83637
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inclose2.jpg",
+          "sha256": "1b03f9b7985d82ff45735e97913334b07116031ca3453053f9100211deabc425",
+          "bytes": 56045
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inclose4f.jpg",
+          "sha256": "bd060ea29a79e90a10c59b794ed35df65d3a2c3018612db1b834d23f451803de",
+          "bytes": 87929
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inclose9f.jpg",
+          "sha256": "f448e310ed7488d7fc709e24e762374723d72260dcbf419d6b5be65db8d06d3c",
+          "bytes": 85143
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inopen.jpg",
+          "sha256": "cd4cbf54ca6e49eccde5ae12ce2d2c595e4af2f60d46f584ec8e26be737d1de0",
+          "bytes": 190784
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inopen2.jpg",
+          "sha256": "a1cfe18e93dfdf23d672006b89a99f9c7f972365ce942a71f945c255a10aa930",
+          "bytes": 159341
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inopen21f.jpg",
+          "sha256": "2d413468a2316454e5684dcef3813db5536ec614475b440414fbfab653168642",
+          "bytes": 113967
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inopen21f2.jpg",
+          "sha256": "1024efec87b41fcd8c99f86cd4c8062e03ffc428221992d64789bcfecc82160f",
+          "bytes": 100906
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inopen21f3.jpg",
+          "sha256": "db264d0cd552e182bb1625819749f2670908a8e51c7575d2d4bd639e4c00885e",
+          "bytes": 114826
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inopen3.jpg",
+          "sha256": "ceaabc595d548ba87c7563a10db76aa18f437ce3b80dbe3910657cd326500739",
+          "bytes": 185276
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/inopen4.jpg",
+          "sha256": "b766291271d86d4e08fc2fc23ed59434be087efde2566466930980682167afe5",
+          "bytes": 194015
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/manifest.json",
+          "sha256": "2a018c57f78b17cbb252bfc72b73d2b2e6c0b5b2234230a303ebbdbdab21e580",
+          "bytes": 3844
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/outclose.jpg",
+          "sha256": "1de7ce20a313fd4102bd39291406906bc3b7533e52275baf9ace5af1329cbfe2",
+          "bytes": 52788
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/outclose2.jpg",
+          "sha256": "875ff9cd5ff6e07c6b8c0f934789b789cbee305f7bf1df881ef490c0d6b0c834",
+          "bytes": 206486
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/outclose3.jpg",
+          "sha256": "617aea717c1fea12ec4c23e904351bbf59ad5cd49e707f17ccef39742b39fde9",
+          "bytes": 211037
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/outopen.jpg",
+          "sha256": "1a037c11c9de6e6af4081d2189d05a10758ba19bc6114ac5624f0a9feedbf531",
+          "bytes": 118157
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/outopen2.jpg",
+          "sha256": "ef73c0d819f8d7ecacd922f6e93b050a5434d8b78d6e98749ab2da43b3a3895d",
+          "bytes": 138187
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/outopen3.jpg",
+          "sha256": "fb3247df182457bdad4d14f8af8d4fb8ad6f0a1138f9eab0c9846243ea1c74da",
+          "bytes": 147025
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/outopen4.jpg",
+          "sha256": "2ace7b2df73bb3fae46fde33b8f927dbba80ff04eff9af35308af68992d8d32a",
+          "bytes": 126948
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_off&down_off.jpg",
+          "sha256": "de988ab793cb2b695d7b275294fd85f8c77d57519c4f47f19e53f7bfab9ef1c8",
+          "bytes": 153028
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_off&down_off2.jpg",
+          "sha256": "da0d9acd23467d6ce4028a3fff6e2d72d3ccf97f870641a52037e6e1098b584c",
+          "bytes": 93383
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_off&down_off3.jpg",
+          "sha256": "5a20efe165c990d13f88667e8d31f52c0a3e888188e991e9bedbb0b244a43209",
+          "bytes": 153227
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_off&down_on.jpg",
+          "sha256": "31a301ffcf1f305e7f652a6b3b1599cab8668c43b81f4d3ed61551fcae23444d",
+          "bytes": 173611
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_off&down_on2.jpg",
+          "sha256": "a8befc1cf00176e0dcdfe191b602fa6a221ed3c96320fdcd346ab5ce2c06f787",
+          "bytes": 88301
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_off&down_on3.jpg",
+          "sha256": "84993250710d7050ff87ace25cccf189e947c1e0a527a18185dca149412b485a",
+          "bytes": 133207
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_on&down_off.jpg",
+          "sha256": "ca393a8d74688d6f4539500eea8e436aca39f995b2aae49927428bca28d5c1c1",
+          "bytes": 162904
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_on&down_off2.jpg",
+          "sha256": "edd460ec53aca0b302f62d5ab0e709bda624d70a54f9f0b9d9e21af63184fec7",
+          "bytes": 102080
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_on&down_off3.jpg",
+          "sha256": "d104a09d75f7efc6379d12d8ab4e2527bc8734822fc5c39b53d0ed9e3efc6ae2",
+          "bytes": 110375
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_on&down_on.jpg",
+          "sha256": "56e79842b8d8ede3dc01a327f2ef462938b6361ca1bdda4992939a1b55e4b0cb",
+          "bytes": 166923
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_on&down_on2.jpg",
+          "sha256": "6234ca1900a2eb04e422e51af537ee512d672bb7e54a42c059a264eacab6be13",
+          "bytes": 103707
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few-shots/up_on&down_on3.jpg",
+          "sha256": "149ce5b02abeb31ea15ec5212e6e376d09650407a6c3e924f23d39f0e543d772",
+          "bytes": 118460
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/few_shot.py",
+          "sha256": "827b6ab0dbc6b213d09ca4544f0b810b14d3b9ed73ffe07a9516b1661558c317",
+          "bytes": 6826
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/main.py",
+          "sha256": "d067d2e28b01e179c81a68b0dbc9033afa09812b8cc62fff25cfb143d0ac1c6a",
+          "bytes": 2596
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/perception_schema.py",
+          "sha256": "30fbd601157c618a14d2792656b19e3054e5b9844277ba49a3488bf28937de01",
+          "bytes": 5657
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/prompts.py",
+          "sha256": "3cbeee6bfcf262782d47197ba011ef6560706b25aa553215a3da3bb520f4e3ee",
+          "bytes": 3843
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/ros1/elevator_vlm_api_perception/CMakeLists.txt",
+          "sha256": "a415afac2a7f5f1ddacfe8fa258ea71642fd3f6f1e02177c165136bd24bcb5e9",
+          "bytes": 383
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/ros1/elevator_vlm_api_perception/config/perception.yaml",
+          "sha256": "b678ceaf5ab946a2a5441f4acb6fb64667ccf4ea054fb02494d0c21016a0db8b",
+          "bytes": 1488
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/ros1/elevator_vlm_api_perception/launch/elevator_vlm.launch",
+          "sha256": "251b1ac980c4ce4ca1a7a9ffa2104aaa1965a640e734136d2a45d9c7d92c6072",
+          "bytes": 433
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/ros1/elevator_vlm_api_perception/package.xml",
+          "sha256": "2c3b44e36ff99e25f7f14b60d3db7179aca2a3629cbe59c56a29827f45fc98d9",
+          "bytes": 505
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/ros1/elevator_vlm_api_perception/scripts/__pycache__/elevator_vlm_node.cpython-314.pyc",
+          "sha256": "5a7bf57b26a1c6f15c93f4629b72cbb961456035f9b4b00be12c8a7513eb2a01",
+          "bytes": 1151
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/ros1/elevator_vlm_api_perception/scripts/elevator_vlm_node.py",
+          "sha256": "2f62c74e99ef8ad4e17e53b14b591b8d9e747b39bc88be88dba61797f093187d",
+          "bytes": 614
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/ros_stream_node.py",
+          "sha256": "67a669f1068e071713084ce8eae0debcca8f80329428f3f6242ea2e13073119c",
+          "bytes": 17383
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/temporal_filter.py",
+          "sha256": "fd4a4ab743585fb83ab6650ba0f92131e0f0b50fd5ee68eddfc2f015fe173b05",
+          "bytes": 3629
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/tests/__pycache__/test_pipeline.cpython-314.pyc",
+          "sha256": "b3281d4e33cdd0d276e4abc75e037510a064746eb8b1394c4e80310d8ad849b2",
+          "bytes": 23598
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/tests/__pycache__/test_pipeline.cpython-38.pyc",
+          "sha256": "c2bf6a159713f0d10f52b597ae4f1c4e13b1cbe64249ac5ed1a083c5795c7321",
+          "bytes": 13717
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/tests/test_pipeline.py",
+          "sha256": "4ad6cfac6aa4dfab6da02ddb1513e028a0b702379beccb12731d1795e45c99d9",
+          "bytes": 12270
+        },
+        {
+          "path": "Demo_vlm2_kuavo_api.backup.20260922_171403/vlm_client.py",
+          "sha256": "6c95afe2ccba5bd0a8e0ded57d649c87b0ec735ee86b3f14f9d33bd3e131e5d9",
+          "bytes": 4407
+        }
+      ],
+      "bytes": 4338009
+    },
+    {
+      "type": "file",
+      "path": "Demo_vlm2_kuavo_api_door_fast.tar.gz",
+      "sha256": "c936b9500798cd652fca9662825cf33cf092bbb39da2fa7476db24da32e23b17",
+      "bytes": 3928741
+    },
+    {
+      "type": "file",
+      "path": "Demo_vlm2_kuavo_api_elevator_demo_20260922.tar.gz",
+      "sha256": "e2683b5c5fa3fa88ffcb587c745b413682a4b798c4f2586eda5abf35f2b8aa46",
+      "bytes": 3896284
+    }
+  ],
+  "cleanup_bytes": 13767648,
+  "root": "/media/data/vlm",
+  "remote": "https://github.com/wen418/book_project_vlm.git"
+}

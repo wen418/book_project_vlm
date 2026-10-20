@@ -72,6 +72,48 @@ class ConfigTests(unittest.TestCase):
                             core.load_config(path)
 
 
+@unittest.skipUnless(shutil.which("git"), "Git required")
+class GitVersionTests(unittest.TestCase):
+    def repository(self, directory):
+        root = Path(directory)
+        subprocess.run(["git", "init", "-q", str(root)], check=True)
+        subprocess.run(["git", "-C", str(root), "config", "user.name", "Test"], check=True)
+        subprocess.run(["git", "-C", str(root), "config", "user.email", "test@example.invalid"], check=True)
+        target = root / "entry.py"
+        target.write_text("original\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(root), "add", "entry.py"], check=True)
+        subprocess.run(["git", "-C", str(root), "commit", "-qm", "baseline"], check=True)
+        return target
+
+    def test_committed_file_uses_git_without_creating_backup(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = self.repository(directory)
+            self.assertIsNone(controller.backup_before_update(target, ".backup_test"))
+            self.assertFalse(target.with_name("entry.py.backup_test").exists())
+            original = subprocess.check_output(["git", "-C", directory, "show", "HEAD:entry.py"])
+            self.assertEqual(original, b"original\n")
+
+    def test_unsaved_work_or_index_prevents_overwrite(self):
+        for staged in (False, True):
+            with self.subTest(staged=staged), tempfile.TemporaryDirectory() as directory:
+                target = self.repository(directory)
+                target.write_text("unsaved\n", encoding="utf-8")
+                if staged:
+                    subprocess.run(["git", "-C", directory, "add", "entry.py"], check=True)
+                with self.assertRaisesRegex(RuntimeError, "Git"):
+                    controller.backup_before_update(target, ".backup_test")
+                self.assertEqual(target.read_text(encoding="utf-8"), "unsaved\n")
+                self.assertFalse(target.with_name("entry.py.backup_test").exists())
+
+    def test_untracked_file_keeps_fallback_backup(self):
+        with tempfile.TemporaryDirectory() as directory:
+            self.repository(directory)
+            target = Path(directory) / "untracked.py"
+            target.write_text("not in Git\n", encoding="utf-8")
+            backup = controller.backup_before_update(target, ".backup_test")
+            self.assertEqual(backup.read_bytes(), target.read_bytes())
+
+
 class SingleFileDeploymentTests(unittest.TestCase):
     def run_isolated(self, script, arguments):
         return subprocess.run([sys.executable, "-I", "-X", "utf8", str(script), *arguments],
