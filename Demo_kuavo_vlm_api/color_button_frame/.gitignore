@@ -1,0 +1,14 @@
+# Deployment/runtime artefacts stay on the robot, not in the source branch.
+/logs/
+/log/
+/result/
+/verification/
+/history/
+/.one_click.lock
+__pycache__/
+*.py[cod]
+*.log
+*.zip
+*.tar.gz
+.env
+*.env

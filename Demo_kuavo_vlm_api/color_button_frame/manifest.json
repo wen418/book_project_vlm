@@ -1,0 +1,24 @@
+{
+  "release": "color_button_frame_v2",
+  "button_only_replaced": true,
+  "button_confirmation_frames": 1,
+  "door_backend": "original API",
+  "floor_backend": "original API",
+  "lower_file_modified": false,
+  "release_files_sha256": {
+    "launcher.py": "d74242c4b544b1d1384a13d64484942ea19adc04bb98c9c2f4e59d90b28fbe23",
+    "button_color_rule.py": "5b33e85f99cdb5868b28dd5b304dbe44297fd32fe498ee4227b2a36e02784870",
+    "isolated_ros_smoke.py": "febecb43c34de3043c03c362c09e62f8ce051beea05d59ce92fb94c7c88bc2ee",
+    "replay_images.py": "d2bef0383b5c4c3c76c7b887e15027f8654821829a5b44cd8d7bad86e11af98b",
+    "button_contract.py": "d79cb2ee3acaaeb855173ce4b323b5de090092991bf408c68d22c45acbd038da",
+    "build_manifest.py": "efa4e80fa80ad3c729c81f43db4d4bb3eb2500b70da1a992f162258b15504e40",
+    "extra_color_node.py": "43ed40a6ebfd713f9e67bfcee3082b34e544ef52e7f88c066a06720ee8e338ca",
+    "start_elevator_demo.sh": "ce295b37c02cc5097c6a4dbe9932bd6474f7739e513c1d1a095b004a7a899098",
+    "run_extra_perception.sh": "8b074741c31399e5026525add98fca88ff56e0fb023a1a7113f6e636a810c7fa",
+    "upstream/elevator_demo_core.py": "cc0929e57577bb0071689c853f0ca93a204f46cf28ca5bec4ba17ec0c996f7d7",
+    "upstream/elevator_extra_perception.py": "28b00fa181eb489fb0edda82c4b80d268733309112fb9613dafab04435aa8add",
+    "upstream/elevator_button_floor_main.py": "f371a7e12f49bb023e726499dd14691e232841b11ced6b41c3f78a53c2b8a525",
+    "upstream/elevator_demo_launcher.py": "fbb3ccf4ce5bc76e365af36e20146f63c357d8f93d9eb35a31ac46253998d247",
+    "upstream/perception.json": "e07c5f8a29a8dee6bc7491da8cf4bd027f33532d76a64a85db1681d927c20e02"
+  }
+}
