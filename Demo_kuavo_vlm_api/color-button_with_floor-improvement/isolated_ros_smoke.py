@@ -124,6 +124,7 @@ def main():
             floor_gate=adapted_floor_gate(adapted_gate(EvidenceGate),DEFAULTS)(15,.72,1,0)
             floor_gate.arm('floor_monitor','floor',19,before,request_id='floor')
             floor=send(images[2],'floor')
+            first_floor_stamp=floor['image_stamp']
             assert floor['schema_version']==FLOOR_SCHEMA and floor['floor'] is None and floor['floor_raw']==19
             assert not floor_gate.feed(json.dumps(floor),rospy.Time.now().to_sec())
             time.sleep(.55)
@@ -138,9 +139,22 @@ def main():
             floor=send(images[2],'floor');assert floor['floor']==18
             assert floor_gate.feed(json.dumps(floor),rospy.Time.now().to_sec())
             cases.append('floor API stub: 19 confirmed, jump to 13 rejected, subsequent 18 confirmed')
+            wait_for(lambda:rospy.Time.now().to_sec()-first_floor_stamp>=8.5,15)
+            client.value=17;floor=send(images[2],'floor');assert floor['floor']==17
+            client.value=18;floor=send(images[2],'floor')
+            assert floor['floor'] is None and floor['floor_filter']['reason']=='opposite_to_confirmed_direction'
+            wait_for(lambda:rospy.Time.now().to_sec()-first_floor_stamp>=12.5,15)
+            floor_gate.arm('floor_monitor','floor',16,before,request_id='floor')
+            client.value=16;floor=send(images[2],'floor');assert floor['floor']==16
+            assert not floor_gate.feed(json.dumps(floor),rospy.Time.now().to_sec())
+            time.sleep(.55)
+            floor=send(images[2],'floor');assert floor['floor']==16
+            assert floor_gate.feed(json.dumps(floor),rospy.Time.now().to_sec())
+            cases.append('confirmed descent: reverse 18 rejected after 17; correct 16 remains reachable')
             report={'passed':True,'private_master':os.environ['ROS_MASTER_URI'],'robot_master_used':False,
                     'motion_publishers':False,'real_api_calls':0,'cases':cases,
                     'confirmation_frames':1,
+                    'floor_target_confirmations':2,
                     'note':'Recorded images were retimestamped for transport testing; not dynamic accuracy or reaction-latency measurement.'}
             (out/'floor_improvement_ros_smoke.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
             print(json.dumps(report,ensure_ascii=False),flush=True)

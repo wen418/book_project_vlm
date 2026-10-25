@@ -8,5 +8,9 @@
   "target_confirmations": 2,
   "reacquire_confirmations": 3,
   "min_confirmation_span": 0.5,
-  "max_confirmation_span": 12.0
+  "max_confirmation_span": 12.0,
+  "direction_confirmations": 2,
+  "recovery_confirmations": 4,
+  "recovery_min_span": 4.0,
+  "recovery_max_gap": 5.0
 }

@@ -8,9 +8,9 @@ ROOT=Path(__file__).resolve().parent
 
 def main():
     files=[*ROOT.glob('*.py'),*ROOT.glob('*.sh'),*ROOT.joinpath('upstream').glob('*.py'),ROOT/'upstream/perception.json',ROOT/'floor_filter_config.json']
-    manifest={'release':'color_button_with_floor_improvement_v1','button_only_replaced':False,
+    manifest={'release':'color_button_with_floor_improvement_v2','button_only_replaced':False,
               'button_confirmation_frames':1,
-              'door_backend':'original API','floor_backend':'original API + post-inference time guard',
+              'door_backend':'original API','floor_backend':'original API + direction/history/trajectory guard',
               'navigation_and_quantification_unchanged':True,
               'lower_file_modified':False,
               'release_files_sha256':{f.relative_to(ROOT).as_posix():hashlib.sha256(f.read_bytes()).hexdigest() for f in files}}
