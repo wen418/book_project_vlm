@@ -1,5 +1,5 @@
 {
-  "release": "color_button_with_floor_improvement_v2_new_button_pose",
+  "release": "color_button_with_floor_improvement_v2_new_button_pose_ros_env_fix",
   "button_only_replaced": false,
   "button_confirmation_frames": 1,
   "door_backend": "original API",
@@ -19,13 +19,13 @@
   "button_min_side": 22,
   "lower_file_modified": false,
   "release_files_sha256": {
-    "build_manifest.py": "b0d67b87d00d41293682b00b99e08b61627dff1931dd8023402842a99a51cd4a",
+    "build_manifest.py": "07cdda37013edd21941b6d6eb616248dbf78fc80cf2df07d4b4a6b326610c421",
     "button_color_rule.py": "4feb87b0178569e1d75b4fb45171f29b5e7e28496de6296257e68e962f6e5dee",
     "button_contract.py": "d79cb2ee3acaaeb855173ce4b323b5de090092991bf408c68d22c45acbd038da",
     "extra_color_node.py": "24bce7eb6d992ed97d9f37a7fe299372ad58d2b70e3b2f79175feb75907c3fba",
     "floor_filter.py": "90b5e43759b80cfbd6b90166702b13bd5a6d588180df0137aa6fcd40c9ecc180",
     "isolated_ros_smoke.py": "173c4766bf9533c4457f2ab1330649afee9b906ae7153f2bd00534aab74d3021",
-    "launcher.py": "a46f574926fdc7238785f60c681dafd5816ce7e704e0271a819c592da35f2c60",
+    "launcher.py": "1fe1df78eaec5054329ee143a01bf4b2d8b5a45b09380b5f645da24131ffdaa0",
     "replay_floor_history.py": "cb963d92b3dfa5798e1581394519d5c9beddeca50e5c574ff54a32d8ccfc7050",
     "replay_images.py": "e06b4a28caf158b54cefd9ef19056b8d9cd734ebe449cec959710d6e6cecb02c",
     "write_verification_report.py": "e67763373a6a8afb96597e3e0240f4e22278ada284c050e80d6a91f40f7a432d",

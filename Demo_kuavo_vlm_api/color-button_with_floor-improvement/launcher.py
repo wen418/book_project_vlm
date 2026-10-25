@@ -6,7 +6,7 @@ import importlib.util
 import json
 import math
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import shlex
 import sys
 import zlib
@@ -69,6 +69,12 @@ def readiness(values, now, camera_age=2.0):
 original.readiness_reason = readiness
 BaseLauncher = original.Launcher
 
+# Load native ROS libraries before running the in-memory lower adapter. Letting
+# the old entry load them itself would exec its disk file and discard the adapter.
+ROS_ENV_SCRIPT = ('set -e; source "$1"; source "$2"; '
+                  'export KUAVO_ELEVATOR_ENV_READY="$3"; '
+                  'exec /usr/bin/python3 -u -c "$4"')
+
 
 def lower_bootstrap(arguments):
     files = {'entry': (ROOT/'upstream/elevator_button_floor_main.py').read_text(),
@@ -78,7 +84,7 @@ def lower_bootstrap(arguments):
              'entry_path': original.ENTRY}
     files['original_sha256'] = hashlib.sha256((ROOT/'upstream/elevator_button_floor_main.py').read_bytes()).hexdigest()
     encoded = base64.b64encode(zlib.compress(json.dumps(files).encode())).decode()
-    return ("import base64,zlib,json,types,sys,hashlib;from pathlib import Path;"
+    return ("import base64,zlib,json,types,sys,hashlib,os;from pathlib import Path;"
             "p=json.loads(zlib.decompress(base64.b64decode(%r)));" % encoded +
             "assert hashlib.sha256(Path(p['entry_path']).read_bytes()).hexdigest()==p['original_sha256'],"
             "'下位机入口已变化；请先更新本方案快照，不使用旧点位';"
@@ -89,6 +95,7 @@ def lower_bootstrap(arguments):
             "sys.modules[m.__name__]=m;exec(compile(p['entry'],p['entry_path'],'exec'),m.__dict__);"
             "m.DEFAULT_CONFIG['points']['button']=dict(p['button_pose']);"
             "m.EvidenceGate=f.adapted_floor_gate(c.adapted_gate(m.EvidenceGate),p['floor_config']);"
+            "print('[方案] button='+c.BACKEND+'/schema'+str(c.SCHEMA)+'; floor='+f.BACKEND+'/schema'+str(f.SCHEMA)+'; button_pose='+str(m.DEFAULT_CONFIG['points']['button'])+'; ROS_ENV='+str(os.environ.get('KUAVO_ELEVATOR_ENV_READY')),flush=True);"
             "sys.argv=[p['entry_path']]+p['arguments'];sys.exit(m.main())")
 
 
@@ -104,8 +111,11 @@ class Launcher(BaseLauncher):
         return super().start_perception()
 
     def lower_command(self, arguments, locked=False):
+        workspace = next(path.parent for path in PurePosixPath(original.BOOK).parents if path.name == 'src')
         command = ['env', 'ROS_MASTER_URI='+os.environ['ROS_MASTER_URI'], 'ROS_IP=192.168.26.1',
-                   '/usr/bin/python3','-u','-c',lower_bootstrap(arguments)]
+                   '/bin/bash', '--noprofile', '--norc', '-c', ROS_ENV_SCRIPT, 'elevator-color-ros-env',
+                   '/opt/ros/noetic/setup.bash', str(workspace/'devel/setup.bash'),
+                   str(workspace), lower_bootstrap(arguments)]
         if locked:
             command = ['flock','-n','-E','73','/tmp/kuavo_elevator_demo.lock',*command]
         return 'cd '+shlex.quote(original.BOOK)+' && exec '+shlex.join(command)

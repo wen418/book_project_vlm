@@ -9,6 +9,9 @@ import threading
 import types
 import unittest
 import tempfile
+import os
+import shlex
+import subprocess
 from unittest.mock import patch
 from collections import deque
 
@@ -168,6 +171,42 @@ class NodeTests(unittest.TestCase):
 
 
 class LaunchTests(unittest.TestCase):
+    def test_ros_setup_keeps_memory_entry_and_both_loaded_environments(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)/'robot workspace'
+            workspace.mkdir()
+            distro, setup = workspace/'ros setup.bash', workspace/'workspace setup.bash'
+            distro.write_text('export TEST_ROS_LOADED=yes\n')
+            setup.write_text('export TEST_WORKSPACE_LOADED=yes\n')
+            code = ("import os,json; print(json.dumps({k:os.environ.get(k) for k in "
+                    "['TEST_ROS_LOADED','TEST_WORKSPACE_LOADED','KUAVO_ELEVATOR_ENV_READY']}))")
+            completed = subprocess.run(['/bin/bash', '--noprofile', '--norc', '-c',
+                launcher.ROS_ENV_SCRIPT, 'test-elevator-env', str(distro), str(setup), str(workspace), code],
+                capture_output=True, text=True, check=True)
+            self.assertEqual(json.loads(completed.stdout), {'TEST_ROS_LOADED':'yes',
+                'TEST_WORKSPACE_LOADED':'yes', 'KUAVO_ELEVATOR_ENV_READY':str(workspace)})
+
+    def test_failed_workspace_setup_never_executes_lower_code(self):
+        with tempfile.TemporaryDirectory() as directory:
+            setup = Path(directory)/'setup.bash'
+            setup.write_text('return 9\n')
+            completed = subprocess.run(['/bin/bash', '--noprofile', '--norc', '-c',
+                launcher.ROS_ENV_SCRIPT, 'test-elevator-env', str(setup), str(setup), directory,
+                "raise RuntimeError('must never execute')"], capture_output=True, text=True)
+            self.assertEqual(completed.returncode, 9)
+            self.assertNotIn('must never execute', completed.stderr)
+
+    def test_lower_command_preserves_adapter_when_ros_environment_is_not_loaded(self):
+        instance = launcher.Launcher(types.SimpleNamespace(lower_host='kuavo_master'))
+        with patch.dict(os.environ, {'ROS_MASTER_URI':'http://kuavo_master:11311'}):
+            command = shlex.split(instance.lower_command(['--check-runtime'], locked=True))
+        self.assertEqual(command[:5], ['cd', original.BOOK, '&&', 'exec', 'flock'])
+        self.assertIn(launcher.ROS_ENV_SCRIPT, command)
+        script_index = command.index(launcher.ROS_ENV_SCRIPT)
+        self.assertEqual(command[script_index+1:script_index+5], ['elevator-color-ros-env',
+            '/opt/ros/noetic/setup.bash','/home/lab/kuavo-ros-control/devel/setup.bash','/home/lab/kuavo-ros-control'])
+        self.assertIn('elevator_color_lower', command[script_index+5])
+
     def test_site_metadata_changes_only_button_point_and_retains_process_check(self):
         metadata = {'config': {'points': {'button': {'x': .11, 'y': .976, 'theta': 2.0},
                                          'origin': {'x': -3.465}}, 'head': {'floor': {'yaw': -20}}},
