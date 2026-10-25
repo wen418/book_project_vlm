@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parent
 
 def main():
     files=[*ROOT.glob('*.py'),*ROOT.glob('*.sh'),*ROOT.joinpath('upstream').glob('*.py'),ROOT/'upstream/perception.json',ROOT/'floor_filter_config.json',ROOT/'button_pose.json']
-    manifest={'release':'color_button_with_floor_improvement_v2_new_button_pose_ros_env_fix','button_only_replaced':False,
+    manifest={'release':'color_button_with_floor_improvement_v2_telemetry_transport_fix','button_only_replaced':False,
               'button_confirmation_frames':1,
               'door_backend':'original API','floor_backend':'original API + direction/history/trajectory guard',
               'navigation_and_quantification_unchanged':True,

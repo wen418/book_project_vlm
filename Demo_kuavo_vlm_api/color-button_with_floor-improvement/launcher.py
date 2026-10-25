@@ -17,6 +17,9 @@ original = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(original)
 from button_contract import BACKEND, SCHEMA
 from floor_filter import BACKEND as FLOOR_BACKEND, SCHEMA as FLOOR_SCHEMA, config_digest, validate_config
+from telemetry_transport import framed_child, preserve_failure
+
+original.Child = framed_child(original.Child)
 
 FLOOR_CONFIG=validate_config(json.loads((ROOT/'floor_filter_config.json').read_text()))
 
@@ -80,6 +83,7 @@ def lower_bootstrap(arguments):
     files = {'entry': (ROOT/'upstream/elevator_button_floor_main.py').read_text(),
              'contract': (ROOT/'button_contract.py').read_text(), 'arguments': arguments,
              'floor_contract': (ROOT/'floor_filter.py').read_text(), 'floor_config': FLOOR_CONFIG,
+             'transport': (ROOT/'telemetry_transport.py').read_text(),
              'button_pose': BUTTON_POSE,
              'entry_path': original.ENTRY}
     files['original_sha256'] = hashlib.sha256((ROOT/'upstream/elevator_button_floor_main.py').read_bytes()).hexdigest()
@@ -91,6 +95,7 @@ def lower_bootstrap(arguments):
             "sys.path.insert(0,str(Path(p['entry_path']).parent));"
             "c=types.ModuleType('color_button_contract');exec(compile(p['contract'],'<button_contract>','exec'),c.__dict__);"
             "f=types.ModuleType('floor_guard_contract');exec(compile(p['floor_contract'],'<floor_filter>','exec'),f.__dict__);"
+            "t=types.ModuleType('elevator_transport');exec(compile(p['transport'],'<telemetry_transport>','exec'),t.__dict__);sys.stdout=t.EventBoundaryWriter(sys.stdout);"
             "m=types.ModuleType('elevator_color_lower');m.__file__=p['entry_path'];"
             "sys.modules[m.__name__]=m;exec(compile(p['entry'],p['entry_path'],'exec'),m.__dict__);"
             "m.DEFAULT_CONFIG['points']['button']=dict(p['button_pose']);"
@@ -100,6 +105,20 @@ def lower_bootstrap(arguments):
 
 
 class Launcher(BaseLauncher):
+    def close(self):
+        if self.recorder is not None:
+            close_recording = self.recorder.close
+
+            def with_diagnostics(exit_code):
+                try:
+                    preserve_failure(self.recorder, exit_code, ROOT/'verification/runtime_failures')
+                except Exception as exc:
+                    print('故障日志保存失败：'+str(exc), file=sys.stderr, flush=True)
+                return close_recording(exit_code)
+
+            self.recorder.close = with_diagnostics
+        return super().close()
+
     def valid_image(self, message):
         return super().valid_image(message) and (message.width, message.height) == (848, 480)
 
