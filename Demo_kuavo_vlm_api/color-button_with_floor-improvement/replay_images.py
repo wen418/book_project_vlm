@@ -19,13 +19,14 @@ def main():
     for row in samples:
         image=cv2.imread(str(data/row['run_id']/row['image']))
         start=time.perf_counter();result,_,_=analyze(image)
-        assert result['prediction'] is row['prediction'],(row['run_id'],row['id'])
         results.append({'run_id':row['run_id'],'id':row['id'],'ground_truth':row['ground_truth'],
+                        'previous_prediction':row['prediction'],
                         **result,'elapsed_ms':(time.perf_counter()-start)*1000})
     summary={'n':len(results),'correct':sum(r['prediction'] is not None and r['prediction']==r['ground_truth'] for r in results),
              'incorrect':sum(r['prediction'] is not None and r['prediction']!=r['ground_truth'] for r in results),
              'unknown':sum(r['prediction'] is None for r in results),
-             'all_predictions_match_frozen_benchmark':True,
+             'all_predictions_match_frozen_benchmark':all(r['prediction'] is r['previous_prediction'] for r in results),
+             'changed_predictions':sum(r['prediction'] is not r['previous_prediction'] for r in results),
              'note':'Single-frame regression, not two-frame dynamic accuracy. Images are sparse historical captures.'}
     out=ROOT/'verification';out.mkdir(exist_ok=True)
     (out/'single_frame_replay.json').write_text(json.dumps({'summary':summary,'results':results},ensure_ascii=False,indent=2))

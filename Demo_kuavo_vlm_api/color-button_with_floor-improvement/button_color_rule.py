@@ -3,8 +3,8 @@ import cv2
 import numpy as np
 
 DEFAULTS = {
-    'search_roi': [230, 235, 105, 90], 'expected_size': [848, 480],
-    'canny_low': 35, 'canny_high': 100, 'min_side': 27, 'max_side': 58,
+    'search_roi': [190, 175, 135, 120], 'expected_size': [848, 480],
+    'canny_low': 35, 'canny_high': 100, 'min_side': 22, 'max_side': 58,
     'hue_low_max': 12, 'hue_high_min': 170, 'min_saturation': 70,
     'min_value': 65, 'min_red_excess': 25,
     'on_ratio': 0.035, 'on_component_ratio': 0.012,

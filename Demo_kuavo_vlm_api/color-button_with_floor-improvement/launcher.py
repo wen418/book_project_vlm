@@ -4,6 +4,7 @@ import base64
 import hashlib
 import importlib.util
 import json
+import math
 import os
 from pathlib import Path
 import shlex
@@ -19,6 +20,32 @@ from floor_filter import BACKEND as FLOOR_BACKEND, SCHEMA as FLOOR_SCHEMA, confi
 
 FLOOR_CONFIG=validate_config(json.loads((ROOT/'floor_filter_config.json').read_text()))
 
+
+def load_button_pose(path):
+    pose = json.loads(Path(path).read_text(encoding='utf-8'))
+    if (not isinstance(pose, dict) or set(pose) != {'x', 'y', 'theta'} or
+            any(type(v) not in (int, float) or not math.isfinite(v) for v in pose.values()) or
+            not -180 <= pose['theta'] <= 180):
+        raise ValueError('button_pose.json 必须包含有限数值 x/y/theta，单位米/度')
+    return pose
+
+
+BUTTON_POSE = load_button_pose(ROOT/'button_pose.json')
+base_metadata_code = original.remote_metadata_code
+
+
+def remote_metadata_code():
+    # Preserve the original read-only process/config probe, then apply this scheme's point.
+    return ("import contextlib,io,json\n"
+            "_site_buffer=io.StringIO()\n"
+            "with contextlib.redirect_stdout(_site_buffer):\n"
+            " exec(%r)\n" % base_metadata_code() +
+            "_site_metadata=json.loads(_site_buffer.getvalue())\n"
+            "_site_metadata['config']['points']['button']=%r\n" % BUTTON_POSE +
+            "print(json.dumps(_site_metadata,ensure_ascii=False))\n")
+
+
+original.remote_metadata_code = remote_metadata_code
 original.DEFAULT_ROOT = ROOT
 original.EXTRA_START = ROOT/'run_extra_perception.sh'
 # Quantification code and door node stay on their original, verified paths.
@@ -47,6 +74,7 @@ def lower_bootstrap(arguments):
     files = {'entry': (ROOT/'upstream/elevator_button_floor_main.py').read_text(),
              'contract': (ROOT/'button_contract.py').read_text(), 'arguments': arguments,
              'floor_contract': (ROOT/'floor_filter.py').read_text(), 'floor_config': FLOOR_CONFIG,
+             'button_pose': BUTTON_POSE,
              'entry_path': original.ENTRY}
     files['original_sha256'] = hashlib.sha256((ROOT/'upstream/elevator_button_floor_main.py').read_bytes()).hexdigest()
     encoded = base64.b64encode(zlib.compress(json.dumps(files).encode())).decode()
@@ -59,6 +87,7 @@ def lower_bootstrap(arguments):
             "f=types.ModuleType('floor_guard_contract');exec(compile(p['floor_contract'],'<floor_filter>','exec'),f.__dict__);"
             "m=types.ModuleType('elevator_color_lower');m.__file__=p['entry_path'];"
             "sys.modules[m.__name__]=m;exec(compile(p['entry'],p['entry_path'],'exec'),m.__dict__);"
+            "m.DEFAULT_CONFIG['points']['button']=dict(p['button_pose']);"
             "m.EvidenceGate=f.adapted_floor_gate(c.adapted_gate(m.EvidenceGate),p['floor_config']);"
             "sys.argv=[p['entry_path']]+p['arguments'];sys.exit(m.main())")
 

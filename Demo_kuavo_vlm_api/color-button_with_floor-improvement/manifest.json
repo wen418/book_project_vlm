@@ -1,29 +1,42 @@
 {
-  "release": "color_button_with_floor_improvement_v2",
+  "release": "color_button_with_floor_improvement_v2_new_button_pose",
   "button_only_replaced": false,
   "button_confirmation_frames": 1,
   "door_backend": "original API",
   "floor_backend": "original API + direction/history/trajectory guard",
   "navigation_and_quantification_unchanged": true,
+  "button_pose_override": {
+    "x": -0.039,
+    "y": 0.914,
+    "theta": 1.0
+  },
+  "button_search_roi": [
+    190,
+    175,
+    135,
+    120
+  ],
+  "button_min_side": 22,
   "lower_file_modified": false,
   "release_files_sha256": {
-    "launcher.py": "7c71f09d777fe1114916e57e1fa9fb158efc64a49ef7b14c4a8f7beb3d6b4a5b",
-    "button_color_rule.py": "5b33e85f99cdb5868b28dd5b304dbe44297fd32fe498ee4227b2a36e02784870",
-    "isolated_ros_smoke.py": "173c4766bf9533c4457f2ab1330649afee9b906ae7153f2bd00534aab74d3021",
-    "replay_images.py": "d2bef0383b5c4c3c76c7b887e15027f8654821829a5b44cd8d7bad86e11af98b",
-    "floor_filter.py": "90b5e43759b80cfbd6b90166702b13bd5a6d588180df0137aa6fcd40c9ecc180",
+    "build_manifest.py": "b0d67b87d00d41293682b00b99e08b61627dff1931dd8023402842a99a51cd4a",
+    "button_color_rule.py": "4feb87b0178569e1d75b4fb45171f29b5e7e28496de6296257e68e962f6e5dee",
     "button_contract.py": "d79cb2ee3acaaeb855173ce4b323b5de090092991bf408c68d22c45acbd038da",
-    "build_manifest.py": "9d7b88118581a84ec4d7d2c5073734007e77e2e71f3918464a75ef7d85ee8447",
-    "write_verification_report.py": "e67763373a6a8afb96597e3e0240f4e22278ada284c050e80d6a91f40f7a432d",
-    "replay_floor_history.py": "cb963d92b3dfa5798e1581394519d5c9beddeca50e5c574ff54a32d8ccfc7050",
     "extra_color_node.py": "24bce7eb6d992ed97d9f37a7fe299372ad58d2b70e3b2f79175feb75907c3fba",
-    "start_elevator_demo.sh": "ce295b37c02cc5097c6a4dbe9932bd6474f7739e513c1d1a095b004a7a899098",
+    "floor_filter.py": "90b5e43759b80cfbd6b90166702b13bd5a6d588180df0137aa6fcd40c9ecc180",
+    "isolated_ros_smoke.py": "173c4766bf9533c4457f2ab1330649afee9b906ae7153f2bd00534aab74d3021",
+    "launcher.py": "a46f574926fdc7238785f60c681dafd5816ce7e704e0271a819c592da35f2c60",
+    "replay_floor_history.py": "cb963d92b3dfa5798e1581394519d5c9beddeca50e5c574ff54a32d8ccfc7050",
+    "replay_images.py": "e06b4a28caf158b54cefd9ef19056b8d9cd734ebe449cec959710d6e6cecb02c",
+    "write_verification_report.py": "e67763373a6a8afb96597e3e0240f4e22278ada284c050e80d6a91f40f7a432d",
     "run_extra_perception.sh": "8b074741c31399e5026525add98fca88ff56e0fb023a1a7113f6e636a810c7fa",
-    "upstream/elevator_demo_core.py": "cc0929e57577bb0071689c853f0ca93a204f46cf28ca5bec4ba17ec0c996f7d7",
-    "upstream/elevator_extra_perception.py": "28b00fa181eb489fb0edda82c4b80d268733309112fb9613dafab04435aa8add",
+    "start_elevator_demo.sh": "ce295b37c02cc5097c6a4dbe9932bd6474f7739e513c1d1a095b004a7a899098",
     "upstream/elevator_button_floor_main.py": "f371a7e12f49bb023e726499dd14691e232841b11ced6b41c3f78a53c2b8a525",
+    "upstream/elevator_demo_core.py": "cc0929e57577bb0071689c853f0ca93a204f46cf28ca5bec4ba17ec0c996f7d7",
     "upstream/elevator_demo_launcher.py": "fbb3ccf4ce5bc76e365af36e20146f63c357d8f93d9eb35a31ac46253998d247",
+    "upstream/elevator_extra_perception.py": "28b00fa181eb489fb0edda82c4b80d268733309112fb9613dafab04435aa8add",
     "upstream/perception.json": "e07c5f8a29a8dee6bc7491da8cf4bd027f33532d76a64a85db1681d927c20e02",
-    "floor_filter_config.json": "4d8a5b6a9f4497daae1f673225b7622615d3df7c0bf7f9389368752bed81f0ab"
+    "floor_filter_config.json": "4d8a5b6a9f4497daae1f673225b7622615d3df7c0bf7f9389368752bed81f0ab",
+    "button_pose.json": "d6c8550f2b2ef181395fca0e7f771980c9107f037463c39d1215ce4c4c18be3f"
   }
 }

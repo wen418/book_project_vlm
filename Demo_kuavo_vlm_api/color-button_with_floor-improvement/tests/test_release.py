@@ -1,11 +1,14 @@
 import copy
+import contextlib
 import importlib.util
+import io
 import json
 from pathlib import Path
 import sys
 import threading
 import types
 import unittest
+import tempfile
 from unittest.mock import patch
 from collections import deque
 
@@ -16,6 +19,7 @@ from button_contract import FrameConfirmation, adapted_gate, valid_proof, BACKEN
 from elevator_button_floor_main import EvidenceGate
 from extra_color_node import ColorExtraNode
 from launcher import readiness, lower_bootstrap, original
+import launcher
 from floor_filter import BACKEND as FLOOR_BACKEND, SCHEMA as FLOOR_SCHEMA, config_digest, DEFAULTS
 
 
@@ -164,6 +168,48 @@ class NodeTests(unittest.TestCase):
 
 
 class LaunchTests(unittest.TestCase):
+    def test_site_metadata_changes_only_button_point_and_retains_process_check(self):
+        metadata = {'config': {'points': {'button': {'x': .11, 'y': .976, 'theta': 2.0},
+                                         'origin': {'x': -3.465}}, 'head': {'floor': {'yaw': -20}}},
+                    'active_pids': [12345]}
+        output = io.StringIO()
+        with patch('launcher.base_metadata_code', return_value='print(%r)' % json.dumps(metadata)):
+            with contextlib.redirect_stdout(output):
+                exec(launcher.remote_metadata_code(), {})
+        expected = copy.deepcopy(metadata)
+        expected['config']['points']['button'] = launcher.BUTTON_POSE
+        self.assertEqual(json.loads(output.getvalue()), expected)
+        self.assertEqual(metadata['config']['points']['button']['x'], .11)
+
+    def test_lower_execution_uses_site_point_without_modifying_snapshot(self):
+        from elevator_button_floor_main import DEFAULT_CONFIG
+        before = copy.deepcopy(DEFAULT_CONFIG)
+        with patch.object(original, 'ENTRY', str(ROOT/'upstream/elevator_button_floor_main.py')):
+            code = lower_bootstrap([])
+        output = io.StringIO()
+        with patch.object(sys, 'argv', sys.argv[:]), patch.dict(sys.modules):
+            with contextlib.redirect_stdout(output), self.assertRaises(SystemExit) as stopped:
+                exec(code, {})
+            self.assertEqual(stopped.exception.code, 0)
+            active_config = sys.modules['elevator_color_lower'].DEFAULT_CONFIG
+            expected = copy.deepcopy(before)
+            expected['points']['button'] = launcher.BUTTON_POSE
+            self.assertEqual(active_config, expected)
+        self.assertEqual(DEFAULT_CONFIG, before)
+        self.assertIn("'x': -0.039", output.getvalue())
+
+    def test_button_pose_rejects_invalid_coordinates(self):
+        invalid = [{'x': True, 'y': .914, 'theta': 1},
+                   {'x': float('nan'), 'y': .914, 'theta': 1},
+                   {'x': -.039, 'y': .914, 'theta': 181},
+                   {'x': -.039, 'y': .914}]
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)/'pose.json'
+            for pose in invalid:
+                path.write_text(json.dumps(pose), encoding='utf-8')
+                with self.assertRaises(ValueError):
+                    launcher.load_button_pose(path)
+
     def test_old_extra_readiness_is_rejected(self):
         values={'door':({'schema_version':2,'mode':'idle','status':'idle','stage_timing_version':1},10),
                 'extra':({'mode':'idle','status':'idle','image_received':True,'image_age_sec':.1},10),
