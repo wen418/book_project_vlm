@@ -5,8 +5,8 @@ if [[ -n "${CONDA_PREFIX:-}" ]]; then
   echo "请先退出 Conda，再启动机器人测试。" >&2
   exit 2
 fi
-export ROS_MASTER_URI="${ROS_MASTER_URI:-http://kuavo_master:11311}"
-export ROS_IP="${ROS_IP:-192.168.26.12}"
+network_exports="$(/usr/bin/python3 "${ELEVATOR_LAUNCH_DIR}/network_config.py" "$@")"
+eval "${network_exports}"
 unset ROS_HOSTNAME
 set +u
 source /opt/ros/noetic/setup.bash

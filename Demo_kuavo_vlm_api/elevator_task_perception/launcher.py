@@ -90,6 +90,7 @@ def lower_bootstrap(arguments):
              'transport': (ROOT/'telemetry_transport.py').read_text(),
              'task_contract': (ROOT/'task_contract.py').read_text(),
              'adapter': (ROOT/'lower_adapter.py').read_text(),
+             'network': (ROOT/'network_config.py').read_text(),
              'button_pose': BUTTON_POSE,
              'entry_path': original.ENTRY}
     files['original_sha256'] = 'f371a7e12f49bb023e726499dd14691e232841b11ced6b41c3f78a53c2b8a525'
@@ -99,6 +100,7 @@ def lower_bootstrap(arguments):
             "assert hashlib.sha256(Path(p['entry_path']).read_bytes()).hexdigest()==p['original_sha256'],"
             "'下位机入口已变化；请先更新本方案快照，不使用旧点位';"
             "sys.path.insert(0,str(Path(p['entry_path']).parent));"
+            "n=types.ModuleType('elevator_network');exec(compile(p['network'],'<network_config>','exec'),n.__dict__);n.configure_lower();"
             "q=types.ModuleType('task_contract');sys.modules[q.__name__]=q;exec(compile(p['task_contract'],'<task_contract>','exec'),q.__dict__);"
             "c=types.ModuleType('color_button_contract');exec(compile(p['contract'],'<button_contract>','exec'),c.__dict__);"
             "f=types.ModuleType('floor_guard_contract');exec(compile(p['floor_contract'],'<floor_filter>','exec'),f.__dict__);"
@@ -158,7 +160,7 @@ class Launcher(BaseLauncher):
         if '--target-floor' not in arguments:
             arguments += ['--target-floor', str(self.args.target_floor)]
         workspace = next(path.parent for path in PurePosixPath(original.BOOK).parents if path.name == 'src')
-        command = ['env', 'ROS_MASTER_URI='+os.environ['ROS_MASTER_URI'], 'ROS_IP=192.168.26.1',
+        command = ['env', 'ROS_MASTER_URI='+os.environ['ROS_MASTER_URI'],
                    '/bin/bash', '--noprofile', '--norc', '-c', ROS_ENV_SCRIPT, 'elevator-color-ros-env',
                    '/opt/ros/noetic/setup.bash', str(workspace/'devel/setup.bash'),
                    str(workspace), lower_bootstrap(arguments)]

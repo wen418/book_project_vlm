@@ -1,5 +1,5 @@
 {
-  "release": "elevator_task_perception_v1",
+  "release": "elevator_task_perception_v1_internal_network",
   "button_confirmations": 1,
   "floor_direction_constraint": false,
   "floor_target_rule": "2 of last 3 in 5 seconds",
@@ -14,7 +14,7 @@
     "/media/data/vlm/Demo_vlm2_kuavo_api/elevator_perception.py": "8466694f4559557eeb7aa173e1945290663fe27fb037a5e701f27db2224f1046"
   },
   "release_files_sha256": {
-    "launcher.py": "4f13026c678d0f2f32a7735200ffd9d0eb8b3252b113f47dbab31cfde60c5a5b",
+    "launcher.py": "7304be406ab299be4b54745fb0cf743879431cd88e15805a5492c34bce14c6dd",
     "task_contract.py": "17378d01bd6057e343bb6b4c595ab2d13ede567533c19406b4edfc077f578c50",
     "button_color_rule.py": "4feb87b0178569e1d75b4fb45171f29b5e7e28496de6296257e68e962f6e5dee",
     "button_contract.py": "499b3bd0f407a4f69798630df6fac6999973edf0a2ba1c6af3928ae79a7f28f3",
@@ -29,15 +29,16 @@
     "compact_door_node.py": "bfa937078a57077801be94a8f121302af44e2b3c232623e0f91c44d516e08c18",
     "door_ros.yaml": "3ad2559f7fc39134f1c88f21026b83e004977f545dba3a0cff9635bfd4e3bc83",
     "telemetry_transport.py": "d48a35be001815e23ed58c0870b975a0db707bd18cb8e7543401e34a8920fed3",
-    "start_elevator_demo.sh": "ce295b37c02cc5097c6a4dbe9932bd6474f7739e513c1d1a095b004a7a899098",
+    "start_elevator_demo.sh": "219a8e06b5d3e3788c076c6f274ec0ad6f84332acf3ede023a8bb8cefd0c8b37",
     "run_extra_perception.sh": "8b074741c31399e5026525add98fca88ff56e0fb023a1a7113f6e636a810c7fa",
     "run_door_perception.sh": "78e16bdf9fb291963f18631b36795b4da327346b3ea48f3da5f6a20c9c0e1675",
-    "build_manifest.py": "fa15b4fe1568ac2985fd3ce11a710e52dc6afa1eb788f060ee30670c686a4421",
+    "build_manifest.py": "fa00dba97300e5a8504b0203acaf84b6dcc6f28863130dbc8e5efe3707f34070",
     "smoke_private_ros.py": "cc46ec0e2562833348dee2bc02eefe932b976294514c464038d338b42799f7a2",
     "benchmark_short_output.py": "cd840b579d08d1cebba5ff5c54da411a2f057500ba35ec1692328a919e8dc4dc",
+    "network_config.py": "b05c34c2f166e94b194a7ac5fc86f695308bf927a14e65e7fa020cec9c42d8d4",
     "upstream/elevator_button_floor_main.py": "7713da8672a5c6b96e2f2a8d5bec5669c2e98631d6b11e4302302a7819641faa",
     "upstream/elevator_demo_core.py": "cc0929e57577bb0071689c853f0ca93a204f46cf28ca5bec4ba17ec0c996f7d7",
-    "upstream/elevator_demo_launcher.py": "87fffcc31be697300d3f0f6364d2f9cb3cc7dbfaecf01530eab14d774ed05827",
+    "upstream/elevator_demo_launcher.py": "2e46b9aac33cb6f797e644db0fb7f4d4482705a90b7bb3467210270a64d94f6e",
     "upstream/elevator_extra_perception.py": "7de55dc78a4f1e8067a49aa16126088297f9d273dc7891ba2c82b665cd35d59c",
     "upstream/perception.json": "e07c5f8a29a8dee6bc7491da8cf4bd027f33532d76a64a85db1681d927c20e02"
   }

@@ -4,7 +4,7 @@
 
 ## 一键启动
 
-在上位机 `leju_kuavo@192.168.5.244` 执行：
+登录上位机（当前 `leju_kuavo@192.168.121.215`）后执行：
 
 ```bash
 cd /media/data/vlm/Demo_kuavo_vlm_api/elevator_task_perception
@@ -18,7 +18,7 @@ cd /media/data/vlm/Demo_kuavo_vlm_api/elevator_task_perception
 ./start_elevator_demo.sh --current-floor 21 --target-floor 20 --program quantify --entry-plan reduced_backtrack
 ```
 
-下位机 SSH 默认 `lab@192.168.5.133`，可用 `--lower-host` 覆盖。ROS 默认继续使用已验证的内部有线地址：master `kuavo_master:11311`（192.168.26.1）、上位机 ROS_IP=192.168.26.12。Wi-Fi SSH 地址变化不改变内部 ROS 网络。上下位机需同步时间。
+下位机 SSH 默认 `lab@kuavo_master`，通过上位机内部网络连接，不绑定下位机Wi-Fi地址。可用 `--lower-host 主机名` 或 `ELEVATOR_LOWER_HOST` 覆盖。上位机ROS_IP默认根据到该主机的路由自动选择；下位机ROS_IP从实际SSH连接的服务端地址取得；ROS_MASTER_URI默认使用该内部主机名。显式设置的ROS_MASTER_URI/ROS_IP仍优先。上下位机需同步时间。内部主机名应由现场DNS或hosts正确解析，内部网段改变后无需修改程序中的地址。
 
 两个楼层参数必须显式给出；相同楼层直接报错，由规划跳过乘梯。本版仍使用现场原地图和局部导航坐标，不自动切换地图；能识别某层不意味着该层的导航点已经标定。按钮观察点保持 x=-0.039m、y=0.914m、theta=1.0°。
 

@@ -163,7 +163,7 @@ class Launcher:
         return output
 
     def lower_command(self, arguments, locked=False):
-        command = ["env", "ROS_MASTER_URI=" + os.environ["ROS_MASTER_URI"], "ROS_IP=192.168.26.1",
+        command = ["env", "ROS_MASTER_URI=" + os.environ["ROS_MASTER_URI"],
                    "/usr/bin/python3", "-u", ENTRY, *arguments]
         if locked:
             command = ["flock", "-n", "-E", "73", "/tmp/kuavo_elevator_demo.lock", *command]
@@ -375,7 +375,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description="依次启动两个 VLM 感知和下位机电梯程序；默认运行完整演示")
     parser.add_argument("--target-floor", type=int, help="本次目标楼层；省略则沿用下位机内置配置")
     parser.add_argument("--current-floor", type=int, required=True, help="规划提供的本次乘梯起始楼层")
-    parser.add_argument("--lower-host", default="192.168.5.133", help="下位机 SSH 主机")
+    parser.add_argument("--lower-host", default=os.environ.get('ELEVATOR_LOWER_HOST') or 'kuavo_master',
+                        help="下位机内部 SSH 主机名；默认 kuavo_master，可用环境变量或本参数覆盖")
     parser.add_argument("--ready-timeout", type=float, default=60.0)
     parser.add_argument("--program", choices=("demo", "quantify"), default="demo", help="demo 原流程；quantify 新量化程序")
     parser.add_argument("--result-dir", type=Path, default=QUANT_ROOT / "result")

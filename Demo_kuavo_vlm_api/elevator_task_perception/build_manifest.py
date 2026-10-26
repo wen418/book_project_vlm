@@ -13,9 +13,9 @@ def main():
                'compact_door_node.py', 'door_ros.yaml', 'telemetry_transport.py',
                'start_elevator_demo.sh', 'run_extra_perception.sh', 'run_door_perception.sh',
                'build_manifest.py']
-    runtime += ['smoke_private_ros.py', 'benchmark_short_output.py']
+    runtime += ['smoke_private_ros.py', 'benchmark_short_output.py', 'network_config.py']
     runtime += [p.relative_to(ROOT).as_posix() for p in sorted((ROOT/'upstream').glob('*')) if p.is_file()]
-    manifest = {'release': 'elevator_task_perception_v1', 'button_confirmations': 1,
+    manifest = {'release': 'elevator_task_perception_v1_internal_network', 'button_confirmations': 1,
                 'floor_direction_constraint': False, 'floor_target_rule': '2 of last 3 in 5 seconds',
                 'vlm_response': 'door C/O/U; floor integer/U; max_tokens=8; no few-shot',
                 'checks': 'startup readiness; runtime command/settle; retain arrival and motion telemetry',
