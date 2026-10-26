@@ -1,0 +1,21 @@
+camera:
+  scene_topic: /cam_h/color/image_raw
+  yuv422_layout: yuyv
+  door_topic: ''
+  button_topic: ''
+  scene_roi: []
+  door_roi: []
+  button_roi: []
+mode: idle
+mode_topic: /elevator/perception/mode
+output_topic: /elevator/perception/state
+model_config: config.door_fast.json
+inference_hz: 1.0
+status_hz: 1.0
+max_frame_age_sec: 2.0
+max_result_age_sec: 15.0
+max_pair_skew_sec: 0.5
+jpeg_quality: 80
+max_image_edge: 0
+temporal_filter: false
+state_file: ''

@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+verification/
+result/
+.result_pending/
+logs/
+.one_click.lock

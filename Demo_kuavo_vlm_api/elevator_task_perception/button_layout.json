@@ -1,0 +1,7 @@
+{
+  "dual_search_roi": [150, 100, 250, 320],
+  "single_search_roi": [190, 175, 135, 120],
+  "single_button_floors": {"21": "down"},
+  "dual_order": ["up", "down"],
+  "note": "双按钮面板按已确认的竖直布局：上键在上、下键在下。单按钮楼层必须显式配置。ROI按848x480标定。"
+}

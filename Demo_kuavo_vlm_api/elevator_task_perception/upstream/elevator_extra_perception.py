@@ -1,0 +1,351 @@
+#!/usr/bin/env python3
+"""Upper computer: add down-button and floor-display perception without changing the door node."""
+from __future__ import annotations
+
+import argparse
+import base64
+import json
+import os
+from pathlib import Path
+import sys
+import threading
+import time
+import uuid
+
+from elevator_demo_core import finite, load_config, parse_observation
+
+ROOT = Path(__file__).resolve().parent
+PROMPTS = {
+    "button_verify": """你是电梯厅外下行呼梯按钮的视觉核验器。只根据当前图像判断下行实体按钮本身是否点亮。
+画面可以只有一个向下箭头按钮，不要求存在上行按钮。先辨认按钮本体，再判断其背光或边框是否明确发光。
+楼层显示屏上的红色数字、金属反光、相机闪光、按钮表面印刷的箭头、手指接触，都不能作为按钮已点亮的证据。
+按钮清晰且未亮为 false；明确点亮为 true；未看见、太小、模糊、遮挡或无法区分反光与背光为 null。
+confidence 是对本次判断的确定程度，0到1，不是点亮的概率。未知时填0。
+只输出以下三个字段的完整JSON，不要解释或思考过程；evidence不超过30字：
+{"button_lit":true或false或null,"confidence":0到1,"evidence":"可见证据"}""",
+    "floor_monitor": """你是电梯当前运行楼层显示屏的视觉读取器。只读取屏幕此刻明确显示的楼层整数。
+不要读取按钮编号、门牌、楼层贴纸或目标楼层。不要根据任务、上一帧或数字变化规律猜测。
+本次输入只含当前一帧。屏幕不在画面、数字不完整、过曝、模糊或刷新缺段导致无法确定时，floor必须为null。
+不要把数字缺段或局部图案补全成另一个楼层，也不能把其他红光当成楼层数字。
+confidence是对此次读数的确定程度，0到1；未知时填0。
+只输出以下三个字段的完整JSON，不要解释或思考过程；evidence不超过30字：
+{"floor":整数或null,"confidence":0到1,"evidence":"可见数字或无法读取原因"}"""
+}
+
+
+def make_client(config, project_override=None):
+    project = Path(project_override or config["extra_perception"]["vlm_project"])
+    sys.path.insert(0, str(project))
+    from vlm_client import OpenAICompatibleVLM
+    raw = json.loads((project / config["extra_perception"]["model_config"]).read_text(encoding="utf-8-sig"))
+    client = OpenAICompatibleVLM(
+        api_url=os.environ.get("VLM_API_URL") or raw["api_url"],
+        model=os.environ.get("VLM_MODEL") or raw["model"],
+        api_key=os.environ.get("VLM_API_KEY") or raw.get("api_key", ""),
+        timeout_seconds=raw.get("timeout_seconds", 20),
+        max_tokens=256,
+        temperature=0.0,
+        use_json_object=True,
+        max_retries=0,
+        enable_thinking=raw.get("enable_thinking", False),
+    )
+    client._require_credentials()
+    return client
+
+
+def infer(client, data_url, mode, threshold):
+    messages = [{"role": "system", "content": PROMPTS[mode]},
+                {"role": "user", "content": [
+                    {"type": "text", "text": "只判断这张当前图像，按规定返回JSON。"},
+                    {"type": "image_url", "image_url": {"url": data_url}}]}]
+    answer = parse_observation(client.complete(messages), mode)
+    field = "button_lit" if mode == "button_verify" else "floor"
+    if answer["confidence"][field] < threshold:
+        answer[field] = None
+    answer["status"] = "ok" if answer[field] is not None else "uncertain"
+    return answer
+
+
+def decode_image(message, layout, cv2, np, bridge):
+    if str(getattr(message, "encoding", "")).lower() == "yuv422":
+        height, width, step = int(message.height), int(message.width), int(message.step)
+        raw = np.frombuffer(bytes(message.data), dtype=np.uint8)
+        if height <= 0 or width <= 0 or width % 2 or step < width * 2 or raw.size < height * step:
+            raise ValueError("YUV422 图像不完整")
+        packed = raw[:height * step].reshape(height, step)[:, :width * 2]
+        packed = np.ascontiguousarray(packed).reshape(height, width, 2)
+        conversion = cv2.COLOR_YUV2BGR_YUY2 if layout == "yuyv" else cv2.COLOR_YUV2BGR_UYVY
+        return cv2.cvtColor(packed, conversion)
+    return bridge.imgmsg_to_cv2(message, desired_encoding="bgr8")
+
+
+def encode_image(image, camera, mode, cv2):
+    roi = camera["button_roi" if mode == "button_verify" else "floor_roi"]
+    if roi is not None:
+        x, y, width, height = roi
+        if x + width > image.shape[1] or y + height > image.shape[0]:
+            raise ValueError("ROI 超出当前图像，必须重新标定")
+        image = image[y:y + height, x:x + width]
+    edge = camera["max_image_edge"]
+    if edge > 0 and max(image.shape[:2]) > edge:
+        scale = edge / max(image.shape[:2])
+        image = cv2.resize(image, (max(1, round(image.shape[1] * scale)), max(1, round(image.shape[0] * scale))))
+    ok, encoded = cv2.imencode(".jpg", image, [int(cv2.IMWRITE_JPEG_QUALITY), camera["jpeg_quality"]])
+    if not ok:
+        raise RuntimeError("JPEG 编码失败")
+    return "data:image/jpeg;base64," + base64.b64encode(encoded.tobytes()).decode("ascii")
+
+
+class ExtraPerceptionNode:
+    def __init__(self, config, client=None, client_factory=None):
+        import cv2
+        import numpy as np
+        import rospy
+        from cv_bridge import CvBridge
+        from sensor_msgs.msg import Image
+        from std_msgs.msg import String
+        self.config, self.client, self.rospy, self.String = config, client, rospy, String
+        self.cv2, self.np, self.bridge = cv2, np, CvBridge()
+        self.lock = threading.RLock()
+        self.publish_lock = threading.Lock()
+        self.stop = threading.Event()
+        self.request = {"mode": "idle", "request_id": "", "not_before_stamp": 0.0}
+        self.frame = None
+        self.revision, self.sequence = 0, 0
+        self.last_signature = None
+        self.instance_id = uuid.uuid4().hex
+        project = Path(config["extra_perception"]["vlm_project"])
+        if not (project / "stage_timing.py").is_file():
+            project = Path(__file__).resolve().parent.parent / "Demo_vlm2_kuavo_api"
+        sys.path.insert(0, str(project))
+        from stage_timing import ros_timing
+        self.timing = ros_timing(rospy, String, "extra")
+        self.last_result = None
+        self.state = {"status": "starting", "reason": "正在初始化附加感知"}
+        self.client_error = ""
+        p = config["perception"]
+        self.publisher = rospy.Publisher(p["extra_state_topic"], String, queue_size=10, latch=True)
+        self.ready = rospy.Publisher(p["extra_ready_topic"], String, queue_size=1, latch=True)
+        self.subscribers = [
+            rospy.Subscriber(config["camera"]["topic"], Image, self.on_frame, queue_size=1, buff_size=32 * 1024 * 1024),
+            rospy.Subscriber(p["extra_request_topic"], String, self.on_request, queue_size=1),
+        ]
+        rospy.on_shutdown(self.stop.set)
+        self.emit_heartbeat()
+        if self.client is None and client_factory is not None:
+            try:
+                self.client = client_factory()
+            except Exception as exc:
+                self.client_error = str(exc)[:200]
+        if self.client is None:
+            self.client_error = self.client_error or "VLM 客户端未配置"
+            self.set_state("error", "VLM 初始化失败：" + self.client_error)
+        else:
+            self.client = self.timing.wrap(self.client)
+            self.set_state("idle", "节点已启动，等待下位机观察请求；当前不调用模型")
+        self.ready.publish(String(data=json.dumps({"schema_version": 1, "instance_id": self.instance_id,
+                                                 "stage_timing_version": 1,
+                                                 "capabilities": list(PROMPTS),
+                                                 "inference_hz": 1.0 / config["extra_perception"]["inference_period"],
+                                                 "status": "error" if self.client_error else "ready",
+                                                 "reason": self.client_error or "附加感知已就绪"})))
+        self.emit_heartbeat()
+        self.timer = rospy.Timer(rospy.Duration(1.0), self.on_heartbeat)
+        rospy.on_shutdown(self.timer.shutdown)
+
+    def on_frame(self, message):
+        with self.lock:
+            self.revision += 1
+            self.frame = (message, message.header.stamp.to_sec(), self.revision)
+        if getattr(self, "timing", None):
+            self.timing.frame(message.header.stamp.to_sec())
+
+    def on_request(self, message):
+        try:
+            if message.data.strip() in ("idle", *PROMPTS):
+                request = {"mode": message.data.strip(), "request_id": uuid.uuid4().hex,
+                           "not_before_stamp": self.rospy.Time.now().to_sec()}
+            else:
+                request = json.loads(message.data)
+            if not isinstance(request, dict) or request.get("mode") not in ("idle", *PROMPTS):
+                raise ValueError("观察模式无效")
+            if not isinstance(request.get("request_id"), str) or not request["request_id"]:
+                raise ValueError("request_id 缺失")
+            stamp = finite(request.get("not_before_stamp"), "not_before_stamp", 0)
+            if stamp > self.rospy.Time.now().to_sec() + 1:
+                raise ValueError("请求时间超前，请同步上下位机时钟")
+            with self.lock:
+                self.request = dict(request)
+                if getattr(self, "timing", None):
+                    self.timing.begin(request["mode"], request["request_id"], stamp)
+                self.last_result = None
+                self.state = {"status": "idle" if request["mode"] == "idle" else "waiting_image",
+                              "reason": "感知已暂停" if request["mode"] == "idle" else "已接收观察请求，等待新图像"}
+            self.emit_heartbeat()
+        except (ValueError, TypeError, AttributeError) as exc:
+            self.set_state("error", "观察请求格式错误：" + str(exc))
+            self.emit_heartbeat()
+            self.rospy.logwarn("忽略无效观察请求: %s", exc)
+
+    def set_state(self, status, reason, request=None):
+        with self.lock:
+            if request is not None and (self.request["request_id"] != request["request_id"] or
+                                        self.request["mode"] != request["mode"]):
+                return
+            self.state = {"status": status, "reason": reason}
+
+    def publish(self, request, stamp, result, message_type="result"):
+        with self.publish_lock:
+            payload = {"schema_version": 1, "sequence": self.sequence, "instance_id": self.instance_id,
+                       "message_type": message_type, "request_id": request["request_id"], "mode": request["mode"],
+                       "image_stamp": stamp, "generated_stamp": self.rospy.Time.now().to_sec(),
+                       "button_lit": None, "floor": None, "confidence": {"button_lit": 0.0, "floor": 0.0},
+                       "evidence": {"button_lit": "", "floor": ""}, "error": "", **result}
+            self.sequence += 1
+            if message_type == "result":
+                with self.lock:
+                    if self.request["request_id"] != request["request_id"] or self.request["mode"] != request["mode"]:
+                        return
+                    self.last_result = dict(payload)
+                    self.state = {"status": payload["status"], "reason": payload.get("reason", "观察完成")}
+            self.publisher.publish(self.String(data=json.dumps(payload, ensure_ascii=False, allow_nan=False)))
+
+    def emit_heartbeat(self):
+        with self.lock:
+            request, frame = dict(self.request), self.frame
+            state, last_result = dict(self.state), self.last_result
+        now = self.rospy.Time.now().to_sec()
+        stamp = frame[1] if frame else None
+        try:
+            age = now - finite(stamp, "image_stamp", 0.000001)
+        except ValueError:
+            age, stamp = None, None
+        result = {**state, "camera_topic": self.config["camera"]["topic"], "image_received": frame is not None,
+                  "image_age_sec": None if age is None else round(age, 3), "last_result": last_result,
+                  "latest_image_stamp": stamp, "result_fresh": False}
+        if last_result is not None:
+            last_stamp = last_result.get("image_stamp")
+            result["last_result_age_sec"] = round(now - last_stamp, 3) if last_stamp is not None else None
+            if math_is_fresh(last_stamp, now, self.config["extra_perception"]["max_result_age"], request["not_before_stamp"]):
+                for field in ("button_lit", "floor", "confidence", "evidence"):
+                    result[field] = last_result.get(field)
+                result["result_fresh"] = True
+                stamp = last_stamp
+            elif state["status"] in ("ok", "uncertain"):
+                result.update(status="stale_result", reason="上一次识别结果已过期，等待新结果")
+        self.publish(request, stamp, result, message_type="heartbeat")
+
+    def on_heartbeat(self, _event):
+        if not self.stop.is_set() and not self.rospy.is_shutdown():
+            self.emit_heartbeat()
+
+    def run_once(self):
+        with self.lock:
+            request, frame = dict(self.request), self.frame
+            timing_stage = dict(self.timing.stage or {}) if getattr(self, "timing", None) else None
+        if self.client_error:
+            self.set_state("error", "VLM 初始化失败：" + self.client_error)
+            return
+        if request["mode"] == "idle":
+            return
+        field = "button_lit" if request["mode"] == "button_verify" else "floor"
+        stamp = frame[1] if frame is not None else None
+        timing, context = getattr(self, "timing", None), None
+        try:
+            now = self.rospy.Time.now().to_sec()
+            if frame is None:
+                self.set_state("waiting_image", "尚未收到头部相机图像，请检查相机话题", request)
+                return
+            if not math_is_fresh(stamp, now, self.config["extra_perception"]["max_frame_age"], request["not_before_stamp"]):
+                self.set_state("waiting_fresh_image", "相机图像过期、时间戳异常或早于本次请求，等待新图像", request)
+                return
+            signature = (request["request_id"], frame[2])
+            if signature == self.last_signature:
+                self.set_state("waiting_new_frame", "当前帧已经处理，等待不同的新帧", request)
+                return
+            self.last_signature = signature
+            if timing:
+                context = timing.select(stamp, timing_stage)
+            image = decode_image(frame[0], self.config["camera"]["yuv422_layout"], self.cv2, self.np, self.bridge)
+            data_url = encode_image(image, self.config["camera"], request["mode"], self.cv2)
+            start = time.monotonic()
+            self.set_state("processing", "正在调用 VLM；请等待结果", request)
+            self.emit_heartbeat()
+            result = infer(self.client, data_url, request["mode"], self.config["perception"]["min_confidence"])
+            result["latency_ms"] = round((time.monotonic() - start) * 1000, 1)
+            if not math_is_fresh(stamp, self.rospy.Time.now().to_sec(), self.config["extra_perception"]["max_result_age"], request["not_before_stamp"]):
+                raise ValueError("推理完成时图像已过期")
+            value = result[field]
+            if result["status"] == "uncertain":
+                result["reason"] = "无法可靠判断，请检查目标是否入镜、清晰度和反光"
+            elif field == "button_lit":
+                result["reason"] = "下行按钮已点亮" if value else "下行按钮未点亮，继续等待"
+            else:
+                result["reason"] = f"当前屏幕楼层：{value}"
+        except Exception as exc:
+            result = {"status": "error", field: None, "confidence": {field: 0.0},
+                      "evidence": {field: ""}, "error": str(exc)[:200], "reason": str(exc)[:200]}
+        with self.lock:
+            if self.request["request_id"] != request["request_id"] or self.request["mode"] != request["mode"]:
+                if context:
+                    timing.finish(context, result["status"], {field: result.get(field)}, accepted=False)
+                return  # A head/stage change invalidates the in-flight answer, including ABA switches.
+        if context:
+            timing.finish(context, result["status"], {field: result.get(field)})
+        self.publish(request, stamp, result)
+
+    def run(self):
+        while not self.rospy.is_shutdown() and not self.stop.is_set():
+            start = time.monotonic()
+            self.run_once()
+            self.stop.wait(max(0.05, self.config["extra_perception"]["inference_period"] - (time.monotonic() - start)))
+
+
+def math_is_fresh(stamp, now, maximum, not_before):
+    try:
+        stamp = finite(stamp, "image_stamp", 0.000001)
+        return stamp >= not_before and -1 <= finite(now, "now") - stamp <= maximum
+    except ValueError:
+        return False
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--config", type=Path, default=ROOT / "params/elevator_button_floor_demo.json")
+    parser.add_argument("--vlm-project", type=Path)
+    parser.add_argument("--inference-hz", type=float, default=1.0, choices=(1.0,), help="VLM 最大请求频率，统一为 1 Hz")
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--run", action="store_true")
+    modes.add_argument("--image", type=Path)
+    modes.add_argument("--response-file", type=Path)
+    parser.add_argument("--mode", choices=tuple(PROMPTS), default="button_verify")
+    args = parser.parse_args(argv)
+    config = load_config(args.config)
+    config["extra_perception"]["inference_period"] = 1.0 / args.inference_hz
+    if args.response_file:
+        print(json.dumps(parse_observation(args.response_file.read_text(encoding="utf-8"), args.mode), ensure_ascii=False))
+    elif args.image:
+        import cv2
+        image = cv2.imread(str(args.image))
+        if image is None:
+            raise ValueError("无法读取图片")
+        print(json.dumps(infer(make_client(config, args.vlm_project), encode_image(image, config["camera"], args.mode, cv2),
+                               args.mode, config["perception"]["min_confidence"]), ensure_ascii=False))
+    elif args.run:
+        import rospy
+        rospy.init_node("elevator_extra_perception_demo", anonymous=False)
+        ExtraPerceptionNode(config, client_factory=lambda: make_client(config, args.vlm_project)).run()
+    else:
+        print("配置有效；默认仅预览。--run 启动按钮/楼层感知；--image 分析单张图片。")
+        print("本节点不发布底盘、头部或按键动作，也不修改原门感知程序。")
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except KeyboardInterrupt:
+        raise SystemExit(130)
+    except Exception as error:
+        print("附加感知未启动或已终止：" + str(error), file=sys.stderr)
+        raise SystemExit(1)
